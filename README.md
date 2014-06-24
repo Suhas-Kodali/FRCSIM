@@ -1,2 +1,3 @@
-Repository for Frog Force 503's development of a video game based on FRC's Real Game.
+Robot simulator for FRC game and strategy analysis
 ===================
+Created with JMonkey Engine 3, contact brycepaputa@gmail.com or suhaskodali@gmail.com for more information.
