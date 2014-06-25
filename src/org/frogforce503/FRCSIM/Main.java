@@ -26,7 +26,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static void main(String[] args) {
         Main app = new Main();
         AppSettings appSettings = new AppSettings(true);
-        appSettings.setSettingsDialogImage("Textures/first-vertical.png");
+        //appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
