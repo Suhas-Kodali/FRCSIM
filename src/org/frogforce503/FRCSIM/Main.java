@@ -69,65 +69,23 @@ public class Main extends SimpleApplication implements ActionListener {
 
     private void setupKeys() {
         flyCam.setEnabled(false);
-        
-        inputManager.addMapping("a", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("b", new KeyTrigger(KeyInput.KEY_B));
-        inputManager.addMapping("c", new KeyTrigger(KeyInput.KEY_C));
-        inputManager.addMapping("d", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addMapping("e", new KeyTrigger(KeyInput.KEY_E));
-        inputManager.addMapping("f", new KeyTrigger(KeyInput.KEY_F));
-        inputManager.addMapping("g", new KeyTrigger(KeyInput.KEY_G));
-        inputManager.addMapping("h", new KeyTrigger(KeyInput.KEY_H));
-        inputManager.addMapping("i", new KeyTrigger(KeyInput.KEY_I));
-        inputManager.addMapping("j", new KeyTrigger(KeyInput.KEY_J));
-        inputManager.addMapping("k", new KeyTrigger(KeyInput.KEY_K));
-        inputManager.addMapping("l", new KeyTrigger(KeyInput.KEY_L));
-        inputManager.addMapping("m", new KeyTrigger(KeyInput.KEY_M));
-        inputManager.addMapping("n", new KeyTrigger(KeyInput.KEY_N));
-        inputManager.addMapping("o", new KeyTrigger(KeyInput.KEY_O));
-        inputManager.addMapping("p", new KeyTrigger(KeyInput.KEY_P));
-        inputManager.addMapping("q", new KeyTrigger(KeyInput.KEY_Q));
-        inputManager.addMapping("r", new KeyTrigger(KeyInput.KEY_R));
-        inputManager.addMapping("s", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("t", new KeyTrigger(KeyInput.KEY_T));
-        inputManager.addMapping("u", new KeyTrigger(KeyInput.KEY_U));
-        inputManager.addMapping("v", new KeyTrigger(KeyInput.KEY_V));
-        inputManager.addMapping("w", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("x", new KeyTrigger(KeyInput.KEY_X));
-        inputManager.addMapping("y", new KeyTrigger(KeyInput.KEY_Y));
-        inputManager.addMapping("z", new KeyTrigger(KeyInput.KEY_Z));
+        int[] keys = new int[]{KeyInput.KEY_A,KeyInput.KEY_B,KeyInput.KEY_C,
+                KeyInput.KEY_D,KeyInput.KEY_E,KeyInput.KEY_F,KeyInput.KEY_G,
+                KeyInput.KEY_H,KeyInput.KEY_I,KeyInput.KEY_J,KeyInput.KEY_K,
+                KeyInput.KEY_L,KeyInput.KEY_M,KeyInput.KEY_N,KeyInput.KEY_O,
+                KeyInput.KEY_P,KeyInput.KEY_Q,KeyInput.KEY_R,KeyInput.KEY_S,
+                KeyInput.KEY_T,KeyInput.KEY_U,KeyInput.KEY_V,KeyInput.KEY_W,
+                KeyInput.KEY_X,KeyInput.KEY_Y,KeyInput.KEY_Z};
+        for(char i = 0; i+'a' <= 'z'; i++){
+            inputManager.addMapping(new String(new char[]{(char)(i+'a')}), new KeyTrigger(keys[i]));
+            inputManager.addListener(this, new String(new char[]{(char)(i+'a')}));
+        }
         inputManager.addMapping("left", new KeyTrigger(KeyInput.KEY_LEFT));
         inputManager.addMapping("right", new KeyTrigger(KeyInput.KEY_RIGHT));
         inputManager.addMapping("up", new KeyTrigger(KeyInput.KEY_UP));
         inputManager.addMapping("down", new KeyTrigger(KeyInput.KEY_DOWN));
         inputManager.addMapping("space", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("enter", new KeyTrigger(KeyInput.KEY_RETURN));
-        inputManager.addListener(this, "a");
-        inputManager.addListener(this, "b");
-        inputManager.addListener(this, "c");
-        inputManager.addListener(this, "d");
-        inputManager.addListener(this, "e");
-        inputManager.addListener(this, "f");
-        inputManager.addListener(this, "g");
-        inputManager.addListener(this, "h");
-        inputManager.addListener(this, "i");
-        inputManager.addListener(this, "j");
-        inputManager.addListener(this, "k");
-        inputManager.addListener(this, "l");
-        inputManager.addListener(this, "m");
-        inputManager.addListener(this, "n");
-        inputManager.addListener(this, "o");
-        inputManager.addListener(this, "p");
-        inputManager.addListener(this, "q");
-        inputManager.addListener(this, "r");
-        inputManager.addListener(this, "s");
-        inputManager.addListener(this, "t");
-        inputManager.addListener(this, "u");
-        inputManager.addListener(this, "v");
-        inputManager.addListener(this, "w");
-        inputManager.addListener(this, "x");
-        inputManager.addListener(this, "y");
-        inputManager.addListener(this, "z");
         inputManager.addListener(this, "left");
         inputManager.addListener(this, "right");
         inputManager.addListener(this, "up");
