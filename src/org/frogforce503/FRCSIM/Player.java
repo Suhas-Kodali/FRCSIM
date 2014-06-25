@@ -76,9 +76,9 @@ public class Player {
         
         for(int i = 0; i < 8; i++){
             if(i<=3){
-                pos[i][0]=-xOff+width/2;
+                pos[i][0]=-xOff+width/2+1;
             } else {
-                pos[i][0]=xOff-width/2;
+                pos[i][0]=xOff-width/2-1;
             }
             if(i%4 == 0){
                 pos[i][1]=zOff;

@@ -9,6 +9,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.system.AppSettings;
 import java.util.ArrayList;
 import org.frogforce503.FRCSIM.Player.Alliance;
 
@@ -24,35 +25,45 @@ public class Main extends SimpleApplication implements ActionListener {
     private Ball ball;
     public static void main(String[] args) {
         Main app = new Main();
+        AppSettings appSettings = new AppSettings(true);
+        appSettings.setSettingsDialogImage("Textures/first-vertical.png");
+        appSettings.setUseJoysticks(true);
+        app.setDisplayFps(false);
+        app.setDisplayStatView(false);
+        app.setSettings(appSettings);
         app.start();
     }
 
     @Override
     public void simpleInitApp() {
         red = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        red.getAdditionalRenderState().setWireframe(false);
         red.setBoolean("UseMaterialColors", true); 
         red.setColor("Ambient", ColorRGBA.Red); 
         red.setColor("Diffuse", ColorRGBA.Red); 
         black = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        black.getAdditionalRenderState().setWireframe(false);
         black.setBoolean("UseMaterialColors", true); 
         black.setColor("Ambient", ColorRGBA.Black); 
         black.setColor("Diffuse", ColorRGBA.Black); 
         blue = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        blue.getAdditionalRenderState().setWireframe(false);
         blue.setBoolean("UseMaterialColors", true); 
         blue.setColor("Ambient", ColorRGBA.Blue); 
         blue.setColor("Diffuse", ColorRGBA.Blue); 
         green = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        green.getAdditionalRenderState().setWireframe(false);
         green.setBoolean("UseMaterialColors", true); 
         green.setColor("Ambient", ColorRGBA.Green); 
         green.setColor("Diffuse", ColorRGBA.Green); 
         darkGray = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        darkGray.getAdditionalRenderState().setWireframe(false);
         darkGray.setBoolean("UseMaterialColors", true); 
         darkGray.setColor("Ambient", ColorRGBA.DarkGray); 
         darkGray.setColor("Diffuse", ColorRGBA.DarkGray); 
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
@@ -141,6 +152,5 @@ public class Main extends SimpleApplication implements ActionListener {
                 player2.reset();
             }
         }
-        System.out.println(binding);
     }
 }
