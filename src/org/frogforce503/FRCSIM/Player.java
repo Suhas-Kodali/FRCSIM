@@ -2,13 +2,16 @@ package org.frogforce503.FRCSIM;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
+import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.control.VehicleControl;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
@@ -32,19 +35,23 @@ public class Player {
 
         //create a compound shape and attach the BoxCollisionShape for the car body at 0,1,0
         //this shifts the effective center of mass of the BoxCollisionShape to 0,-1,0
-        CompoundCollisionShape compoundShape = new CompoundCollisionShape();
-        BoxCollisionShape box = new BoxCollisionShape(new Vector3f(in(14), in(2.5f), in(14)));
-        compoundShape.addChildShape(box, new Vector3f(0, in(3), 0));
+        
         Node chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
-        chassisGeometry.setMaterial(alliance.material);
-        System.out.println(alliance.material);
+        chassisGeometry.setMaterial(Main.black);
+        chassisNode.attachChild(chassisGeometry);
+        new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
+        
+        CompoundCollisionShape compoundShape = new CompoundCollisionShape();
+        CollisionShape box = new BoxCollisionShape(new Vector3f(in(14), in(2.5f), in(14)));
+        compoundShape.addChildShape(box, new Vector3f(0, in(3), 0));
+        
         this.alliance = alliance;
 
         //create vehicle node
         Node vehicleNode=new Node("vehicleNode");
-        vehicleNode.attachChild(chassisGeometry);
+        vehicleNode.attachChild(chassisNode);
         vehicle = new VehicleControl(compoundShape, 400);
         vehicleNode.addControl(vehicle);
         
@@ -107,7 +114,7 @@ public class Player {
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
         }
-
+                
         rootNode.attachChild(vehicleNode);
 
         space.add(vehicle);
