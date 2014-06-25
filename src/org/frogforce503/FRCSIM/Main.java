@@ -60,7 +60,9 @@ public class Main extends SimpleApplication implements ActionListener {
         player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         player2.setKeyMapping(Player.KeyMapping.std);
         ball = new Ball(black, rootNode, bulletAppState.getPhysicsSpace());
-        cam.lookAt(player1.getPhysicsLocation(), Vector3f.UNIT_Y);
+        cam.setLocation(new Vector3f(0,4,12));
+        cam.lookAt(new Vector3f(0,-5,0), Vector3f.UNIT_Y);
+        
     }
 
     private PhysicsSpace getPhysicsSpace(){
@@ -101,6 +103,7 @@ public class Main extends SimpleApplication implements ActionListener {
     @Override
     public void simpleUpdate(float tpf) {
         //cam.lookAt(player.getPhysicsLocation(), Vector3f.UNIT_Y);
+        
         player1.update();
         player2.update();
     }

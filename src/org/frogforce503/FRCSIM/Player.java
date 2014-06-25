@@ -132,22 +132,31 @@ public class Player {
             right-=1;
         }
         if(Main.InputManager.isPressed(keyMapping.left)){
-            vehicle.brake(brakeForce);
-            left+=turningForce;
-            right-=turningForce;
+            //vehicle.brake(brakeForce);
+            if(left == 0){
+                left+=turningForce;
+                right-=turningForce;
+            } else {
+                left+=turningForce;
+                right-=2*turningForce;
+            }
         }
         if(Main.InputManager.isPressed(keyMapping.right)){
-            vehicle.brake(brakeForce);
-            left-=turningForce;
-            right+=turningForce;
+            if(left == 0){
+                left-=turningForce;
+                right+=turningForce;
+            } else {
+                left-=2*turningForce;
+                right+=turningForce;
+            }
         }
         float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
         for(int i = 0; i < 4; i++){
-            vehicle.accelerate(i, left*accelerationForce*(left==right?(maxSpeed-Math.abs(curSpeed))/maxSpeed:1));
+            vehicle.accelerate(i, left*accelerationForce* (left+right!=0? (maxSpeed-Math.abs(curSpeed))/maxSpeed:1));
             
         }
         for(int i = 4; i < 8; i++){
-            vehicle.accelerate(i, right*accelerationForce*(left==right?(maxSpeed-Math.abs(curSpeed))/maxSpeed:1));
+            vehicle.accelerate(i, right*accelerationForce* (left+right!=0? (maxSpeed-Math.abs(curSpeed))/maxSpeed:1));
         }
         if(left==right&&Math.abs(left)<0.01){
             vehicle.brake(brakeForce);
