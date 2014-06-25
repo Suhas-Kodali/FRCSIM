@@ -21,9 +21,9 @@ import static org.frogforce503.FRCSIM.Main.in;
 public class Player {
     private VehicleControl vehicle;
     private final float accelerationForce = 175f;
-    private final float turningForce = 200f/accelerationForce*.5f;
-    private final float brakeForce = 300f;
-    private final float maxSpeed = 25;
+    private final float turningForce = 100f;
+    private final float frictionForce = 2f;
+    private final float maxSpeed = 17;
     private Vector3f jumpForce = new Vector3f(0, 60, 0);
     private KeyMapping keyMapping = KeyMapping.std;
     private final Alliance alliance;
@@ -123,45 +123,34 @@ public class Player {
         float left = 0;
         float right = 0;
         
+        float curSpeed = Math.abs(vehicle.getCurrentVehicleSpeedKmHour());
+        float accelerationFactor = (maxSpeed-curSpeed)/maxSpeed * accelerationForce;
+        
         if(Main.InputManager.isPressed(keyMapping.up)){
-            left+=1;
-            right+=1;
+            left+=1 * accelerationFactor;
+            right+=1 * accelerationFactor;
         }
         if(Main.InputManager.isPressed(keyMapping.down)){
-            left-=1;
-            right-=1;
+            left-=1 * accelerationFactor;
+            right-=1 * accelerationFactor;
         }
         if(Main.InputManager.isPressed(keyMapping.left)){
-            //vehicle.brake(brakeForce);
-            if(left == 0){
-                left+=turningForce;
-                right-=turningForce;
-            } else {
-                left+=turningForce;
-                right-=2*turningForce;
-            }
+            left+=turningForce;
+            right-=turningForce;
         }
         if(Main.InputManager.isPressed(keyMapping.right)){
-            if(left == 0){
-                left-=turningForce;
-                right+=turningForce;
-            } else {
-                left-=2*turningForce;
-                right+=turningForce;
-            }
+            left-=turningForce;
+            right+=turningForce;
         }
-        float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
+        
         for(int i = 0; i < 4; i++){
-            vehicle.accelerate(i, left*accelerationForce* (left+right!=0? (maxSpeed-Math.abs(curSpeed))/maxSpeed:1));
-            
+            vehicle.accelerate(i, left);
         }
         for(int i = 4; i < 8; i++){
-            vehicle.accelerate(i, right*accelerationForce* (left+right!=0? (maxSpeed-Math.abs(curSpeed))/maxSpeed:1));
+            vehicle.accelerate(i, right);
         }
-        if(left==right&&Math.abs(left)<0.01){
-            vehicle.brake(brakeForce);
-        }
-        //System.out.println(curSpeed);
+        
+        vehicle.brake(frictionForce);
     }
     
     public void jump(){

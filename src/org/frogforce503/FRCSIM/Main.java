@@ -28,6 +28,7 @@ public class Main extends SimpleApplication implements ActionListener {
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
+        appSettings.setResolution(1280, 768);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
