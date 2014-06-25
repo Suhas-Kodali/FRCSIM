@@ -117,9 +117,8 @@ public class Player {
     public Vector3f getPhysicsLocation(){
         return vehicle.getPhysicsLocation();
     }
-    
+    public int lastTurn = 0, turnCounter = 0;
     public void update(){
-        
         float left = 0;
         float right = 0;
         
@@ -134,14 +133,21 @@ public class Player {
             left-=1 * accelerationFactor;
             right-=1 * accelerationFactor;
         }
+        int curTurn = 0;
         if(Main.InputManager.isPressed(keyMapping.left)){
             left+=turningForce;
             right-=turningForce;
+            curTurn++;
         }
         if(Main.InputManager.isPressed(keyMapping.right)){
             left-=turningForce;
             right+=turningForce;
+            curTurn--;
         }
+        if(lastTurn!=0 && curTurn==0){
+            vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
+        }
+        lastTurn = curTurn;
         
         for(int i = 0; i < 4; i++){
             vehicle.accelerate(i, left);
