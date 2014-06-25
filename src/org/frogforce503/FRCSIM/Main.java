@@ -26,7 +26,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static void main(String[] args) {
         Main app = new Main();
         AppSettings appSettings = new AppSettings(true);
-        //appSettings.setSettingsDialogImage("Textures/first-vertical.png");
+        appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
@@ -70,7 +70,7 @@ public class Main extends SimpleApplication implements ActionListener {
         player1.setKeyMapping(Player.KeyMapping.wasd);
         player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         player2.setKeyMapping(Player.KeyMapping.std);
-        ball = new Ball(black, rootNode, bulletAppState.getPhysicsSpace());
+        ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         cam.setLocation(new Vector3f(0,4,12));
         cam.lookAt(new Vector3f(0,-5,0), Vector3f.UNIT_Y);
         
