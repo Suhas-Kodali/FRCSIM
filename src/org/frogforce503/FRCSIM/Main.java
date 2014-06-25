@@ -68,9 +68,11 @@ public class Main extends SimpleApplication implements ActionListener {
         new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        player1.setKeyMapping(Player.KeyMapping.wasd);
+        player1.setKeyMapping(Player.KeyMapping.std);
         player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-        player2.setKeyMapping(Player.KeyMapping.std);
+        player2.setKeyMapping(Player.KeyMapping.wasd);
+        player2.setPhysicsLocation(new Vector3f(0,0,1));
+        
         ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         cam.setLocation(new Vector3f(0,4,12));
         cam.lookAt(new Vector3f(0,-5,0), Vector3f.UNIT_Y);

@@ -6,6 +6,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.control.VehicleControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
@@ -43,16 +44,14 @@ public class Player {
         chassisNode.attachChild(chassisGeometry);
         new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
         
-        CompoundCollisionShape compoundShape = new CompoundCollisionShape();
-        CollisionShape box = new BoxCollisionShape(new Vector3f(in(14), in(2.5f), in(14)));
-        compoundShape.addChildShape(box, new Vector3f(0, in(3), 0));
+        CollisionShape collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
         
         this.alliance = alliance;
 
         //create vehicle node
         Node vehicleNode=new Node("vehicleNode");
         vehicleNode.attachChild(chassisNode);
-        vehicle = new VehicleControl(compoundShape, 400);
+        vehicle = new VehicleControl(collisionShape, 400);
         vehicleNode.addControl(vehicle);
         
         //setting suspension values for wheels, this can be a bit tricky
@@ -124,6 +123,11 @@ public class Player {
     public Vector3f getPhysicsLocation(){
         return vehicle.getPhysicsLocation();
     }
+    
+    public void setPhysicsLocation(Vector3f pos){
+        vehicle.setPhysicsLocation(pos);
+    }
+    
     public int lastTurn = 0, turnCounter = 0;
     public void update(){
         float left = 0;
@@ -164,6 +168,9 @@ public class Player {
         }
         
         vehicle.brake(frictionForce);
+        if(vehicle.getLinearVelocity().length()<.1){
+            vehicle.brake(frictionForce*5);
+        }
     }
     
     public void jump(){
