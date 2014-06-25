@@ -192,13 +192,4 @@ public class Player {
     public void setKeyMapping(KeyMapping src){
         keyMapping = src;
     }
-    
-    public static enum Alliance{
-        BLUE(Main.blue),
-        RED(Main.red);
-        public final Material material;
-        Alliance(Material color){
-            this.material = color;
-        }
-    }
 }

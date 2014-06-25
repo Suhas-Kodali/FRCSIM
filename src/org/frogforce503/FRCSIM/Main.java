@@ -11,7 +11,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
 import java.util.ArrayList;
-import org.frogforce503.FRCSIM.Player.Alliance;
+import org.frogforce503.FRCSIM.Alliance;
 
 /**
  *
