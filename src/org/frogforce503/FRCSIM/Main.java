@@ -9,9 +9,15 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.system.AppSettings;
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.builder.LayerBuilder;
+import de.lessvoid.nifty.builder.PanelBuilder;
+import de.lessvoid.nifty.builder.ScreenBuilder;
+import de.lessvoid.nifty.builder.TextBuilder;
+import de.lessvoid.nifty.controls.button.builder.ButtonBuilder;
 import java.util.ArrayList;
-import org.frogforce503.FRCSIM.Alliance;
 
 /**
  *
@@ -20,15 +26,22 @@ import org.frogforce503.FRCSIM.Alliance;
 public class Main extends SimpleApplication implements ActionListener {
 
     public static Material red, black, blue, green, darkGray;
-    private BulletAppState bulletAppState;
+    
+    public static Nifty nifty;
+            
+    public static Field field;
+    
+    public static Main app;
+    
+    public static BulletAppState bulletAppState;
     private Player player1, player2;
-    private Ball ball;
+    private Ball[] ball = new Ball[6];
     public static void main(String[] args) {
-        Main app = new Main();
+        app = new Main();
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
-        appSettings.setResolution(1280, 768);
+        //appSettings.setResolution(1280, 768);// so 
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
@@ -37,46 +50,186 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
-        red = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+    NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
+    assetManager, inputManager, audioRenderer, guiViewPort);
+    nifty = niftyDisplay.getNifty();
+    guiViewPort.addProcessor(niftyDisplay);
+    flyCam.setDragToRotate(true);
+ 
+    nifty.loadStyleFile("nifty-default-styles.xml");
+    nifty.loadControlFile("nifty-default-controls.xml");
+ 
+    // <screen>
+     nifty.addScreen("Start_Screen", new ScreenBuilder("Hello Nifty Screen"){{
+        controller(new StartScreen()); // Screen properties       
+ 
+        // <layer>
+        layer(new LayerBuilder("Layer_ID") {{
+            childLayoutVertical(); // layer properties, add more...
+            
+               height("100%");
+               width("100%");
+ 
+            // <panel>
+            panel(new PanelBuilder("panel_bottom_left") {{
+                    childLayoutCenter();
+                    valignCenter();
+                    alignLeft();
+                    backgroundColor("#000");
+                    height("50%");
+                    width("100%");
+ 
+                    // add control
+                    control(new ButtonBuilder("StartButton", "Start") {{
+                      alignCenter();
+                      valignCenter();
+                      height("50%");
+                      width("50%");
+                      interactOnClick("startGame(hud)");
+                    }});
+ 
+                }});
+ 
+                panel(new PanelBuilder("panel_bottom_right") {{
+                    childLayoutCenter();
+                    valignCenter();
+                    alignRight();
+                    backgroundColor("#000");
+                    height("50%");
+                    width("100%");
+ 
+                    // add control
+                    control(new ButtonBuilder("QuitButton", "Quit") {{
+                      alignCenter();
+                      valignCenter();
+                      height("50%");
+                      width("50%");
+                      interactOnClick("quitGame()");
+                    }});
+ 
+                }});
+            // </panel>
+          }});
+        // </layer>
+      }}.build(nifty));
+    // </screen>
+     
+     nifty.addScreen("hud", new ScreenBuilder("Hello Nifty Screen"){{
+        controller(new StartScreen()); // Screen properties       
+ 
+        // <layer>
+        layer(new LayerBuilder("Layer_1") {{
+            childLayoutVertical(); // layer properties, add more...
+            
+               height("100%");
+               width("100%");
+ 
+            // <panel>
+           
+ 
+                panel(new PanelBuilder("panel_bottom_right") {{
+                    childLayoutCenter();
+                    valignTop();
+                    alignLeft();
+                    backgroundColor("#FFF");
+                    height("5%");
+                    width("10%");
+                    //marginTop("10%");
+ 
+                    // add control
+                    
+                    control(new ButtonBuilder("OptionButton", "Options") {{
+                      alignCenter();
+                      valignCenter();
+                      height("100%");
+                      width("100%");
+                    }});
+                }});
+            // </panel>
+          }});
+        
+         layer(new LayerBuilder("Layer_2") {{
+            childLayoutVertical(); // layer properties, add more...
+            
+               height("100%");
+               width("100%");
+ 
+            // <panel>
+            panel(new PanelBuilder("score_panel") {{
+                    childLayoutCenter();
+                    valignTop();
+                    alignRight();
+                    backgroundColor("#FFF");
+                    height("5%");
+                    width("10%");
+ 
+                    // add control
+                    text(new TextBuilder() {{
+                    text("Score: ${CALL.getScore()}");
+                    font("Interface/Fonts/Default.fnt");
+                    color("#000");
+                    height("10%");
+                    width("10%");
+                    }});
+ 
+                }});
+ 
+               
+            // </panel>
+          }});
+        // </layer>
+      }}.build(nifty));
+ 
+    nifty.gotoScreen("Start_Screen"); // start the screen
+        
+        
+        
+        
+        
+        
+        red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         red.getAdditionalRenderState().setWireframe(false);
-        red.setBoolean("UseMaterialColors", true); 
-        red.setColor("Ambient", ColorRGBA.Red); 
-        red.setColor("Diffuse", ColorRGBA.Red); 
-        black = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        red.setColor("Color", ColorRGBA.Red); 
+        black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
-        black.setBoolean("UseMaterialColors", true); 
-        black.setColor("Ambient", ColorRGBA.Black); 
-        black.setColor("Diffuse", ColorRGBA.Black); 
-        blue = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        black.setColor("Color", ColorRGBA.Black);
+        blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         blue.getAdditionalRenderState().setWireframe(false);
-        blue.setBoolean("UseMaterialColors", true); 
-        blue.setColor("Ambient", ColorRGBA.Blue); 
-        blue.setColor("Diffuse", ColorRGBA.Blue); 
-        green = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        blue.setColor("Color", ColorRGBA.Blue);
+        green = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         green.getAdditionalRenderState().setWireframe(false);
-        green.setBoolean("UseMaterialColors", true); 
-        green.setColor("Ambient", ColorRGBA.Green); 
-        green.setColor("Diffuse", ColorRGBA.Green); 
-        darkGray = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+        green.setColor("Color", ColorRGBA.Green); 
+        darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         darkGray.getAdditionalRenderState().setWireframe(false);
-        darkGray.setBoolean("UseMaterialColors", true); 
-        darkGray.setColor("Ambient", ColorRGBA.DarkGray); 
-        darkGray.setColor("Diffuse", ColorRGBA.DarkGray); 
+        darkGray.setColor("Color", ColorRGBA.DarkGray); 
+        
+        
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
+        field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
+        
         player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         player1.setKeyMapping(Player.KeyMapping.wasd);
         player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         player2.setKeyMapping(Player.KeyMapping.std);
-        ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-        cam.setLocation(new Vector3f(0,4,12));
+        initBalls();
+        cam.setLocation(new Vector3f(0,12,12));
         cam.lookAt(new Vector3f(0,-5,0), Vector3f.UNIT_Y);
         
     }
 
+    private void initBalls(){
+        for(int i = 0; i < 6; i++){
+            if(i < 3){
+                ball[i] = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, i);
+            }else{
+                ball[i] = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, i-3);
+            }
+        }
+    }
+    
     private PhysicsSpace getPhysicsSpace(){
         return bulletAppState.getPhysicsSpace();
     }
@@ -118,6 +271,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         player1.update();
         player2.update();
+        //ball[1].update();
     }
     
     public static class InputManager{
