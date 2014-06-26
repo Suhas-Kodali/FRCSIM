@@ -64,7 +64,6 @@ public class ScreenListener extends AbstractAppState implements ScreenController
     }
     
     public String getScore(){
-        System.out.println(System.getProperty("user.name"));
         return System.getProperty("user.name");
   }
 }

@@ -1,22 +1,18 @@
 package org.frogforce503.FRCSIM;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.system.AppSettings;
-import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.builder.LayerBuilder;
-import de.lessvoid.nifty.builder.PanelBuilder;
-import de.lessvoid.nifty.builder.ScreenBuilder;
-import de.lessvoid.nifty.builder.TextBuilder;
-import de.lessvoid.nifty.controls.button.builder.ButtonBuilder;
+import com.jme3.texture.Texture;
 import java.util.ArrayList;
 
 /**
@@ -25,13 +21,15 @@ import java.util.ArrayList;
  */
 public class Main extends SimpleApplication implements ActionListener {
 
-    public static Material red, black, blue, green, darkGray;
+    public static Material red, black, blue, green, darkGray, cage;
     
     public static Scene scene;
             
     public static Field field;
     
     public static Main app;
+    
+    public static Ball ball, ball2, ball3;
     
     public static BulletAppState bulletAppState;
     private Player player1, player2;
@@ -40,7 +38,6 @@ public class Main extends SimpleApplication implements ActionListener {
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
-        appSettings.setResolution(1280, 768);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
@@ -53,11 +50,17 @@ public class Main extends SimpleApplication implements ActionListener {
         scene.initScreens();
         scene.startScreen();
         red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        red.getAdditionalRenderState().setWireframe(false);
+        red.getAdditionalRenderState().setWireframe(true);
         red.setColor("Color", ColorRGBA.Red); 
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
-        black.setColor("Color", ColorRGBA.Black);
+        black.setColor("Color", ColorRGBA.Black); 
+        cage = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        cage.getAdditionalRenderState().setWireframe(false);
+        cage.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        TextureKey key = new TextureKey("Textures/cage.png");
+        Texture tex = assetManager.loadTexture(key);
+        cage.setTexture("ColorMap", tex);
         blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         blue.getAdditionalRenderState().setWireframe(false);
         blue.setColor("Color", ColorRGBA.Blue);
@@ -81,11 +84,10 @@ public class Main extends SimpleApplication implements ActionListener {
         cam.setLocation(new Vector3f(0,12,12));
         player2.setKeyMapping(Player.KeyMapping.wasd);
         player2.setPhysicsLocation(new Vector3f(0,0,1));
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        ball2 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        ball3 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
-        
     }
     
     private PhysicsSpace getPhysicsSpace(){
@@ -93,7 +95,7 @@ public class Main extends SimpleApplication implements ActionListener {
     }
 
     private void setupKeys() {
-        flyCam.setEnabled(false);
+        //flyCam.setEnabled(false);
         int[] keys = new int[]{KeyInput.KEY_A,KeyInput.KEY_B,KeyInput.KEY_C,
                 KeyInput.KEY_D,KeyInput.KEY_E,KeyInput.KEY_F,KeyInput.KEY_G,
                 KeyInput.KEY_H,KeyInput.KEY_I,KeyInput.KEY_J,KeyInput.KEY_K,
@@ -111,12 +113,14 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addMapping("down", new KeyTrigger(KeyInput.KEY_DOWN));
         inputManager.addMapping("space", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("enter", new KeyTrigger(KeyInput.KEY_RETURN));
+        inputManager.addMapping("pgdwn", new KeyTrigger(KeyInput.KEY_PGDN));
         inputManager.addListener(this, "left");
         inputManager.addListener(this, "right");
         inputManager.addListener(this, "up");
         inputManager.addListener(this, "down");
         inputManager.addListener(this, "space");
         inputManager.addListener(this, "enter");
+        inputManager.addListener(this, "pgdwn");
     }
     
     public static float in(float in){

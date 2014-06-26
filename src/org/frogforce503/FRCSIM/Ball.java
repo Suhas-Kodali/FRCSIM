@@ -15,7 +15,8 @@ import java.util.ArrayList;
  */
 public class Ball {
     public final Alliance alliance;
-    private RigidBodyControl sphereControl;
+    private Geometry sphereGeometry;
+    private static RigidBodyControl sphereControl;
     public static final float drag = 1f/3f;
     private static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
@@ -39,4 +40,9 @@ public class Ball {
             ball.update();
         }
     }
+    
+    public RigidBodyControl getRigidBodyControl(){
+        return this.sphereControl;
+    }
+    
 }

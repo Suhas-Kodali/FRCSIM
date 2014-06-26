@@ -3,16 +3,14 @@ package org.frogforce503.FRCSIM;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
-import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.VehicleControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
@@ -28,6 +26,7 @@ public class Player {
     private final float turningForce = 100f;
     private final float frictionForce = 2f;
     private final float maxSpeed = 17;
+    private GhostControl ghost;
     private Vector3f jumpForce = new Vector3f(0, 60, 0);
     private KeyMapping keyMapping = KeyMapping.std;
     private final Alliance alliance;
@@ -40,8 +39,27 @@ public class Player {
         Node chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
-        chassisGeometry.setMaterial(Main.black);
+        chassisGeometry.setMaterial(Main.cage);
+        chassisGeometry.setQueueBucket(Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
+        Box intakeBox = new Box(in(1), in(6), in(12));
+        Geometry intakeGeometry = new Geometry("Intake", intakeBox);
+        intakeGeometry.setLocalTranslation(in(31)/2, in(3) + in(6)/2 + in(5), in(28)/2 + in(12 + 2));
+        intakeGeometry.setMaterial(Main.green);
+        chassisNode.attachChild(intakeGeometry);
+        Geometry intakeGeometry2 = new Geometry("Intake", intakeBox);
+        intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(6)/2 + in(5), in(28)/2 + in(12 + 2));
+        intakeGeometry2.setMaterial(Main.green);
+        chassisNode.attachChild(intakeGeometry2);
+        
+        ghost = new GhostControl(new BoxCollisionShape(new Vector3f(in(28)/2 - .1f,in(3 + 6)/2,in(24)/2)));  // a box-shaped ghost
+        Node ghostNode = new Node("a ghost-controlled thing");
+        ghost.setPhysicsLocation(new Vector3f(0,0,in(28/2 + 24)));
+        ghostNode.addControl(ghost);
+        chassisNode.attachChild(ghostNode);
+        space.add(ghost);
+        
+        
         new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
         
         CollisionShape collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
@@ -104,15 +122,38 @@ public class Player {
         
         for(int i = 0; i < 8; i++){
             Node node = new Node("wheel node");
-            Geometry wheels = new Geometry("wheel", wheelMesh);
-            node.attachChild(wheels);
-            wheels.rotate(0, FastMath.HALF_PI, 0);
-            wheels.setMaterial(Main.black);
+            Geometry wheel = new Geometry("wheel", wheelMesh);
+            node.attachChild(wheel);
+            wheel.rotate(0, FastMath.HALF_PI, 0);
+            wheel.setMaterial(Main.black);
             
             vehicle.addWheel(node, new Vector3f(pos[i][0], pos[i][2], pos[i][1]),
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
         }
+//        
+//        Node node = new Node("wheel node");
+//            Geometry wheels = new Geometry("wheel", wheelMesh);
+//            node.attachChild(wheels);
+//            wheels.rotate(0, 0, 0);
+//            wheels.setMaterial(Main.red);
+//            vehicle.addWheel(node, new Vector3f(in(28)/2, in(6 + 3 + 3), in(28)/2 + in(2) + in(24)),
+//                    wheelDirection, wheelAxle, restLength, radius, false);
+//            vehicleNode.attachChild(node);
+//            
+//            vehicle.setFrictionSlip(8, 100f);
+//            
+//        Node wheelNode = new Node("wheel node");
+//            Geometry wheel2 = new Geometry("wheel", wheelMesh);
+//            wheelNode.attachChild(wheel2);
+//            wheel2.rotate(0, FastMath.HALF_PI, 0);
+//            wheel2.setMaterial(Main.red);
+//            vehicle.addWheel(wheelNode, new Vector3f(-in(28)/2, in(6 + 3 + 3), in(28)/2 + in(2) + in(24)),
+//                    wheelDirection, wheelAxle, restLength, radius, false);
+//            vehicleNode.attachChild(wheelNode);
+            
+            
+            
                 
         rootNode.attachChild(vehicleNode);
 
@@ -132,7 +173,6 @@ public class Player {
     public void update(){
         float left = 0;
         float right = 0;
-        
         float curSpeed = Math.abs(vehicle.getCurrentVehicleSpeedKmHour());
         float accelerationFactor = (maxSpeed-curSpeed)/maxSpeed * accelerationForce;
         
@@ -154,6 +194,13 @@ public class Player {
             left-=turningForce;
             right+=turningForce;
             curTurn--;
+        }
+        if(Main.InputManager.isPressed(keyMapping.load)){
+            System.out.println("Loading!");
+            System.out.println(ghost.getOverlappingCount());
+            if(ghost.getOverlappingObjects().contains(Main.ball.getRigidBodyControl())){
+                System.out.println("Got a ball!");
+            }
         }
         if(lastTurn!=0 && curTurn==0){
             vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
@@ -178,8 +225,7 @@ public class Player {
     }
     
     public void reset(){
-        System.out.println("Reset");
-        vehicle.setPhysicsLocation(new Vector3f(0,-5,0));
+        vehicle.setPhysicsLocation(new Vector3f(0,0,0));
         vehicle.setPhysicsRotation(new Matrix3f());
         vehicle.setLinearVelocity(Vector3f.ZERO);
         vehicle.setAngularVelocity(Vector3f.ZERO);
@@ -187,15 +233,16 @@ public class Player {
     }
     
     public static class KeyMapping{
-        public final String up, down, left, right;
-        public KeyMapping(String up, String down, String left, String right){
+        public final String up, down, left, right, load;
+        public KeyMapping(String up, String down, String left, String right, String load){
             this.up = up;
             this.down = down;
             this.left = left;
             this.right = right;
+            this.load = load;
         }
-        public final static KeyMapping std = new KeyMapping("up", "down", "left", "right");
-        public final static KeyMapping wasd = new KeyMapping("w", "s", "a", "d");
+        public final static KeyMapping std = new KeyMapping("up", "down", "left", "right", "pgdwn");
+        public final static KeyMapping wasd = new KeyMapping("w", "s", "a", "d", "r");
     }
     
     public void setKeyMapping(KeyMapping src){

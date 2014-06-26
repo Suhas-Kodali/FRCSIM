@@ -50,16 +50,6 @@ public class Field {
         space.add(floorGeometry);
         
         
-        
-//        Box wall1 = new Box(new Vector3f(-length/2f, Main.in(20)-5, -Main.in(20)-width/2f), new Vector3f(length/2f, -5, -width/2f));
-//        Geometry wall1Geometry = new Geometry("Wall", wall1);
-//        wall1Geometry.setMaterial(Main.green);
-//        Plane wallPlane1 = new Plane();
-//        wallPlane1.setOriginNormal(new Vector3f(0, 0, -width/2f), new Vector3f(0,0,1));
-//        wall1Geometry.addControl(new RigidBodyControl(new PlaneCollisionShape(wallPlane1), 0));
-//        rootNode.attachChild(wall1Geometry);
-//        space.add(wall1Geometry);
-        
         Box northWall = new Box(length/2, Main.in(20)/2, Main.in(20f)/2);
         Geometry northWall_geo = new Geometry("east_wall", northWall);
         northWall_geo.setMaterial(Main.green);
@@ -78,16 +68,7 @@ public class Field {
         southWall_geo.addControl(south_phy);
         space.add(southWall_geo);
         
-//        Box wall2 = new Box(new Vector3f(-length/2f, Main.in(20), +Main.in(20)+width/2f), new Vector3f(length/2f, 0, width/2f));
-//        Geometry wall2Geometry = new Geometry("Wall", wall2);
-//        wall2Geometry.setMaterial(Main.green);
-//        Plane plane2 = new Plane();
-//        plane2.setOriginNormal(new Vector3f(0, 0, width/2f), new Vector3f(0,0,-1));
-//        wall2Geometry.addControl(new RigidBodyControl(new PlaneCollisionShape(plane2), 0));
-//        rootNode.attachChild(wall2Geometry);
-//        space.add(wall2Geometry);
-        
-        Box goal1 = new Box(Main.in(3)/2, Main.in(6*12+11)/2, width/2 +Main.in(20));
+        Box goal1 = new Box(Main.in(12)/2, Main.in(6*12+11)/2, width/2 +Main.in(20));
         Geometry goal1Geometry = new Geometry("Goal", goal1);
         goal1Geometry.setMaterial(Main.green);
         goal1Geometry.setLocalTranslation(length/2, Main.in(6*12+11)/2, 0);
@@ -95,20 +76,13 @@ public class Field {
         rootNode.attachChild(goal1Geometry);
         space.add(goal1Geometry);
         
-        Box goal2 = new Box(Main.in(3)/2, Main.in(6*12+11)/2, width/2 + Main.in(20));
+        Box goal2 = new Box(Main.in(12)/2, Main.in(6*12+11)/2, width/2 + Main.in(20));
         Geometry goal2Geometry = new Geometry("Goal", goal2);
         goal2Geometry.setMaterial(Main.green);
         goal2Geometry.setLocalTranslation(-length/2, Main.in(6*12+11)/2, 0);
         goal2Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2Geometry);
         space.add(goal2Geometry);
-        
-//        Box goal2 = new Box(new Vector3f(-length/2f, 0, width/2f+Main.in(20)), new Vector3f(-length/2f-Main.in(3), Main.in(6*12+11), -width/2f-Main.in(20)));
-//        Geometry goal2Geometry = new Geometry("Goal", goal2);
-//        goal2Geometry.setMaterial(Main.green);
-//        goal2Geometry.addControl(new RigidBodyControl(0));
-//        rootNode.attachChild(goal2Geometry);
-//        space.add(goal2Geometry);
         
     }
 }
