@@ -10,13 +10,13 @@ import com.jme3.app.state.AppStateManager;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import static org.frogforce503.FRCSIM.Main.nifty;
+import static org.frogforce503.FRCSIM.Scene.nifty;
 
 /**
  *
  * @author skodali
  */
-public class StartScreen extends AbstractAppState implements ScreenController {
+public class ScreenListener extends AbstractAppState implements ScreenController {
 
  
     
@@ -61,7 +61,6 @@ public class StartScreen extends AbstractAppState implements ScreenController {
 
     public void quitGame() {
         Main.app.stop();  // switch to another screen
-        // start the game and do some more stuff...
     }
     
     public String getScore(){
