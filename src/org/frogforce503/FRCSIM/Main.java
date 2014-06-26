@@ -35,13 +35,12 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public static BulletAppState bulletAppState;
     private Player player1, player2;
-    private Ball[] ball = new Ball[6];
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
-        //appSettings.setResolution(1280, 768);// so 
+        appSettings.setResolution(1280, 768);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
@@ -213,29 +212,14 @@ public class Main extends SimpleApplication implements ActionListener {
         player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         player1.setKeyMapping(Player.KeyMapping.std);
         player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-<<<<<<< HEAD
-        player2.setKeyMapping(Player.KeyMapping.std);
-        initBalls();
         cam.setLocation(new Vector3f(0,12,12));
-=======
         player2.setKeyMapping(Player.KeyMapping.wasd);
         player2.setPhysicsLocation(new Vector3f(0,0,1));
-        
-        ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-        cam.setLocation(new Vector3f(0,4,12));
->>>>>>> origin/master
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         cam.lookAt(new Vector3f(0,-5,0), Vector3f.UNIT_Y);
         
-    }
-
-    private void initBalls(){
-        for(int i = 0; i < 6; i++){
-            if(i < 3){
-                ball[i] = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, i);
-            }else{
-                ball[i] = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, i-3);
-            }
-        }
     }
     
     private PhysicsSpace getPhysicsSpace(){
@@ -279,7 +263,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         player1.update();
         player2.update();
-        //ball[1].update();
+        Ball.updateBalls();
     }
     
     public static class InputManager{
