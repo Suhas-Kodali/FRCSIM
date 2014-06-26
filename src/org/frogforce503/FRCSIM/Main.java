@@ -27,7 +27,7 @@ public class Main extends SimpleApplication implements ActionListener {
 
     public static Material red, black, blue, green, darkGray;
     
-    public static Nifty nifty;
+    public static Scene scene;
             
     public static Field field;
     
@@ -50,143 +50,9 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
-    NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
-    assetManager, inputManager, audioRenderer, guiViewPort);
-    nifty = niftyDisplay.getNifty();
-    guiViewPort.addProcessor(niftyDisplay);
-    flyCam.setDragToRotate(true);
- 
-    nifty.loadStyleFile("nifty-default-styles.xml");
-    nifty.loadControlFile("nifty-default-controls.xml");
- 
-    // <screen>
-     nifty.addScreen("Start_Screen", new ScreenBuilder("Hello Nifty Screen"){{
-        controller(new StartScreen()); // Screen properties       
- 
-        // <layer>
-        layer(new LayerBuilder("Layer_ID") {{
-            childLayoutVertical(); // layer properties, add more...
-            
-               height("100%");
-               width("100%");
- 
-            // <panel>
-            panel(new PanelBuilder("panel_bottom_left") {{
-                    childLayoutCenter();
-                    valignCenter();
-                    alignLeft();
-                    backgroundColor("#000");
-                    height("50%");
-                    width("100%");
- 
-                    // add control
-                    control(new ButtonBuilder("StartButton", "Start") {{
-                      alignCenter();
-                      valignCenter();
-                      height("50%");
-                      width("50%");
-                      interactOnClick("startGame(hud)");
-                    }});
- 
-                }});
- 
-                panel(new PanelBuilder("panel_bottom_right") {{
-                    childLayoutCenter();
-                    valignCenter();
-                    alignRight();
-                    backgroundColor("#000");
-                    height("50%");
-                    width("100%");
- 
-                    // add control
-                    control(new ButtonBuilder("QuitButton", "Quit") {{
-                      alignCenter();
-                      valignCenter();
-                      height("50%");
-                      width("50%");
-                      interactOnClick("quitGame()");
-                    }});
- 
-                }});
-            // </panel>
-          }});
-        // </layer>
-      }}.build(nifty));
-    // </screen>
-     
-     nifty.addScreen("hud", new ScreenBuilder("Hello Nifty Screen"){{
-        controller(new StartScreen()); // Screen properties       
- 
-        // <layer>
-        layer(new LayerBuilder("Layer_1") {{
-            childLayoutVertical(); // layer properties, add more...
-            
-               height("100%");
-               width("100%");
- 
-            // <panel>
-           
- 
-                panel(new PanelBuilder("panel_bottom_right") {{
-                    childLayoutCenter();
-                    valignTop();
-                    alignLeft();
-                    backgroundColor("#FFF");
-                    height("5%");
-                    width("10%");
-                    //marginTop("10%");
- 
-                    // add control
-                    
-                    control(new ButtonBuilder("OptionButton", "Options") {{
-                      alignCenter();
-                      valignCenter();
-                      height("100%");
-                      width("100%");
-                    }});
-                }});
-            // </panel>
-          }});
-        
-         layer(new LayerBuilder("Layer_2") {{
-            childLayoutVertical(); // layer properties, add more...
-            
-               height("100%");
-               width("100%");
- 
-            // <panel>
-            panel(new PanelBuilder("score_panel") {{
-                    childLayoutCenter();
-                    valignTop();
-                    alignRight();
-                    backgroundColor("#FFF");
-                    height("5%");
-                    width("10%");
- 
-                    // add control
-                    text(new TextBuilder() {{
-                    text("Score: ${CALL.getScore()}");
-                    font("Interface/Fonts/Default.fnt");
-                    color("#000");
-                    height("10%");
-                    width("10%");
-                    }});
- 
-                }});
- 
-               
-            // </panel>
-          }});
-        // </layer>
-      }}.build(nifty));
- 
-    nifty.gotoScreen("Start_Screen"); // start the screen
-        
-        
-        
-        
-        
-        
+        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
+        scene.initScreens();
+        scene.startScreen();
         red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         red.getAdditionalRenderState().setWireframe(false);
         red.setColor("Color", ColorRGBA.Red); 
@@ -213,18 +79,13 @@ public class Main extends SimpleApplication implements ActionListener {
         player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         player1.setKeyMapping(Player.KeyMapping.std);
         player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-<<<<<<< HEAD
-        player2.setKeyMapping(Player.KeyMapping.std);
+        
         initBalls();
-        cam.setLocation(new Vector3f(0,12,12));
-=======
+        cam.setLocation(new Vector3f(0,9,12));
         player2.setKeyMapping(Player.KeyMapping.wasd);
         player2.setPhysicsLocation(new Vector3f(0,0,1));
-        
-        ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-        cam.setLocation(new Vector3f(0,4,12));
->>>>>>> origin/master
-        cam.lookAt(new Vector3f(0,-5,0), Vector3f.UNIT_Y);
+       
+        cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
         
     }
 
