@@ -111,7 +111,7 @@ public class Player {
         rootNode.attachChild(vehicleNode);
 
         space.add(vehicle);
-        vehicle.setPhysicsLocation(new Vector3f(0,-5,0));
+        vehicle.setPhysicsLocation(new Vector3f(0,0,0));
     }
     
     public Vector3f getPhysicsLocation(){
