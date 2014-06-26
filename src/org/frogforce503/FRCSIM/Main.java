@@ -84,7 +84,7 @@ public class Main extends SimpleApplication implements ActionListener {
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        cam.lookAt(new Vector3f(0,-5,0), Vector3f.UNIT_Y);
+        cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
         
     }
     
