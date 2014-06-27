@@ -61,15 +61,17 @@ public class Player {
         intakeGeometry.setLocalTranslation(in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
         intakeGeometry.setMaterial(Main.green);
         
+        
         chassisNode.attachChild(intakeGeometry);
         intakeGeometry2 = new Geometry("Intake", intakeBox);
         intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
         intakeGeometry2.setMaterial(Main.green);
         chassisNode.attachChild(intakeGeometry2);
         
-        pullGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(10),in(3 + 6 + 5)/2,in(12)/2)));  // a box-shaped ghost
+        //having incredle trouble changing the size of these ghostcontrols
+        
+        pullGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(4),in(3 + 6 + 5)/2,0)));  // a box-shaped ghost
         //Node ghostNode = new Node("a ghost-controlled thing");
-        pullGhost.setPhysicsLocation(new Vector3f(0,0,in(28/2 + 24)));
         //ghostNode.addControl(ghost);
         intakeNode = new Node("node");
         intakeNode.addControl(pullGhost);
@@ -79,18 +81,14 @@ public class Player {
         intakeNode.attachChild(intakeGeometry2);
         space.add(pullGhost);
         
-//        holdGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(10),in(3 + 6 + 5)/2,in(24)/2)));  // a box-shaped ghost
-//        //Node ghostNode = new Node("a ghost-controlled thing");
-//        ghost.setPhysicsLocation(new Vector3f(0,0,in(28/2 + 24)));
-//        //ghostNode.addControl(ghost);
-//        intakeNode = new Node("node");
-//        intakeNode.addControl(ghost);
-//        chassisNode.attachChild(intakeNode);
-//        intakeNode.attachChild(intakeGeometry);
-//        intakeNode.attachChild(intakeGeometry2);
-//        space.add(ghost);
+        holdGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(0f)/2,in(18)/2,in(0f)/2)));  // a box-shaped ghost
+        Node holdGhostNode = new Node("a ghost-controlled thing");
+        holdGhostNode.addControl(holdGhost);
+        chassisNode.attachChild(intakeNode);
+        holdGhostNode.setLocalTranslation(new Vector3f(0,in(18)/2,0));
+        space.add(holdGhost);
         
-//        chassisNode.attachChild(ghostGeometry);
+        chassisNode.attachChild(holdGhostNode);
         
         
         new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
@@ -232,7 +230,12 @@ public class Player {
             for(int i = 0; i < Ball.balls.size(); i++){
                 for(int j = 0; j < pullGhost.getOverlappingObjects().size(); j++){
                     if(pullGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(Ball.balls.get(i).getRigidBodyControl().getPhysicsLocation()).normalize().mult(75));
+                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(Ball.balls.get(i).getRigidBodyControl().getPhysicsLocation()).normalize().mult(40));
+                    }
+                }
+                for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
+                    if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
+                        Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
                     }
                 }
             }
