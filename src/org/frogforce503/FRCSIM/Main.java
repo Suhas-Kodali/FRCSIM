@@ -10,6 +10,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
@@ -30,6 +31,8 @@ public class Main extends SimpleApplication implements ActionListener {
     public static Main app;
     
     public static Ball ball, ball2, ball3;
+    
+    private boolean intakeLowered = false;
     
     public static BulletAppState bulletAppState;
     private Player player1, player2;
@@ -78,12 +81,12 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         
-        player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, assetManager);
         player1.setKeyMapping(Player.KeyMapping.std);
-        player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+        player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, assetManager);
         cam.setLocation(new Vector3f(0,12,12));
         player2.setKeyMapping(Player.KeyMapping.wasd);
-        player2.setPhysicsLocation(new Vector3f(0,0,1));
+        player2.setPhysicsLocation(new Vector3f(1,0,1));
         ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         ball2 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         ball3 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
@@ -158,6 +161,7 @@ public class Main extends SimpleApplication implements ActionListener {
         } else {
             InputManager.release(binding);
         }
+        
         if (binding.equals("space")) {
             if (value) {
                 player1.jump();
@@ -168,6 +172,12 @@ public class Main extends SimpleApplication implements ActionListener {
                 player1.reset();
                 player2.reset();
             }
+        }
+        if(binding.equals("r") && value){
+            player2.lowerIntake();
+        }
+        if(binding.equals("r") && !value){
+            player2.retractIntake();
         }
     }
 }

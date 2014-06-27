@@ -1,17 +1,22 @@
 package org.frogforce503.FRCSIM;
 
+import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.VehicleControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.cinematic.MotionPath;
+import com.jme3.cinematic.MotionPathListener;
+import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import static org.frogforce503.FRCSIM.Main.in;
@@ -26,48 +31,76 @@ public class Player {
     private final float turningForce = 100f;
     private final float frictionForce = 2f;
     private final float maxSpeed = 17;
-    private GhostControl ghost;
+    private GhostControl pullGhost, holdGhost;
     private Vector3f jumpForce = new Vector3f(0, 60, 0);
     private KeyMapping keyMapping = KeyMapping.std;
     private final Alliance alliance;
+    private AssetManager assetManager;
+    private Node rootNode, chassisNode, vehicleNode;
+    private final MotionPath path = new MotionPath();
+    private Geometry intakeGeometry2, intakeGeometry;
+    private CollisionShape collisionShape;
+    private Node intakeNode;
     
-    public Player(Node rootNode, PhysicsSpace space, Alliance alliance) {
+    public Player(Node rootNode, PhysicsSpace space, Alliance alliance, AssetManager assetManager) {
 
+        
+        this.assetManager = assetManager;
+        this.rootNode = rootNode;
         //create a compound shape and attach the BoxCollisionShape for the car body at 0,1,0
         //this shifts the effective center of mass of the BoxCollisionShape to 0,-1,0
         
-        Node chassisNode = new Node("chassis Node");
+        chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
         chassisGeometry.setMaterial(Main.cage);
         chassisGeometry.setQueueBucket(Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
-        Box intakeBox = new Box(in(1), in(6), in(12));
-        Geometry intakeGeometry = new Geometry("Intake", intakeBox);
-        intakeGeometry.setLocalTranslation(in(31)/2, in(3) + in(6)/2 + in(5), in(28)/2 + in(12 + 2));
+        Box intakeBox = new Box(in(1), in(12), in(6));
+        intakeGeometry = new Geometry("Intake", intakeBox);
+        intakeGeometry.setLocalTranslation(in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
         intakeGeometry.setMaterial(Main.green);
+        
         chassisNode.attachChild(intakeGeometry);
-        Geometry intakeGeometry2 = new Geometry("Intake", intakeBox);
-        intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(6)/2 + in(5), in(28)/2 + in(12 + 2));
+        intakeGeometry2 = new Geometry("Intake", intakeBox);
+        intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
         intakeGeometry2.setMaterial(Main.green);
         chassisNode.attachChild(intakeGeometry2);
         
-        ghost = new GhostControl(new BoxCollisionShape(new Vector3f(in(28)/2 - .1f,in(3 + 6)/2,in(24)/2)));  // a box-shaped ghost
-        Node ghostNode = new Node("a ghost-controlled thing");
-        ghost.setPhysicsLocation(new Vector3f(0,0,in(28/2 + 24)));
-        ghostNode.addControl(ghost);
-        chassisNode.attachChild(ghostNode);
-        space.add(ghost);
+        pullGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(10),in(3 + 6 + 5)/2,in(12)/2)));  // a box-shaped ghost
+        //Node ghostNode = new Node("a ghost-controlled thing");
+        pullGhost.setPhysicsLocation(new Vector3f(0,0,in(28/2 + 24)));
+        //ghostNode.addControl(ghost);
+        intakeNode = new Node("node");
+        intakeNode.addControl(pullGhost);
+        chassisNode.attachChild(intakeNode);
+        
+        intakeNode.attachChild(intakeGeometry);
+        intakeNode.attachChild(intakeGeometry2);
+        space.add(pullGhost);
+        
+//        holdGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(10),in(3 + 6 + 5)/2,in(24)/2)));  // a box-shaped ghost
+//        //Node ghostNode = new Node("a ghost-controlled thing");
+//        ghost.setPhysicsLocation(new Vector3f(0,0,in(28/2 + 24)));
+//        //ghostNode.addControl(ghost);
+//        intakeNode = new Node("node");
+//        intakeNode.addControl(ghost);
+//        chassisNode.attachChild(intakeNode);
+//        intakeNode.attachChild(intakeGeometry);
+//        intakeNode.attachChild(intakeGeometry2);
+//        space.add(ghost);
+        
+//        chassisNode.attachChild(ghostGeometry);
         
         
         new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
         
-        CollisionShape collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
+        collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
         
         this.alliance = alliance;
 
         //create vehicle node
-        Node vehicleNode=new Node("vehicleNode");
+        vehicleNode=new Node("vehicleNode");
         vehicleNode.attachChild(chassisNode);
         vehicle = new VehicleControl(collisionShape, 400);
         vehicleNode.addControl(vehicle);
@@ -196,10 +229,12 @@ public class Player {
             curTurn--;
         }
         if(Main.InputManager.isPressed(keyMapping.load)){
-            System.out.println("Loading!");
-            System.out.println(ghost.getOverlappingCount());
-            if(ghost.getOverlappingObjects().contains(Main.ball.getRigidBodyControl())){
-                System.out.println("Got a ball!");
+            for(int i = 0; i < Ball.balls.size(); i++){
+                for(int j = 0; j < pullGhost.getOverlappingObjects().size(); j++){
+                    if(pullGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
+                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(Ball.balls.get(i).getRigidBodyControl().getPhysicsLocation()).normalize().mult(75));
+                    }
+                }
             }
         }
         if(lastTurn!=0 && curTurn==0){
@@ -230,8 +265,17 @@ public class Player {
         vehicle.setLinearVelocity(Vector3f.ZERO);
         vehicle.setAngularVelocity(Vector3f.ZERO);
         vehicle.resetSuspension();
+        chassisNode.attachChild(intakeGeometry);
+        chassisNode.attachChild(intakeGeometry2);
     }
-    
+    public void lowerIntake(){
+        intakeNode.rotate(FastMath.HALF_PI, 0, 0);
+        intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(6)/2, in(2.5f)));
+    }
+    public void retractIntake(){
+        intakeNode.rotate(-FastMath.HALF_PI, 0, 0);
+        intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(18), in(-6f)));
+    }
     public static class KeyMapping{
         public final String up, down, left, right, load;
         public KeyMapping(String up, String down, String left, String right, String load){

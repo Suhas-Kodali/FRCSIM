@@ -15,13 +15,13 @@ import java.util.ArrayList;
  */
 public class Ball {
     public final Alliance alliance;
-    private Geometry sphereGeometry;
+    public static Geometry sphereGeometry;
     private static RigidBodyControl sphereControl;
     public static final float drag = 1f/3f;
-    private static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
+    public static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
         Sphere sphere = new Sphere(32, 32, Main.in(13));
-        Geometry sphereGeometry = new Geometry("Sphere", sphere);
+        sphereGeometry = new Geometry("Sphere", sphere);
         sphereGeometry.setMaterial(alliance.material);
         sphereControl = new RigidBodyControl(.907f);
         sphereGeometry.addControl(sphereControl);
@@ -43,6 +43,10 @@ public class Ball {
     
     public RigidBodyControl getRigidBodyControl(){
         return this.sphereControl;
+    }
+    
+    public Geometry getGeometry(){
+        return this.sphereGeometry;
     }
     
 }

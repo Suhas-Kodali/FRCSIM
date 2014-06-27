@@ -55,8 +55,8 @@ public class Field {
         northWall_geo.setMaterial(Main.green);
         rootNode.attachChild(northWall_geo);
         northWall_geo.setLocalTranslation(0, Main.in(20)/2, -width/2 - Main.in(20)/2);
-        RigidBodyControl floor_phy = new RigidBodyControl(0f);
-        northWall_geo.addControl(floor_phy);
+        RigidBodyControl north_phy = new RigidBodyControl(0f);
+        northWall_geo.addControl(north_phy);
         space.add(northWall_geo);
         
         Box southWall = new Box(length/2, Main.in(20)/2, Main.in(20f)/2);
