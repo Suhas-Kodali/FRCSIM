@@ -191,7 +191,7 @@ public class Player {
         rootNode.attachChild(vehicleNode);
 
         space.add(vehicle);
-        vehicle.setPhysicsLocation(new Vector3f(0,0,0));
+        vehicle.setPhysicsLocation(alliance.position[0]);
     }
     
     public Vector3f getPhysicsLocation(){
@@ -260,7 +260,12 @@ public class Player {
     }
     
     public void reset(){
+<<<<<<< HEAD
         vehicle.setPhysicsLocation(new Vector3f(0,0,0));
+=======
+        System.out.println("Reset");
+        vehicle.setPhysicsLocation(alliance.position[0]);
+>>>>>>> origin/master
         vehicle.setPhysicsRotation(new Matrix3f());
         vehicle.setLinearVelocity(Vector3f.ZERO);
         vehicle.setAngularVelocity(Vector3f.ZERO);

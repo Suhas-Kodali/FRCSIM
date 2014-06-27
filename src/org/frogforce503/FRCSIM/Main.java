@@ -83,6 +83,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, assetManager);
         player1.setKeyMapping(Player.KeyMapping.std);
+<<<<<<< HEAD
         player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, assetManager);
         cam.setLocation(new Vector3f(0,12,12));
         player2.setKeyMapping(Player.KeyMapping.wasd);
@@ -90,6 +91,17 @@ public class Main extends SimpleApplication implements ActionListener {
         ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         ball2 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         ball3 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+=======
+        player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+        player2.setKeyMapping(Player.KeyMapping.wasd);
+        cam.setLocation(new Vector3f(0,12,12));
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+>>>>>>> origin/master
         cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
     }
     
