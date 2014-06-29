@@ -17,7 +17,7 @@ public class Ball {
     public final Alliance alliance;
     public static Geometry sphereGeometry;
     private static RigidBodyControl sphereControl;
-    public static final float drag = 1f/3f;
+    public static final float drag = 1f/18f;
     public static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
         Sphere sphere = new Sphere(32, 32, Main.in(13));

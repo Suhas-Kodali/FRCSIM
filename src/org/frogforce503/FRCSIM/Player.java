@@ -246,7 +246,7 @@ public class Player {
                 
                 for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
                     if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce((vehicle.getForwardVector(null).add(0, 0.6f, 0)).mult(new Vector3f(50f,50f,50f)));
+                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce((vehicle.getForwardVector(null).add(0, 0.6f, 0)).mult(new Vector3f(70f,70f,70f)));
                     }
                 }
             }
