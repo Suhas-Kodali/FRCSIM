@@ -240,6 +240,25 @@ public class Player {
                 }
             }
         }
+        
+        if(Main.InputManager.isPressed(keyMapping.shoot)){
+            for(int i = 0; i < Ball.balls.size(); i++){
+                
+                for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
+                    if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
+                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce((vehicle.getForwardVector(null).add(0, 0.6f, 0)).mult(new Vector3f(50f,50f,50f)));
+                    }
+                }
+            }
+        }else{
+            for(int i = 0; i < Ball.balls.size(); i++){
+                for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
+                    if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
+                        Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
+                    }
+                }
+            }
+        }
         if(lastTurn!=0 && curTurn==0){
             vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
         }
@@ -281,16 +300,17 @@ public class Player {
         intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(18), in(-6f)));
     }
     public static class KeyMapping{
-        public final String up, down, left, right, load;
-        public KeyMapping(String up, String down, String left, String right, String load){
+        public final String up, down, left, right, load, shoot;
+        public KeyMapping(String up, String down, String left, String right, String load, String shoot){
             this.up = up;
             this.down = down;
             this.left = left;
             this.right = right;
             this.load = load;
+            this.shoot = shoot;
         }
-        public final static KeyMapping std = new KeyMapping("up", "down", "left", "right", "pgdwn");
-        public final static KeyMapping wasd = new KeyMapping("w", "s", "a", "d", "r");
+        public final static KeyMapping std = new KeyMapping("up", "down", "left", "right", "pgdwn", "enter");
+        public final static KeyMapping wasd = new KeyMapping("w", "s", "a", "d", "r", "space");
     }
     
     public void setKeyMapping(KeyMapping src){

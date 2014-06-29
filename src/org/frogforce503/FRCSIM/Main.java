@@ -163,17 +163,17 @@ public class Main extends SimpleApplication implements ActionListener {
             InputManager.release(binding);
         }
         
-        if (binding.equals("space")) {
-            if (value) {
-                player1.jump();
-                player2.jump();
-            }
-        } else if (binding.equals("enter")) {
-            if (value) {
-                player1.reset();
-                player2.reset();
-            }
-        }
+//        if (binding.equals("space")) {
+//            if (value) {
+//                player1.jump();
+//                player2.jump();
+//            }
+//        } else if (binding.equals("enter")) {
+//            if (value) {
+//                player1.reset();
+//                player2.reset();
+//            }
+//        }
         if(binding.equals("r") && value){
             player2.lowerIntake();
         }
