@@ -180,5 +180,11 @@ public class Main extends SimpleApplication implements ActionListener {
         if(binding.equals("r") && !value){
             player2.retractIntake();
         }
+        if(binding.equals("pgdwn") && value){
+            player1.lowerIntake();
+        }
+        if(binding.equals("pgdwn") && !value){
+            player1.retractIntake();
+        }
     }
 }

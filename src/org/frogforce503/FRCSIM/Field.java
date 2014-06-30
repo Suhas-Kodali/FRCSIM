@@ -76,6 +76,14 @@ public class Field {
         rootNode.attachChild(goal1Geometry);
         space.add(goal1Geometry);
         
+        Box goalTop1 = new Box(Main.in(12)/2, Main.in(37)/2, width/2 +Main.in(20));
+        Geometry goal1TopGeometry = new Geometry("Goal", goalTop1);
+        goal1TopGeometry.setMaterial(Main.red);
+        goal1TopGeometry.setLocalTranslation(length/2, Main.in(37)/2 + Main.in(6*12+11), 0);
+        goal1TopGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(goal1TopGeometry);
+        space.add(goal1TopGeometry);
+        
         Box goal2 = new Box(Main.in(12)/2, Main.in(6*12+11)/2, width/2 + Main.in(20));
         Geometry goal2Geometry = new Geometry("Goal", goal2);
         goal2Geometry.setMaterial(Main.green);

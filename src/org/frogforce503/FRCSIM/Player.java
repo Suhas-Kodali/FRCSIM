@@ -5,18 +5,16 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.GhostControl;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.control.VehicleControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.cinematic.MotionPath;
-import com.jme3.cinematic.MotionPathListener;
-import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import static org.frogforce503.FRCSIM.Main.in;
@@ -62,11 +60,11 @@ public class Player {
         intakeGeometry.setMaterial(Main.green);
         
         
-        chassisNode.attachChild(intakeGeometry);
+        //chassisNode.attachChild(intakeGeometry);
         intakeGeometry2 = new Geometry("Intake", intakeBox);
         intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
         intakeGeometry2.setMaterial(Main.green);
-        chassisNode.attachChild(intakeGeometry2);
+        //chassisNode.attachChild(intakeGeometry2);
         
         //having incredle trouble changing the size of these ghostcontrols
         
@@ -75,16 +73,15 @@ public class Player {
         //ghostNode.addControl(ghost);
         intakeNode = new Node("node");
         intakeNode.addControl(pullGhost);
-        chassisNode.attachChild(intakeNode);
         
         intakeNode.attachChild(intakeGeometry);
         intakeNode.attachChild(intakeGeometry2);
+        chassisNode.attachChild(intakeNode);
         space.add(pullGhost);
         
         holdGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(0f)/2,in(18)/2,in(0f)/2)));  // a box-shaped ghost
         Node holdGhostNode = new Node("a ghost-controlled thing");
         holdGhostNode.addControl(holdGhost);
-        chassisNode.attachChild(intakeNode);
         holdGhostNode.setLocalTranslation(new Vector3f(0,in(18)/2,0));
         space.add(holdGhost);
         
@@ -246,7 +243,7 @@ public class Player {
                 
                 for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
                     if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce((vehicle.getForwardVector(null).add(0, 0.6f, 0)).mult(new Vector3f(70f,70f,70f)));
+                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce((vehicle.getForwardVector(null).add(0, 0.7f, 0)).mult(new Vector3f(70f,70f,70f)));
                     }
                 }
             }

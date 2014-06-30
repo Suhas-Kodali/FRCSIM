@@ -56,7 +56,7 @@ public class ScreenListener extends AbstractAppState implements ScreenController
     }
 
     public void quitGame() {
-        Main.app.stop();  // switch to another screen
+        Main.app.stop();  
     }
     
     public String getScore(){
