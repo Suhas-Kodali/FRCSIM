@@ -2,17 +2,20 @@ package org.frogforce503.FRCSIM;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
+import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.PointLight;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static org.frogforce503.FRCSIM.Main.in;
 
 /**
  *
@@ -29,6 +32,8 @@ public class Field {
     
     public final float width = Main.in(24*12+8);
     public final float length = Main.in(54*12);
+    public final GhostControl eastGhost, eastGoalGhost; 
+    public static Integer score = 0;
     
     public Field(Node rootNode, AssetManager assetManager, PhysicsSpace space) {
         AmbientLight ambient = new AmbientLight();
@@ -50,7 +55,7 @@ public class Field {
         space.add(floorGeometry);
         
         
-        Box northWall = new Box(length/2, Main.in(20)/2, Main.in(20f)/2);
+        Box northWall = new Box(length/2, Main.in(20f)/2, Main.in(20f)/2);
         Geometry northWall_geo = new Geometry("east_wall", northWall);
         northWall_geo.setMaterial(Main.green);
         rootNode.attachChild(northWall_geo);
@@ -59,7 +64,7 @@ public class Field {
         northWall_geo.addControl(north_phy);
         space.add(northWall_geo);
         
-        Box southWall = new Box(length/2, Main.in(20)/2, Main.in(20f)/2);
+        Box southWall = new Box(length/2, Main.in(20f)/2, Main.in(20f)/2);
         Geometry southWall_geo = new Geometry("east_wall", southWall);
         southWall_geo.setMaterial(Main.green);
         rootNode.attachChild(southWall_geo);
@@ -68,29 +73,97 @@ public class Field {
         southWall_geo.addControl(south_phy);
         space.add(southWall_geo);
         
-        Box goal1 = new Box(Main.in(12)/2, Main.in(6*12+11)/2, width/2 +Main.in(20));
+        Box goal1 = new Box(Main.in(12)/2, Main.in(6*12+6)/2, width/2 +Main.in(20));
         Geometry goal1Geometry = new Geometry("Goal", goal1);
         goal1Geometry.setMaterial(Main.green);
-        goal1Geometry.setLocalTranslation(length/2, Main.in(6*12+11)/2, 0);
+        goal1Geometry.setLocalTranslation(length/2, Main.in(6*12+6)/2, 0);
         goal1Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal1Geometry);
         space.add(goal1Geometry);
         
-        Box goalTop1 = new Box(Main.in(12)/2, Main.in(37)/2, width/2 +Main.in(20));
+        Box goal1TopSouth = new Box(Main.in(6)/2, Main.in(37)/2, Main.in(1)/2);
+        Geometry goal1TopSouthGeometry = new Geometry("Goal", goal1TopSouth);
+        goal1TopSouthGeometry.setMaterial(Main.red);
+        goal1TopSouthGeometry.setLocalTranslation(length/2, Main.in(37)/2 + Main.in(6*12+6), width/2 - Main.in(0.5f));
+        goal1TopSouthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(goal1TopSouthGeometry);
+        space.add(goal1TopSouthGeometry);
+        
+        Box goalTopNorth1 = new Box(Main.in(6)/2, Main.in(37)/2, Main.in(1)/2);
+        Geometry goal1TopNorthGeometry = new Geometry("Goal", goalTopNorth1);
+        goal1TopNorthGeometry.setMaterial(Main.red);
+        goal1TopNorthGeometry.setLocalTranslation(length/2, Main.in(37)/2 + Main.in(6*12+6), -width/2 + Main.in(0.5f));
+        goal1TopNorthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(goal1TopNorthGeometry);
+        space.add(goal1TopNorthGeometry);
+        
+        Box goalTop1 = new Box(Main.in(6)/2, Main.in(1)/2, width/2);
         Geometry goal1TopGeometry = new Geometry("Goal", goalTop1);
         goal1TopGeometry.setMaterial(Main.red);
-        goal1TopGeometry.setLocalTranslation(length/2, Main.in(37)/2 + Main.in(6*12+11), 0);
+        goal1TopGeometry.setLocalTranslation(length/2, Main.in(37) + Main.in(6*12+6), 0);
         goal1TopGeometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal1TopGeometry);
         space.add(goal1TopGeometry);
         
-        Box goal2 = new Box(Main.in(12)/2, Main.in(6*12+11)/2, width/2 + Main.in(20));
+        Box goal2 = new Box(Main.in(12)/2, Main.in(6*12+6)/2, width/2 + Main.in(20));
         Geometry goal2Geometry = new Geometry("Goal", goal2);
         goal2Geometry.setMaterial(Main.green);
-        goal2Geometry.setLocalTranslation(-length/2, Main.in(6*12+11)/2, 0);
+        goal2Geometry.setLocalTranslation(-length/2, Main.in(6*12+6)/2, 0);
         goal2Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2Geometry);
         space.add(goal2Geometry);
         
+        eastGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(500)/2, Main.in(37 + 6*12+6)/2, width/2 + Main.in(20f))));
+        //eastGhost.setPhysicsLocation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+6 + 6)/2, 0));
+//        Box test = new Box(Main.in(500)/2, Main.in(37 + 6*12+6)/2, width/2 + Main.in(20f));
+//        Geometry testG = new Geometry("Goal", test);
+//        testG.setMaterial(Main.green);
+//        testG.setLocalTranslation(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+6 + 6)/2, 0);
+//        testG.addControl(new RigidBodyControl(4));
+//        rootNode.attachChild(testG);
+//        space.add(testG);
+        Node eastGhostNode = new Node("a ghost-controlled thing");
+        eastGhostNode.addControl(eastGhost);
+        eastGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+6 + 6)/2, 0));
+        rootNode.attachChild(eastGhostNode);
+        space.add(eastGhost);
+        
+        eastGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
+        
+        Node eastGoalGhostNode = new Node("a thing");
+        eastGoalGhostNode.addControl(eastGoalGhost);
+        eastGoalGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(6)/2, Main.in(37)/2  + Main.in(6*12+6), 0));
+        rootNode.attachChild(eastGoalGhostNode);
+        space.add(eastGoalGhost);
+        
+    }
+    
+    
+    int wait = 0;
+    
+    public void update(){
+        
+        
+        for(int i = 0; i < Ball.balls.size(); i++){
+                
+                for(int j = 0; j < eastGhost.getOverlappingObjects().size(); j++){
+                    if(eastGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
+                        Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(Vector3f.ZERO);
+                        wait = 0;
+                    }
+                }
+                
+                for(int j = 0; j < eastGoalGhost.getOverlappingObjects().size(); j++){
+                    if(eastGoalGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
+                        if(wait == 0){
+                            System.out.println("score");
+                            score = score + 1;
+                            Main.scene.updateVariables();
+                        }
+                        
+                        wait = wait + 1;
+                   }
+                }
+    }
     }
 }

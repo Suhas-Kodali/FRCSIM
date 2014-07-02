@@ -49,10 +49,9 @@ public class ScreenListener extends AbstractAppState implements ScreenController
     }
     
      /** custom methods */ 
-    public void startGame(String nextScreen) {
-        nifty.gotoScreen(nextScreen);  // switch to another screen
-        // start the game and do some more stuff...
-        nifty.setIgnoreKeyboardEvents(true);
+    public void changeScreen(String nextScreen) {
+        Main.scene.screen = nextScreen;
+        nifty.gotoScreen(nextScreen);
     }
 
     public void quitGame() {
@@ -60,6 +59,6 @@ public class ScreenListener extends AbstractAppState implements ScreenController
     }
     
     public String getScore(){
-        return System.getProperty("user.name");
+        return Main.field.score.toString();
   }
 }

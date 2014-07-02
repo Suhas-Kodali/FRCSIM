@@ -10,11 +10,11 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
+import static org.frogforce503.FRCSIM.Scene.nifty;
 
 /**
  *
@@ -31,6 +31,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static Main app;
     
     public static Ball ball, ball2, ball3;
+    
     
     private boolean intakeLowered = false;
     
@@ -53,7 +54,7 @@ public class Main extends SimpleApplication implements ActionListener {
         scene.initScreens();
         scene.startScreen();
         red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        red.getAdditionalRenderState().setWireframe(true);
+        red.getAdditionalRenderState().setWireframe(false);
         red.setColor("Color", ColorRGBA.Red); 
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
@@ -138,6 +139,8 @@ public class Main extends SimpleApplication implements ActionListener {
         player1.update();
         player2.update();
         Ball.updateBalls();
+        field.update();
+        scene.update();
     }
     
     public static class InputManager{

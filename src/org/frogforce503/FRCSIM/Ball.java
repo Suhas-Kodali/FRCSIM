@@ -45,6 +45,8 @@ public class Ball {
         return this.sphereControl;
     }
     
+    
+    
     public Geometry getGeometry(){
         return this.sphereGeometry;
     }

@@ -19,6 +19,7 @@ import de.lessvoid.nifty.controls.button.builder.ButtonBuilder;
  */
 public class Scene {
     public static Nifty nifty;
+    public String screen = "start_screen";
     public Scene(AssetManager assetManager, InputManager inputManager, AudioRenderer audioRenderer, ViewPort guiViewPort, FlyByCamera flyCam){
          NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
     assetManager, inputManager, audioRenderer, guiViewPort);
@@ -32,7 +33,7 @@ public class Scene {
     
     public void initScreens(){
         // <screen>
-     nifty.addScreen("Start_Screen", new ScreenBuilder("Hello Nifty Screen"){{
+     nifty.addScreen("start_screen", new ScreenBuilder("Hello Nifty Screen"){{
         controller(new ScreenListener()); // Screen properties       
  
         // <layer>
@@ -57,7 +58,7 @@ public class Scene {
                       valignCenter();
                       height("50%");
                       width("50%");
-                      interactOnClick("startGame(hud)");
+                      interactOnClick("changeScreen(hud)");
                     }});
  
                 }});
@@ -153,11 +154,28 @@ public class Scene {
         // </layer>
       }}.build(nifty));
      
+     
     }
     
     public void startScreen(){
-        nifty.gotoScreen("Start_Screen"); // start the screen
+        nifty.gotoScreen("start_screen"); // start the screen
     }
     
+    public void hudScreen(){
+        nifty.gotoScreen("hud"); // start the screen
+    }
+    
+    public void updateVariables(){
+        initScreens();
+        nifty.gotoScreen(screen);   
+    }
+    
+    public void update(){
+        if(screen != "start_screen"){
+            nifty.setIgnoreKeyboardEvents(true);
+        }else{
+            nifty.setIgnoreKeyboardEvents(false);
+        }
+    }
     
 }
