@@ -31,7 +31,7 @@ public class Player {
     private final float maxSpeed = 17;
     private GhostControl pullGhost, holdGhost;
     private Vector3f jumpForce = new Vector3f(0, 60, 0);
-    private KeyMapping keyMapping = KeyMapping.std;
+    private KeyMapping keyMapping = KeyMapping.NULL;
     private final Alliance alliance;
     private AssetManager assetManager;
     private Node rootNode, chassisNode, vehicleNode;
@@ -197,7 +197,8 @@ public class Player {
         vehicle.setPhysicsLocation(pos);
     }
     
-    public int lastTurn = 0, turnCounter = 0;
+    private int lastTurn = 0;
+    private boolean hasBall = false;
     public void update(){
         float left = 0;
         float right = 0;
@@ -223,27 +224,24 @@ public class Player {
             right+=turningForce;
             curTurn--;
         }
-        if(Main.InputManager.isPressed(keyMapping.load)){
+        
+        if(isIntakeDown&&!hasBall){
             for(int i = 0; i < Ball.balls.size(); i++){
                 for(int j = 0; j < pullGhost.getOverlappingObjects().size(); j++){
                     if(pullGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
                         Ball.balls.get(i).getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(Ball.balls.get(i).getRigidBodyControl().getPhysicsLocation()).normalize().mult(40));
                     }
                 }
-                for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
-                    if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
-                    }
-                }
             }
         }
         
+        hasBall = false;
         if(Main.InputManager.isPressed(keyMapping.shoot)){
             for(int i = 0; i < Ball.balls.size(); i++){
-                
                 for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
                     if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
                         Ball.balls.get(i).getRigidBodyControl().applyCentralForce((vehicle.getForwardVector(null).add(0, 0.65f, 0)).mult(new Vector3f(50f,50f,50f)));
+                        hasBall = true;
                     }
                 }
             }
@@ -252,6 +250,7 @@ public class Player {
                 for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
                     if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
                         Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
+                        hasBall = true;
                     }
                 }
             }
@@ -288,14 +287,27 @@ public class Player {
         chassisNode.attachChild(intakeGeometry);
         chassisNode.attachChild(intakeGeometry2);
     }
+    private boolean isIntakeDown = false;
     public void lowerIntake(){
         intakeNode.rotate(FastMath.HALF_PI, 0, 0);
         intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(6)/2, in(2.5f)));
+        isIntakeDown = true;
     }
     public void retractIntake(){
         intakeNode.rotate(-FastMath.HALF_PI, 0, 0);
         intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(18), in(-6f)));
+        isIntakeDown = false;
     }
+    public Runnable toggleIntake = new Runnable(){
+        public void run() {
+            if(isIntakeDown){
+                retractIntake();
+            } else {
+                lowerIntake();
+            }
+        }
+    };
+    
     public static class KeyMapping{
         public final String up, down, left, right, load, shoot;
         public KeyMapping(String up, String down, String left, String right, String load, String shoot){
@@ -308,9 +320,16 @@ public class Player {
         }
         public final static KeyMapping std = new KeyMapping("up", "down", "left", "right", "pgdwn", "enter");
         public final static KeyMapping wasd = new KeyMapping("w", "s", "a", "d", "r", "space");
+        public final static KeyMapping NULL = new KeyMapping("", "", "", "", "", "");
     }
     
     public void setKeyMapping(KeyMapping src){
+        if(keyMapping != KeyMapping.NULL){
+            Main.InputManager.removeListener(keyMapping.load);
+        }
         keyMapping = src;
+        if(keyMapping != KeyMapping.NULL){
+            Main.InputManager.addListener(keyMapping.load, toggleIntake);
+        }
     }
 }
