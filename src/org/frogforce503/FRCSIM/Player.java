@@ -17,6 +17,9 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
@@ -30,24 +33,15 @@ public class Player {
     private final float frictionForce = 2f;
     private final float maxSpeed = 17;
     private GhostControl pullGhost, holdGhost;
-    private Vector3f jumpForce = new Vector3f(0, 60, 0);
     private KeyMapping keyMapping = KeyMapping.NULL;
     private final Alliance alliance;
-    private AssetManager assetManager;
-    private Node rootNode, chassisNode, vehicleNode;
-    private final MotionPath path = new MotionPath();
+    private Node chassisNode, vehicleNode;
     private Geometry intakeGeometry2, intakeGeometry;
     private CollisionShape collisionShape;
     private Node intakeNode;
-    
+    private ArrayList<Ball> pulledBalls = new ArrayList<Ball>(2);
+    private Ball heldBall = null;
     public Player(Node rootNode, PhysicsSpace space, Alliance alliance, AssetManager assetManager) {
-
-        
-        this.assetManager = assetManager;
-        this.rootNode = rootNode;
-        //create a compound shape and attach the BoxCollisionShape for the car body at 0,1,0
-        //this shifts the effective center of mass of the BoxCollisionShape to 0,-1,0
-        
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
@@ -158,39 +152,12 @@ public class Player {
             vehicle.addWheel(node, new Vector3f(pos[i][0], pos[i][2], pos[i][1]),
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
-        }
-//        
-//        Node node = new Node("wheel node");
-//            Geometry wheels = new Geometry("wheel", wheelMesh);
-//            node.attachChild(wheels);
-//            wheels.rotate(0, 0, 0);
-//            wheels.setMaterial(Main.red);
-//            vehicle.addWheel(node, new Vector3f(in(28)/2, in(6 + 3 + 3), in(28)/2 + in(2) + in(24)),
-//                    wheelDirection, wheelAxle, restLength, radius, false);
-//            vehicleNode.attachChild(node);
-//            
-//            vehicle.setFrictionSlip(8, 100f);
-//            
-//        Node wheelNode = new Node("wheel node");
-//            Geometry wheel2 = new Geometry("wheel", wheelMesh);
-//            wheelNode.attachChild(wheel2);
-//            wheel2.rotate(0, FastMath.HALF_PI, 0);
-//            wheel2.setMaterial(Main.red);
-//            vehicle.addWheel(wheelNode, new Vector3f(-in(28)/2, in(6 + 3 + 3), in(28)/2 + in(2) + in(24)),
-//                    wheelDirection, wheelAxle, restLength, radius, false);
-//            vehicleNode.attachChild(wheelNode);
-            
-            
-            
-                
+        }            
+        
         rootNode.attachChild(vehicleNode);
 
         space.add(vehicle);
         vehicle.setPhysicsLocation(alliance.position[0]);
-    }
-    
-    public Vector3f getPhysicsLocation(){
-        return vehicle.getPhysicsLocation();
     }
     
     public void setPhysicsLocation(Vector3f pos){
@@ -198,7 +165,6 @@ public class Player {
     }
     
     private int lastTurn = 0;
-    private boolean hasBall = false;
     public void update(){
         float left = 0;
         float right = 0;
@@ -225,36 +191,37 @@ public class Player {
             curTurn--;
         }
         
-        if(isIntakeDown&&!hasBall){
-            for(int i = 0; i < Ball.balls.size(); i++){
-                for(int j = 0; j < pullGhost.getOverlappingObjects().size(); j++){
-                    if(pullGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(Ball.balls.get(i).getRigidBodyControl().getPhysicsLocation()).normalize().mult(40));
+        if(isIntakeDown && heldBall == null && !isShooting){
+            for(int j = pullGhost.getOverlappingObjects().size()-1; j >=0; j--){
+                if(pullGhost.getOverlapping(j).getUserObject() instanceof Ball){
+                    Ball ball = ((Ball) pullGhost.getOverlapping(j).getUserObject());
+                    if(!pulledBalls.contains(ball)){
+                        pulledBalls.add(ball);
                     }
                 }
             }
         }
         
-        hasBall = false;
-        if(Main.InputManager.isPressed(keyMapping.shoot)){
-            for(int i = 0; i < Ball.balls.size(); i++){
-                for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
-                    if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().applyCentralForce((vehicle.getForwardVector(null).add(0, 0.65f, 0)).mult(new Vector3f(50f,50f,50f)));
-                        hasBall = true;
-                    }
-                }
-            }
-        }else{
-            for(int i = 0; i < Ball.balls.size(); i++){
-                for(int j = 0; j < holdGhost.getOverlappingObjects().size(); j++){
-                    if(holdGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
-                        hasBall = true;
+        
+        if(heldBall==null&&!isShooting){
+            for(int j = holdGhost.getOverlappingObjects().size()-1; j>=0; j--){
+                if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball){
+                    heldBall = (Ball) holdGhost.getOverlapping(j).getUserObject();
+                    if(pulledBalls.contains(heldBall)){
+                        pulledBalls.remove(heldBall);
                     }
                 }
             }
         }
+        
+        for(Ball ball : pulledBalls){
+            ball.getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(ball.getRigidBodyControl().getPhysicsLocation()).normalize().mult(40));
+        }
+        
+        if(heldBall!= null && !isShooting){
+            heldBall.getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
+        }
+        
         if(lastTurn!=0 && curTurn==0){
             vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
         }
@@ -272,10 +239,23 @@ public class Player {
             vehicle.brake(frictionForce*5);
         }
     }
-    
-    public void jump(){
-        vehicle.applyImpulse(jumpForce, Vector3f.ZERO);
-    }
+    private boolean isShooting = false;
+    public static final int shootLength = 1000;
+    public static final int shootForce = 12;
+    public Runnable shoot = new Runnable(){
+        public void run(){
+            if(heldBall != null && ! isShooting){
+                heldBall.getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null)).add(new Vector3f(0, .65f, 0)).mult(shootForce).add(vehicle.getLinearVelocity()));
+                heldBall = null;
+                if(pulledBalls.contains(heldBall)){
+                    pulledBalls.remove(heldBall);
+                }                    
+                isShooting = true;
+                (new Timer()).schedule(new TimerTask(){public void run(){isShooting = false;}}, shootLength);
+            }
+            
+        }
+    };
     
     public void reset(){
         System.out.println("Reset");
@@ -326,10 +306,12 @@ public class Player {
     public void setKeyMapping(KeyMapping src){
         if(keyMapping != KeyMapping.NULL){
             Main.InputManager.removeListener(keyMapping.load);
+            Main.InputManager.removeListener(keyMapping.shoot);
         }
         keyMapping = src;
         if(keyMapping != KeyMapping.NULL){
             Main.InputManager.addListener(keyMapping.load, toggleIntake);
+            Main.InputManager.addListener(keyMapping.shoot, shoot);
         }
     }
 }
