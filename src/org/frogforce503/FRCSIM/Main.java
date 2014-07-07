@@ -169,6 +169,10 @@ public class Main extends SimpleApplication implements ActionListener {
         public static void removeListener(String key){
             listeners.remove(key);
         }
+        
+        public static int isPressedi(String key){
+            return (pressed.contains(key)?1:0);
+        }
     }
     
     public void onAction(String binding, boolean value, float tpf) {

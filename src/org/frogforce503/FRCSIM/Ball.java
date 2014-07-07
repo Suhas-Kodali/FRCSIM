@@ -20,6 +20,7 @@ public class Ball {
     public static final float drag = 1f/18f;
     public static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public final int number;
+    private static int count=0;
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
         Sphere sphere = new Sphere(32, 32, Main.in(13));
         sphereGeometry = new Geometry("Sphere", sphere);
@@ -31,7 +32,7 @@ public class Ball {
         space.add(sphereGeometry);
         this.alliance = alliance;        
         balls.add(this);
-        number = balls.indexOf(this);
+        number = count++;
     }
     
     public void update(){
