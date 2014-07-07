@@ -1,6 +1,5 @@
 package org.frogforce503.FRCSIM;
 
-import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -37,6 +36,8 @@ public abstract class Robot {
     private Node intakeNode;
     private ArrayList<Ball> pulledBalls = new ArrayList<Ball>(2);
     private Ball heldBall = null;
+    public static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
+    
     public Robot(Node rootNode, PhysicsSpace space, Alliance alliance) {
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
@@ -102,8 +103,8 @@ public abstract class Robot {
         vehicle.setMass(30);
 
         //Create four wheels and add them at their locations
-        Vector3f wheelDirection = new Vector3f(0, -1, 0); // was 0, -1, 0
-        Vector3f wheelAxle = new Vector3f(-1, 0, 0); // was -1, 0, 0
+        Vector3f wheelDirection = new Vector3f(0, -1, 0);
+        Vector3f wheelAxle = new Vector3f(-1, 0, 0);
         float radius = in(2);
         float width = in(1);
         float restLength = in(2);
@@ -154,6 +155,7 @@ public abstract class Robot {
 
         space.add(vehicle);
         vehicle.setPhysicsLocation(alliance.position[0]);
+        robots.add(this);
     }
     
     public void setPhysicsLocation(Vector3f pos){
@@ -161,6 +163,12 @@ public abstract class Robot {
     }
     
     public abstract void update();
+    
+    public static void updateAll(){
+        for(Robot robot : robots){
+            robot.update();
+        }
+    }
     
     private float lastTurn = 0;
     protected void update(float cup, float cdown, float cleft, float cright){

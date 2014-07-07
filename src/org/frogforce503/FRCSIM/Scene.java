@@ -171,7 +171,7 @@ public class Scene {
     }
     
     public void update(){
-        if(screen != "start_screen"){
+        if(!"start_screen".equals(screen)){
             nifty.setIgnoreKeyboardEvents(true);
         }else{
             nifty.setIgnoreKeyboardEvents(false);

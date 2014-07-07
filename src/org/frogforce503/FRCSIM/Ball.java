@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * @author Bryce Paputa
  */
 public class Ball {
+    
     public final Alliance alliance;
     public Geometry sphereGeometry;
     private RigidBodyControl sphereControl;
@@ -21,6 +22,7 @@ public class Ball {
     public static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public final int number;
     private static int count=0;
+    
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
         Sphere sphere = new Sphere(32, 32, Main.in(13));
         sphereGeometry = new Geometry("Sphere", sphere);
@@ -39,7 +41,7 @@ public class Ball {
         sphereControl.applyCentralForce(sphereControl.getLinearVelocity().normalize().mult(sphereControl.getLinearVelocity().distanceSquared(Vector3f.ZERO)).mult(-drag));
     }
     
-    public static void updateBalls(){
+    public static void updateAll(){
         for(Ball ball : balls){
             ball.update();
         }

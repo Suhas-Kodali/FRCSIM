@@ -15,7 +15,6 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import static org.frogforce503.FRCSIM.Scene.nifty;
 
 /**
  *
@@ -24,20 +23,11 @@ import static org.frogforce503.FRCSIM.Scene.nifty;
 public class Main extends SimpleApplication implements ActionListener {
 
     public static Material red, black, blue, green, darkGray, cage;
-    
     public static Scene scene;
-            
     public static Field field;
-    
     public static Main app;
-    
-    public static Ball ball, ball2, ball3;
-    
-    
-    private boolean intakeLowered = false;
-    
     public static BulletAppState bulletAppState;
-    private Player player1, player2;
+    
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
@@ -84,23 +74,16 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         
-        player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        player1.setKeyMapping(Player.KeyMapping.std);
-        player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-        player2.setKeyMapping(Player.KeyMapping.wasd);
-        player2.setPhysicsLocation(new Vector3f(1,0,1));
+        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, Player.KeyMapping.std, Vector3f.ZERO);
+        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, Player.KeyMapping.wasd, new Vector3f(1,0,1));
         
-        ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        ball2 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        ball3 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         
         cam.setLocation(new Vector3f(0,12,12));
         cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
-    }
-    
-    private PhysicsSpace getPhysicsSpace(){
-        return bulletAppState.getPhysicsSpace();
     }
 
     private void setupKeys() {
@@ -137,14 +120,14 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleUpdate(float tpf) {
-        player1.update();
-        player2.update();
-        Ball.updateBalls();
+        Player.updateAll();
+        Ball.updateAll();
         field.update();
         scene.update();
     }
     
-    public static class InputManager{
+    public static final class InputManager{
+        private InputManager() {}
         private static ArrayList<String> pressed = new ArrayList<String>();
         private static HashMap<String, Runnable> listeners = new HashMap<String, Runnable>();
         public static void press(String key){
@@ -175,6 +158,7 @@ public class Main extends SimpleApplication implements ActionListener {
         }
     }
     
+    @Override
     public void onAction(String binding, boolean value, float tpf) {
         if(value == true){
             InputManager.press(binding);
