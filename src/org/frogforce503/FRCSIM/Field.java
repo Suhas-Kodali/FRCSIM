@@ -149,6 +149,7 @@ public class Field {
                 for(int j = 0; j < eastGhost.getOverlappingObjects().size(); j++){
                     if(eastGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
                         Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(Vector3f.ZERO);
+                        Ball.balls.get(i).getRigidBodyControl().setLinearVelocity(Vector3f.ZERO);
                         wait = 0;
                     }
                 }

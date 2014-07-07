@@ -28,8 +28,8 @@ import static org.frogforce503.FRCSIM.Main.in;
  */
 public class Player extends Robot{
     
-    public Player(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance, AssetManager assetManager){
-        super(rootNode, physicsSpace, alliance, assetManager);
+    public Player(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance){
+        super(rootNode, physicsSpace, alliance);
     }
     
     private KeyMapping keyMapping = KeyMapping.NULL;

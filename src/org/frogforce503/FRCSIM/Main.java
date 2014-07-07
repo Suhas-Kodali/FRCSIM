@@ -84,9 +84,9 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         
-        player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, assetManager);
+        player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         player1.setKeyMapping(Player.KeyMapping.std);
-        player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, assetManager);
+        player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         player2.setKeyMapping(Player.KeyMapping.wasd);
         player2.setPhysicsLocation(new Vector3f(1,0,1));
         

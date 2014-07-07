@@ -37,7 +37,7 @@ public abstract class Robot {
     private Node intakeNode;
     private ArrayList<Ball> pulledBalls = new ArrayList<Ball>(2);
     private Ball heldBall = null;
-    public Robot(Node rootNode, PhysicsSpace space, Alliance alliance, AssetManager assetManager) {
+    public Robot(Node rootNode, PhysicsSpace space, Alliance alliance) {
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
@@ -170,8 +170,8 @@ public abstract class Robot {
         float accelerationFactor = (maxSpeed-curSpeed)/maxSpeed * accelerationForce;
         
         float curTurn = cleft-cright;
-        left += accelerationFactor * (cup-cdown) + turningForce * curTurn;
-        right+= accelerationFactor * (cup-cdown) - turningForce * curTurn;
+        left  += accelerationFactor * (cup-cdown) + turningForce * curTurn;
+        right += accelerationFactor * (cup-cdown) - turningForce * curTurn;
         
         if(Math.abs(lastTurn)>.1 && Math.abs(curTurn)<.1){
             vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
@@ -190,7 +190,7 @@ public abstract class Robot {
             vehicle.brake(frictionForce*5);
         }
         
-        if(isIntakeDown && heldBall == null && !isShooting){
+        if(heldBall == null && !isShooting){
             for(int j = pullGhost.getOverlappingObjects().size()-1; j >=0; j--){
                 if(pullGhost.getOverlapping(j).getUserObject() instanceof Ball){
                     Ball ball = ((Ball) pullGhost.getOverlapping(j).getUserObject());
@@ -199,9 +199,6 @@ public abstract class Robot {
                     }
                 }
             }
-        }
-        
-        if(heldBall==null&&!isShooting){
             for(int j = holdGhost.getOverlappingObjects().size()-1; j>=0; j--){
                 if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball){
                     heldBall = (Ball) holdGhost.getOverlapping(j).getUserObject();
@@ -213,7 +210,7 @@ public abstract class Robot {
         }
         
         for(Ball ball : pulledBalls){
-            ball.getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(ball.getRigidBodyControl().getPhysicsLocation()).normalize().add(new Vector3f(0,.5f,0)).mult(40));
+            ball.getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(ball.getRigidBodyControl().getPhysicsLocation()).normalize().add(new Vector3f(0,.5f,0)).mult(45));
         }
         
         if(heldBall!= null && !isShooting){
