@@ -142,8 +142,8 @@ public class Scene {
                     text("Score: ${CALL.getScore()}");
                     font("Interface/Fonts/Default.fnt");
                     color("#000");
-                    height("10%");
-                    width("10%");
+                    height("5%");
+                    width("5%");
                     }});
  
                 }});
