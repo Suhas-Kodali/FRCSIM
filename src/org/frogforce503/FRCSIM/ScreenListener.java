@@ -36,14 +36,17 @@ public class ScreenListener extends AbstractAppState implements ScreenController
         //this is called on the OpenGL thread after the AppState has been detached
     }
     
+    @Override
     public void bind(Nifty nifty, Screen screen) {
         
     }
 
+    @Override
     public void onStartScreen() {
         
     }
 
+    @Override
     public void onEndScreen() {
         
     }
@@ -59,6 +62,6 @@ public class ScreenListener extends AbstractAppState implements ScreenController
     }
     
     public String getScore(){
-        return Main.field.score.toString();
+        return Field.score.toString();
   }
 }

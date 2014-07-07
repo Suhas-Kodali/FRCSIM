@@ -14,7 +14,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
-import static org.frogforce503.FRCSIM.Scene.nifty;
+import java.util.HashMap;
 
 /**
  *
@@ -23,25 +23,17 @@ import static org.frogforce503.FRCSIM.Scene.nifty;
 public class Main extends SimpleApplication implements ActionListener {
 
     public static Material red, black, blue, green, darkGray, cage;
-    
     public static Scene scene;
-            
     public static Field field;
-    
     public static Main app;
-    
-    public static Ball ball, ball2, ball3;
-    
-    
-    private boolean intakeLowered = false;
-    
     public static BulletAppState bulletAppState;
-    private Player player1, player2;
+    
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
+        appSettings.setResolution(1280, 768);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
@@ -82,25 +74,19 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         
-        player1 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, assetManager);
-        player1.setKeyMapping(Player.KeyMapping.std);
-        player2 = new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, assetManager);
-        cam.setLocation(new Vector3f(0,12,12));
-        player2.setKeyMapping(Player.KeyMapping.wasd);
-        player2.setPhysicsLocation(new Vector3f(1,0,1));
-        ball = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        ball2 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        ball3 = new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, Player.KeyMapping.std, Vector3f.ZERO);
+        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, Player.KeyMapping.wasd, new Vector3f(1,0,1));
+        
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        
         cam.setLocation(new Vector3f(0,12,12));
         cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
-    }
-    
-    private PhysicsSpace getPhysicsSpace(){
-        return bulletAppState.getPhysicsSpace();
+        flyCam.setEnabled(false);
     }
 
     private void setupKeys() {
-        //flyCam.setEnabled(false);
         int[] keys = new int[]{KeyInput.KEY_A,KeyInput.KEY_B,KeyInput.KEY_C,
                 KeyInput.KEY_D,KeyInput.KEY_E,KeyInput.KEY_F,KeyInput.KEY_G,
                 KeyInput.KEY_H,KeyInput.KEY_I,KeyInput.KEY_J,KeyInput.KEY_K,
@@ -134,20 +120,21 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleUpdate(float tpf) {
-        //cam.lookAt(player.getPhysicsLocation(), Vector3f.UNIT_Y);
-        
-        player1.update();
-        player2.update();
-        Ball.updateBalls();
+        Player.updateAll();
+        Ball.updateAll();
         field.update();
         scene.update();
     }
     
-    public static class InputManager{
+    public static final class InputManager{
+        private InputManager() {}
         private static ArrayList<String> pressed = new ArrayList<String>();
-        
+        private static HashMap<String, Runnable> listeners = new HashMap<String, Runnable>();
         public static void press(String key){
             pressed.add(key);
+            if(listeners.containsKey(key)){
+                listeners.get(key).run();
+            }
         }
         
         public static void release(String key){
@@ -157,37 +144,26 @@ public class Main extends SimpleApplication implements ActionListener {
         public static boolean isPressed(String key){
             return pressed.contains(key);
         }
+        
+        public static void addListener(String key, Runnable function){
+            listeners.put(key, function);
+        }
+        
+        public static void removeListener(String key){
+            listeners.remove(key);
+        }
+        
+        public static int isPressedi(String key){
+            return (pressed.contains(key)?1:0);
+        }
     }
     
+    @Override
     public void onAction(String binding, boolean value, float tpf) {
         if(value == true){
             InputManager.press(binding);
         } else {
             InputManager.release(binding);
-        }
-        
-//        if (binding.equals("space")) {
-//            if (value) {
-//                player1.jump();
-//                player2.jump();
-//            }
-//        } else if (binding.equals("enter")) {
-//            if (value) {
-//                player1.reset();
-//                player2.reset();
-//            }
-//        }
-        if(binding.equals("r") && value){
-            player2.lowerIntake();
-        }
-        if(binding.equals("r") && !value){
-            player2.retractIntake();
-        }
-        if(binding.equals("pgdwn") && value){
-            player1.lowerIntake();
-        }
-        if(binding.equals("pgdwn") && !value){
-            player1.retractIntake();
         }
     }
 }

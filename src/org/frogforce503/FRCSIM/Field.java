@@ -14,10 +14,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static org.frogforce503.FRCSIM.Ball.sphereGeometry;
-import static org.frogforce503.FRCSIM.Main.in;
 
 /**
  *
