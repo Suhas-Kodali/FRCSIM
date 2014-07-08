@@ -33,11 +33,11 @@ public abstract class SwerveRobot extends AbstractRobot{
     private final Alliance alliance;
     private final Node vehicleNode;
     private final VehicleControl vehicle;
-    private float maxSpeed=50f;
-    private float accelerationForce=200;
-    private float turnSpeed=1;
     private final float frictionForce = 20f;
-    private float[] wheelSpeeds = new float[]{0,0,0,0};    
+    private float maxTurn=8;
+    private float turnForce=300;
+    private float maxSpeed=8;
+    private float speedForce=400;
     public SwerveRobot(Node rootNode, PhysicsSpace space, Alliance alliance){
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
@@ -144,14 +144,20 @@ public abstract class SwerveRobot extends AbstractRobot{
         rootNode.attachChild(vehicleNode);
 
         space.add(vehicle);
-        space.addTickListener(new WheelSpeedListener());
         
         vehicle.setPhysicsLocation(alliance.position[0]);
     }
     
-    protected void update(float fwr, float str, float omega){
+    protected void updateRC(float fwr, float str, float omega){
         Vector2f V = new Vector2f(str, fwr);
-        float l2 = Main.in(11.25f) * turnSpeed;
+        float l2 = Main.in(11.25f);
+        
+        float speedFactor = (maxSpeed-vehicle.getLinearVelocity().length())/maxSpeed * speedForce;
+        float turnFactor = (maxTurn-Math.abs(vehicle.getAngularVelocity().dot(Vector3f.UNIT_Y)))/maxTurn * turnForce;
+        
+        V.mult(speedFactor, V);
+        l2 *= turnFactor;
+        
         float[] ABCD = new float[]{V.x-omega*l2, V.x + omega*l2,
                                    V.y-omega*l2, V.y + omega*l2};
         float[][] FSW = new float[4][];
@@ -159,17 +165,11 @@ public abstract class SwerveRobot extends AbstractRobot{
             float ABCD1 = ABCD[1-i%2], ABCD2 = ABCD[3-i/2];
             FSW[i] = new float[]{ (float)Math.sqrt(ABCD1*ABCD1 + ABCD2*ABCD2),
                                     (float)Math.atan2(ABCD1, ABCD2)};
-        }
-        
-        float[] accelerationFactor = new float[4];
-        for(int i = 0; i < 4; i++){
-            accelerationFactor[i] = (maxSpeed-wheelSpeeds[i])/maxSpeed * accelerationForce;
-        }
-        
+        }        
         
         for(int i = 0; i < 4; i++){
             vehicle.steer(i, -FSW[i][1]);
-            vehicle.accelerate(i, accelerationFactor[i] * FSW[i][0]);
+            vehicle.accelerate(i, FSW[i][0]);
         }
         
         vehicle.brake(frictionForce);
@@ -177,18 +177,13 @@ public abstract class SwerveRobot extends AbstractRobot{
             vehicle.brake(frictionForce*5);
         }
     }
-    
-    public class WheelSpeedListener extends RigidBodyControl implements PhysicsTickListener{
 
-        public void prePhysicsTick(PhysicsSpace space, float tpf) {
-        }
-
-        public void physicsTick(PhysicsSpace space, float tpf) {
-            for(int i = 0; i < 4; i++){
-                wheelSpeeds[i] = Math.abs(vehicle.getWheel(i).getDeltaRotation()/tpf);
-            }
-            //System.out.println(wheelSpeeds[0] + ", " + vehicle.getLinearVelocity().length());
-        }
-        
+    void updateFC(float FWR, float STR, float omega) {
+        Vector2f forwardDirectionProjection = new Vector2f(vehicle.getForwardVector(null).x, vehicle.getForwardVector(null).z);
+        float angleFromX = forwardDirectionProjection.getAngle();
+        System.out.println(angleFromX);
+        Vector2f command = new Vector2f(FWR, STR);
+        command.rotateAroundOrigin(angleFromX+FastMath.HALF_PI, true);
+        updateRC(command.x, command.y, omega);
     }
 }

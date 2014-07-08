@@ -9,19 +9,32 @@ import com.jme3.scene.Node;
  * @author Bryce
  */
 public class SwervePlayer extends SwerveRobot{
-
-    public SwervePlayer(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance, SwervePlayer.SwerveKeyMapping keyMapping, Vector3f pos){
+    
+    public static enum SwerveType{
+        FieldCentric(), RobotCentric();
+    }
+    
+    private SwerveType type;
+    
+    public SwervePlayer(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance, SwervePlayer.SwerveKeyMapping keyMapping, Vector3f pos, SwerveType type){
         super(rootNode, physicsSpace, alliance);
         setKeyMapping(keyMapping);
         //setPhysicsLocation(pos);
+        this.type = type;
     }
     
     @Override
     public void update() {
         float FWR = Main.InputManager.isPressedi(keyMapping.up)-Main.InputManager.isPressedi(keyMapping.down),
-                STR = Main.InputManager.isPressedi(keyMapping.left)-Main.InputManager.isPressedi(keyMapping.right),
+                STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left),
                 omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
-        super.update(FWR, STR, omega);
+        switch(type){
+            case FieldCentric:
+                super.updateFC(FWR, STR, omega);
+                break;
+            case RobotCentric:
+                super.updateRC(FWR, STR, omega);
+        }
     }
 
     @Override
