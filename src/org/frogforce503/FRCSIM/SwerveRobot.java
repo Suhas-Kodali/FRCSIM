@@ -38,6 +38,7 @@ public abstract class SwerveRobot extends AbstractRobot{
     private float turnForce=300;
     private float maxSpeed=8;
     private float speedForce=400;
+    protected BasicIntake intake;
     public SwerveRobot(Node rootNode, PhysicsSpace space, Alliance alliance){
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
@@ -65,8 +66,8 @@ public abstract class SwerveRobot extends AbstractRobot{
         intakeNode = new Node("node");
         intakeNode.addControl(pullGhost);
         
-        intakeNode.attachChild(intakeGeometry);
-        intakeNode.attachChild(intakeGeometry2);
+        //intakeNode.attachChild(intakeGeometry);
+        //intakeNode.attachChild(intakeGeometry2);
         chassisNode.attachChild(intakeNode);
         space.add(pullGhost);
         
@@ -86,8 +87,10 @@ public abstract class SwerveRobot extends AbstractRobot{
         this.alliance = alliance;
         //create vehicle node
         vehicleNode=new Node("vehicleNode");
-        vehicleNode.attachChild(chassisNode);
         vehicle = new VehicleControl(collisionShape, 400);
+        intake = new BasicIntake(chassisNode, space, vehicle);
+        intake.extend();
+        vehicleNode.attachChild(chassisNode);
         vehicleNode.addControl(vehicle);
         
         //setting suspension values for wheels, this can be a bit tricky
@@ -176,6 +179,8 @@ public abstract class SwerveRobot extends AbstractRobot{
         if(vehicle.getLinearVelocity().length()<.1){
             vehicle.brake(frictionForce*5);
         }
+        
+        intake.update();
     }
 
     void updateFC(float FWR, float STR, float omega) {

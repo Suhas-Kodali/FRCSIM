@@ -26,6 +26,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static Field field;
     public static Main app;
     public static BulletAppState bulletAppState;
+    public static boolean isStarted = false;
     
     public static void main(String[] args) {
         app = new Main();
@@ -75,7 +76,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
         new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
-        //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
+        //SwervePlayer a  = new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
@@ -83,6 +84,8 @@ public class Main extends SimpleApplication implements ActionListener {
         cam.setLocation(new Vector3f(0,12,12));
         cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
+        
+        isStarted = true;
     }
 
     private void setupKeys() {
@@ -119,10 +122,12 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleUpdate(float tpf) {
-        AbstractRobot.updateAll();
-        Ball.updateAll();
-        field.update();
-        scene.update();
+        if(isStarted){
+            AbstractRobot.updateAll();
+            Ball.updateAll();
+            field.update();
+            scene.update();
+        }
     }
     
     public static final class InputManager{

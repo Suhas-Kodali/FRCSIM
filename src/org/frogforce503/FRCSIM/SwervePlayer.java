@@ -41,33 +41,34 @@ public class SwervePlayer extends SwerveRobot{
     public void setPhysicsLocation(Vector3f pos) {
     }
     
-    SwerveKeyMapping keyMapping;
+    SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL;
     
     public static class SwerveKeyMapping{
-        public final String up, down, left, right, rotateCCW, rotateCW;
-        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW){
+        public final String up, down, left, right, rotateCCW, rotateCW, load;
+        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load){
             this.up = up;
             this.down = down;
             this.left = left;
             this.right = right;
             this.rotateCCW = rotateCCW;
             this.rotateCW = rotateCW;
+            this.load = load;
         }
-        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d");
-        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right");
-        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "");
+        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r");
+        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r");
+        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "");
     }
     
     public void setKeyMapping(SwerveKeyMapping src){
-        //if(keyMapping != SwerveKeyMapping.NULL){
-        //    Main.InputManager.removeListener(keyMapping.load);
+        if(keyMapping != SwerveKeyMapping.NULL){
+            Main.InputManager.removeListener(keyMapping.load);
         //    Main.InputManager.removeListener(keyMapping.shoot);
-        //}
+        }
         keyMapping = src;
-        //if(keyMapping != SwerveKeyMapping.NULL){
-        //    Main.InputManager.addListener(keyMapping.load, toggleIntake);
+        if(keyMapping != SwerveKeyMapping.NULL){
+            Main.InputManager.addListener(keyMapping.load, intake.toggle);
         //    Main.InputManager.addListener(keyMapping.shoot, shoot);
-        //}
+        }
     }
     
 }

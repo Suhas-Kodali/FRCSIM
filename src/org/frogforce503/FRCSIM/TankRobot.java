@@ -23,19 +23,15 @@ import static org.frogforce503.FRCSIM.Main.in;
  * @author Bryce Paputa
  */
 public abstract class TankRobot extends AbstractRobot{
-    private VehicleControl vehicle;
+    protected VehicleControl vehicle;
     private final float accelerationForce = 175f;
     private final float turningForce = 100f;
     private final float frictionForce = 2f;
     private final float maxSpeed = 17;
-    private GhostControl pullGhost, holdGhost;
     private final Alliance alliance;
     private Node chassisNode, vehicleNode;
-    private Geometry intakeGeometry2, intakeGeometry;
     private CollisionShape collisionShape;
-    private Node intakeNode;
-    private ArrayList<Ball> pulledBalls = new ArrayList<Ball>(2);
-    private Ball heldBall = null;
+    protected BasicIntake intake;
     
     public TankRobot(Node rootNode, PhysicsSpace space, Alliance alliance) {
         chassisNode = new Node("chassis Node");
@@ -44,38 +40,6 @@ public abstract class TankRobot extends AbstractRobot{
         chassisGeometry.setMaterial(Main.cage);
         chassisGeometry.setQueueBucket(Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
-        Box intakeBox = new Box(in(1), in(12), in(6));
-        intakeGeometry = new Geometry("Intake", intakeBox);
-        intakeGeometry.setLocalTranslation(in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
-        intakeGeometry.setMaterial(Main.green);
-        
-        
-        //chassisNode.attachChild(intakeGeometry);
-        intakeGeometry2 = new Geometry("Intake", intakeBox);
-        intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
-        intakeGeometry2.setMaterial(Main.green);
-        //chassisNode.attachChild(intakeGeometry2);
-        
-        //having incredle trouble changing the size of these ghostcontrols
-        
-        pullGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(4),in(3 + 6 + 5)/2,0)));  // a box-shaped ghost
-        //Node ghostNode = new Node("a ghost-controlled thing");
-        //ghostNode.addControl(ghost);
-        intakeNode = new Node("node");
-        intakeNode.addControl(pullGhost);
-        
-        intakeNode.attachChild(intakeGeometry);
-        intakeNode.attachChild(intakeGeometry2);
-        chassisNode.attachChild(intakeNode);
-        space.add(pullGhost);
-        
-        holdGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(0f)/2,in(18)/2,in(0f)/2)));  // a box-shaped ghost
-        Node holdGhostNode = new Node("a ghost-controlled thing");
-        holdGhostNode.addControl(holdGhost);
-        holdGhostNode.setLocalTranslation(new Vector3f(0,in(18)/2,0));
-        space.add(holdGhost);
-        
-        chassisNode.attachChild(holdGhostNode);
         
         
         new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
@@ -88,6 +52,7 @@ public abstract class TankRobot extends AbstractRobot{
         vehicleNode=new Node("vehicleNode");
         vehicleNode.attachChild(chassisNode);
         vehicle = new VehicleControl(collisionShape, 400);
+        intake = new BasicIntake(chassisNode, space, vehicle);
         vehicleNode.addControl(vehicle);
         
         //setting suspension values for wheels, this can be a bit tricky
@@ -189,32 +154,7 @@ public abstract class TankRobot extends AbstractRobot{
             vehicle.brake(frictionForce*5);
         }
         
-        if(heldBall == null && !isShooting){
-            for(int j = pullGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                if(pullGhost.getOverlapping(j).getUserObject() instanceof Ball){
-                    Ball ball = ((Ball) pullGhost.getOverlapping(j).getUserObject());
-                    if(!pulledBalls.contains(ball)){
-                        pulledBalls.add(ball);
-                    }
-                }
-            }
-            for(int j = holdGhost.getOverlappingObjects().size()-1; j>=0; j--){
-                if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball){
-                    heldBall = (Ball) holdGhost.getOverlapping(j).getUserObject();
-                    if(pulledBalls.contains(heldBall)){
-                        pulledBalls.remove(heldBall);
-                    }
-                }
-            }
-        }
-        
-        for(Ball ball : pulledBalls){
-            ball.getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(ball.getRigidBodyControl().getPhysicsLocation()).normalize().add(new Vector3f(0,.5f,0)).mult(45));
-        }
-        
-        if(heldBall!= null && !isShooting){
-            heldBall.getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
-        }
+        intake.update();
     }
     
     private boolean isShooting = false;
@@ -226,36 +166,13 @@ public abstract class TankRobot extends AbstractRobot{
             shoot();
         }
     };
-    private boolean isIntakeDown = false;
-    public void lowerIntake(){
-        intakeNode.rotate(FastMath.HALF_PI, 0, 0);
-        intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(6)/2, in(2.5f)));
-        isIntakeDown = true;
-    }
-    public void retractIntake(){
-        intakeNode.rotate(-FastMath.HALF_PI, 0, 0);
-        intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(18), in(-6f)));
-        isIntakeDown = false;
-    }
-    public void shoot(){
-        if(heldBall != null && ! isShooting){
-            heldBall.getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null)).add(new Vector3f(0, shootElevation, 0)).mult(shootForce).add(vehicle.getLinearVelocity()));
-            heldBall = null;
-            if(pulledBalls.contains(heldBall)){
-                pulledBalls.remove(heldBall);
-            }                    
-            isShooting = true;
-            (new Timer()).schedule(new TimerTask(){public void run(){isShooting = false;}}, shootLength);
-        }
-    }
-    public Runnable toggleIntake = new Runnable(){
-        public void run() {
-            if(isIntakeDown){
-                retractIntake();
-            } else {
-                lowerIntake();
-            }
-        }
-    };
     
+    public void shoot(){
+        if(intake.hasBall() && ! isShooting){
+            intake.getHeldBall().getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null)).add(new Vector3f(0, shootElevation, 0)).mult(shootForce).add(vehicle.getLinearVelocity()));
+            intake.preShot();
+            isShooting = true;
+            (new Timer()).schedule(new TimerTask(){public void run(){isShooting = false; intake.postShot();}}, shootLength);
+        }
+    }
 }
