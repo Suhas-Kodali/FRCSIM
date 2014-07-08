@@ -22,7 +22,7 @@ import static org.frogforce503.FRCSIM.Main.in;
  *
  * @author Bryce Paputa
  */
-public abstract class Robot {
+public abstract class TankRobot extends AbstractRobot{
     private VehicleControl vehicle;
     private final float accelerationForce = 175f;
     private final float turningForce = 100f;
@@ -36,9 +36,8 @@ public abstract class Robot {
     private Node intakeNode;
     private ArrayList<Ball> pulledBalls = new ArrayList<Ball>(2);
     private Ball heldBall = null;
-    public static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
     
-    public Robot(Node rootNode, PhysicsSpace space, Alliance alliance) {
+    public TankRobot(Node rootNode, PhysicsSpace space, Alliance alliance) {
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
@@ -155,19 +154,11 @@ public abstract class Robot {
 
         space.add(vehicle);
         vehicle.setPhysicsLocation(alliance.position[0]);
-        robots.add(this);
     }
     
+    @Override
     public void setPhysicsLocation(Vector3f pos){
         vehicle.setPhysicsLocation(pos);
-    }
-    
-    public abstract void update();
-    
-    public static void updateAll(){
-        for(Robot robot : robots){
-            robot.update();
-        }
     }
     
     private float lastTurn = 0;

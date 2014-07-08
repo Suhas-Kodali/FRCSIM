@@ -158,7 +158,6 @@ public class Field {
         
         number = (int)num;
         
-        System.out.println(number);
         
         for(int i = 0; i < 19; i++){
             
@@ -172,7 +171,6 @@ public class Field {
                 y + Main.in(6*12+10.75f) + Main.in(37)/2,
                 -x - width/2 + Main.in(20 + 3));
         sphereGeometry.addControl(sphereControl);
-        System.out.println(sphereGeometry.getLocalTranslation());
         rootNode.attachChild(sphereGeometry);
         space.add(sphereGeometry);
         
@@ -184,7 +182,6 @@ public class Field {
                 -y + Main.in(6*12+10.75f) + Main.in(37)/2,
                 -x - width/2 + Main.in(20 + 3));
         sphereGeometry.addControl(sphereControl);
-        System.out.println(sphereGeometry.getLocalTranslation());
         rootNode.attachChild(sphereGeometry);
         space.add(sphereGeometry);
         
@@ -196,7 +193,6 @@ public class Field {
                 y + Main.in(6*12+10.75f) + Main.in(37)/2,
                 x + width/2 - Main.in(20 + 3));
         sphereGeometry.addControl(sphereControl);
-        System.out.println(sphereGeometry.getLocalTranslation());
         rootNode.attachChild(sphereGeometry);
         space.add(sphereGeometry);
         
@@ -208,7 +204,6 @@ public class Field {
                 -y + Main.in(6*12+10.75f) + Main.in(37)/2,
                 x + width/2 - Main.in(20 + 3));
         sphereGeometry.addControl(sphereControl);
-        System.out.println(sphereGeometry.getLocalTranslation());
         rootNode.attachChild(sphereGeometry);
         space.add(sphereGeometry);
         
@@ -233,7 +228,6 @@ public class Field {
     
     public void update(){
         
-        System.out.println(eastNorthGhost.getOverlappingCount());
         
         for(int i = 0; i < Ball.balls.size(); i++){
                 

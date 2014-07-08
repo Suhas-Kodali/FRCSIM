@@ -3,7 +3,6 @@ package org.frogforce503.FRCSIM;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -74,9 +73,9 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         
-        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, Player.KeyMapping.std, Vector3f.ZERO);
-        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, Player.KeyMapping.wasd, new Vector3f(1,0,1));
-        
+        new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
+        new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
+        //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1));
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
@@ -120,7 +119,7 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleUpdate(float tpf) {
-        Player.updateAll();
+        AbstractRobot.updateAll();
         Ball.updateAll();
         field.update();
         scene.update();
