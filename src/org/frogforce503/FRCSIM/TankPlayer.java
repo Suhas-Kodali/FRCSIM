@@ -8,15 +8,15 @@ import com.jme3.scene.Node;
  *
  * @author Bryce Paputa
  */
-public class Player extends Robot{
+public class TankPlayer extends TankRobot{
     
-    public Player(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance, KeyMapping keyMapping, Vector3f pos){
+    public TankPlayer(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance, TankKeyMapping keyMapping, Vector3f pos){
         super(rootNode, physicsSpace, alliance);
         setKeyMapping(keyMapping);
         setPhysicsLocation(pos);
     }
     
-    private KeyMapping keyMapping = KeyMapping.NULL;
+    private TankKeyMapping keyMapping = TankKeyMapping.NULL;
     
     @Override
     public void update() {
@@ -27,9 +27,9 @@ public class Player extends Robot{
         super.update(cup, cdown, cleft, cright);
     }
     
-    public static class KeyMapping{
+    public static class TankKeyMapping{
         public final String up, down, left, right, load, shoot, inbound;
-        public KeyMapping(String up, String down, String left, String right, String load, String shoot, String inbound){
+        public TankKeyMapping(String up, String down, String left, String right, String load, String shoot, String inbound){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -38,18 +38,18 @@ public class Player extends Robot{
             this.shoot = shoot;
             this.inbound = inbound;
         }
-        public final static KeyMapping std = new KeyMapping("up", "down", "left", "right", "pgdwn", "enter", "p");
-        public final static KeyMapping wasd = new KeyMapping("w", "s", "a", "d", "r", "space", "i");
-        public final static KeyMapping NULL = new KeyMapping("", "", "", "", "", "", "");
+        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgdwn", "enter", "p");
+        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "r", "space", "i");
+        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "", "", "", "");
     }
     
-    public void setKeyMapping(KeyMapping src){
-        if(keyMapping != KeyMapping.NULL){
+    public void setKeyMapping(TankKeyMapping src){
+        if(keyMapping != TankKeyMapping.NULL){
             Main.InputManager.removeListener(keyMapping.load);
             Main.InputManager.removeListener(keyMapping.shoot);
         }
         keyMapping = src;
-        if(keyMapping != KeyMapping.NULL){
+        if(keyMapping != TankKeyMapping.NULL){
             Main.InputManager.addListener(keyMapping.load, toggleIntake);
             Main.InputManager.addListener(keyMapping.shoot, shoot);
         }

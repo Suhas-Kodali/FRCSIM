@@ -74,8 +74,8 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         setupKeys();
         
-        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, Player.KeyMapping.std, Vector3f.ZERO);
-        new Player(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, Player.KeyMapping.wasd, new Vector3f(1,0,1));
+        new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
+        new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
@@ -120,7 +120,7 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleUpdate(float tpf) {
-        Player.updateAll();
+        TankPlayer.updateAll();
         Ball.updateAll();
         field.update();
         scene.update();
