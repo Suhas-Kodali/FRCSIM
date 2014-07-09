@@ -22,7 +22,7 @@ import static org.frogforce503.FRCSIM.Main.in;
  *
  * @author Bryce Paputa
  */
-public abstract class TankRobot {
+public abstract class TankRobot extends AbstractRobot{
     private VehicleControl vehicle;
     private final float accelerationForce = 175f;
     private final float turningForce = 100f;
@@ -155,9 +155,9 @@ public abstract class TankRobot {
 
         space.add(vehicle);
         vehicle.setPhysicsLocation(alliance.position[0]);
-        robots.add(this);
     }
     
+    @Override
     public void setPhysicsLocation(Vector3f pos){
         vehicle.setPhysicsLocation(pos);
     }

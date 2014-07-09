@@ -166,7 +166,6 @@ public class Field {
         
         number = (int)num;
         
-        System.out.println(number);
         
         for(int i = 0; i < 19; i++){
             
