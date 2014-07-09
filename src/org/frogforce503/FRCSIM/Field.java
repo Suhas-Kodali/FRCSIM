@@ -14,6 +14,9 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -33,6 +36,10 @@ public class Field {
     public final GhostControl eastGhost, eastGoalGhost, eastNorthGhost; 
     public static Integer score = 0;
     private final Vector3f humanPlayer = new Vector3f(length/2 - Main.in(60), Main.in(36), width/2 + Main.in(28));
+    private boolean isScoring = false;
+    private boolean isWaiting = false;
+    private ArrayList<Ball> outOfBoundsBalls = new ArrayList<Ball>(2);
+    
     
     public Field(Node rootNode, AssetManager assetManager, PhysicsSpace space) {
         AmbientLight ambient = new AmbientLight();
@@ -212,7 +219,6 @@ public class Field {
     }
     
     
-    int wait = 0;
     
     public Vector3f getOutsideBallLocation(){
         for(int i = 0; i < Ball.balls.size(); i++){
@@ -230,35 +236,48 @@ public class Field {
         
         
         for(int i = 0; i < Ball.balls.size(); i++){
-                
-                for(int j = 0; j < eastGhost.getOverlappingObjects().size(); j++){
-                    if(eastGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(humanPlayer);
-                        Ball.balls.get(i).getRigidBodyControl().setAngularVelocity(Vector3f.ZERO);
-                        Ball.balls.get(i).getRigidBodyControl().setLinearVelocity(Vector3f.ZERO);
-                        wait = 0;
-                    }
-                }
-                
-                for(int j = 0; j < eastNorthGhost.getOverlappingObjects().size(); j++){
-                    if(eastNorthGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        Ball.balls.get(i).getRigidBodyControl().setPhysicsLocation(humanPlayer);
-                        Ball.balls.get(i).getRigidBodyControl().setAngularVelocity(Vector3f.ZERO);
-                        Ball.balls.get(i).getRigidBodyControl().setLinearVelocity(Vector3f.ZERO);
-                        wait = 0;
-                    }
-                }
-                
-                for(int j = 0; j < eastGoalGhost.getOverlappingObjects().size(); j++){
-                    if(eastGoalGhost.getOverlapping(j) == Ball.balls.get(i).getRigidBodyControl()){
-                        if(wait == 0){
-                            System.out.println("score");
-                            score = score + 1;
-                            Main.scene.updateVariables();
+                for(int j = eastGhost.getOverlappingObjects().size()-1; j >=0; j--){
+                    if(eastGhost.getOverlapping(j).getUserObject() instanceof Ball){
+                        Ball ball = ((Ball) eastGhost.getOverlapping(j).getUserObject());
+                        if(outOfBoundsBalls.size() == 1){
+                            if(!outOfBoundsBalls.contains(ball) && outOfBoundsBalls.get(0).alliance != ball.alliance ){
+                                outOfBoundsBalls.add(ball);
+                            }
+                        }else if(outOfBoundsBalls.size() == 0){
+                            outOfBoundsBalls.add(ball);
+                        }else{
+                            ball.getRigidBodyControl().destroy();
                         }
-                        
-                        wait = wait + 1;
-                   }
+                    }
+               
+                
+                }
+                for(int j = eastNorthGhost.getOverlappingObjects().size()-1; j >=0; j--){
+                    if(eastNorthGhost.getOverlapping(j).getUserObject() instanceof Ball){
+                        Ball ball = ((Ball) eastNorthGhost.getOverlapping(j).getUserObject());
+                        if(outOfBoundsBalls.size() == 1){
+                            if(!outOfBoundsBalls.contains(ball) && outOfBoundsBalls.get(0).alliance != ball.alliance ){
+                                outOfBoundsBalls.add(ball);
+                            }
+                        }else if(outOfBoundsBalls.size() == 0){
+                            outOfBoundsBalls.add(ball);
+                        }else{
+                            ball.getRigidBodyControl().destroy();
+                        }
+                    }
+               
+                
+                }
+                for(int j = eastGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
+                    if(eastGoalGhost.getOverlapping(j).getUserObject() instanceof Ball && !isWaiting){
+                            score = score + 1;
+                            isWaiting = true;
+                            Main.scene.updateVariables();
+                            (new Timer()).schedule(new TimerTask(){public void run(){isWaiting = false;}}, 700);
+                        }
+                }
+                for(Ball ball : outOfBoundsBalls){
+                    ball.getRigidBodyControl().setLinearVelocity(humanPlayer.subtract(ball.getRigidBodyControl().getPhysicsLocation()));
                 }
     }
     }
