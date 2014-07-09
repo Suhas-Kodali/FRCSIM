@@ -44,8 +44,8 @@ public class SwervePlayer extends SwerveRobot{
     SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL;
     
     public static class SwerveKeyMapping{
-        public final String up, down, left, right, rotateCCW, rotateCW, load;
-        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load){
+        public final String up, down, left, right, rotateCCW, rotateCW, load, shoot;
+        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load, String shoot){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -53,21 +53,22 @@ public class SwervePlayer extends SwerveRobot{
             this.rotateCCW = rotateCCW;
             this.rotateCW = rotateCW;
             this.load = load;
+            this.shoot = shoot;
         }
-        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r");
-        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r");
-        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "");
+        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r", "space");
+        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space");
+        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "");
     }
     
     public void setKeyMapping(SwerveKeyMapping src){
         if(keyMapping != SwerveKeyMapping.NULL){
             Main.InputManager.removeListener(keyMapping.load);
-        //    Main.InputManager.removeListener(keyMapping.shoot);
+            Main.InputManager.removeListener(keyMapping.shoot);
         }
         keyMapping = src;
         if(keyMapping != SwerveKeyMapping.NULL){
             Main.InputManager.addListener(keyMapping.load, intake.toggle);
-        //    Main.InputManager.addListener(keyMapping.shoot, shoot);
+            Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
         }
     }
     

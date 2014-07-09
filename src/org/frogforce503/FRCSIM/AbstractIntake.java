@@ -6,9 +6,14 @@ package org.frogforce503.FRCSIM;
  */
 public abstract class AbstractIntake {
     public abstract Ball getHeldBall();
+    public abstract Ball getShootingBall();
     
     public boolean hasBall(){
         return getHeldBall() != null;
+    }
+    
+    public boolean readyToShoot(){
+        return getShootingBall() != null;
     }
     
     private boolean isShooting = false;

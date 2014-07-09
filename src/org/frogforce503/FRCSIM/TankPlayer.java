@@ -51,7 +51,7 @@ public class TankPlayer extends TankRobot{
         keyMapping = src;
         if(keyMapping != TankKeyMapping.NULL){
             Main.InputManager.addListener(keyMapping.load, intake.toggle);
-            Main.InputManager.addListener(keyMapping.shoot, shoot);
+            Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
         }
     }
 }

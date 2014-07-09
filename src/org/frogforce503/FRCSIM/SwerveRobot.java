@@ -34,11 +34,12 @@ public abstract class SwerveRobot extends AbstractRobot{
     private final Node vehicleNode;
     private final VehicleControl vehicle;
     private final float frictionForce = 20f;
-    private float maxTurn=8;
-    private float turnForce=300;
-    private float maxSpeed=8;
-    private float speedForce=400;
+    private float maxTurn=7;
+    private float turnForce=500;
+    private float maxSpeed=7;
+    private float speedForce=500;
     protected BasicIntake intake;
+    protected BasicShooter shooter;
     public SwerveRobot(Node rootNode, PhysicsSpace space, Alliance alliance){
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
@@ -89,7 +90,7 @@ public abstract class SwerveRobot extends AbstractRobot{
         vehicleNode=new Node("vehicleNode");
         vehicle = new VehicleControl(collisionShape, 400);
         intake = new BasicIntake(chassisNode, space, vehicle);
-        intake.extend();
+        shooter = new BasicShooter(intake, vehicle);
         vehicleNode.attachChild(chassisNode);
         vehicleNode.addControl(vehicle);
         
@@ -186,7 +187,6 @@ public abstract class SwerveRobot extends AbstractRobot{
     void updateFC(float FWR, float STR, float omega) {
         Vector2f forwardDirectionProjection = new Vector2f(vehicle.getForwardVector(null).x, vehicle.getForwardVector(null).z);
         float angleFromX = forwardDirectionProjection.getAngle();
-        System.out.println(angleFromX);
         Vector2f command = new Vector2f(FWR, STR);
         command.rotateAroundOrigin(angleFromX+FastMath.HALF_PI, true);
         updateRC(command.x, command.y, omega);

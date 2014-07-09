@@ -31,7 +31,8 @@ public abstract class TankRobot extends AbstractRobot{
     private final Alliance alliance;
     private Node chassisNode, vehicleNode;
     private CollisionShape collisionShape;
-    protected BasicIntake intake;
+    protected AbstractIntake intake;
+    protected AbstractShooter shooter;
     
     public TankRobot(Node rootNode, PhysicsSpace space, Alliance alliance) {
         chassisNode = new Node("chassis Node");
@@ -53,6 +54,7 @@ public abstract class TankRobot extends AbstractRobot{
         vehicleNode.attachChild(chassisNode);
         vehicle = new VehicleControl(collisionShape, 400);
         intake = new BasicIntake(chassisNode, space, vehicle);
+        shooter = new BasicShooter(intake, vehicle);
         vehicleNode.addControl(vehicle);
         
         //setting suspension values for wheels, this can be a bit tricky
@@ -155,24 +157,6 @@ public abstract class TankRobot extends AbstractRobot{
         }
         
         intake.update();
-    }
-    
-    private boolean isShooting = false;
-    public static final int shootLength = 1000;
-    public static final int shootForce = 12;
-    public static final float shootElevation = .6f;
-    public Runnable shoot = new Runnable(){
-        public void run(){
-            shoot();
-        }
-    };
-    
-    public void shoot(){
-        if(intake.hasBall() && ! isShooting){
-            intake.getHeldBall().getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null)).add(new Vector3f(0, shootElevation, 0)).mult(shootForce).add(vehicle.getLinearVelocity()));
-            intake.preShot();
-            isShooting = true;
-            (new Timer()).schedule(new TimerTask(){public void run(){isShooting = false; intake.postShot();}}, shootLength);
-        }
+        shooter.update();
     }
 }

@@ -24,6 +24,7 @@ public class BasicIntake extends AbstractIntake{
     private final GhostControl holdGhost;
     private final VehicleControl vehicle;
     private Ball heldBall;
+    private Ball shootingBall;
     private ArrayList<Ball> pulledBalls = new ArrayList<Ball>(6);
     
     public BasicIntake(Node chassisNode, PhysicsSpace space, VehicleControl vehicle){
@@ -67,10 +68,22 @@ public class BasicIntake extends AbstractIntake{
     @Override
     public void preShot(){
         super.preShot();
+        shootingBall = heldBall;
         heldBall = null;
         if(pulledBalls.contains(heldBall)){
             pulledBalls.remove(heldBall);
         } 
+    }
+    
+    @Override
+    public void postShot(){
+        super.postShot();
+        shootingBall = null;
+    }
+    
+    @Override
+    public Ball getShootingBall(){
+        return shootingBall;
     }
     
     @Override
