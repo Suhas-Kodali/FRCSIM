@@ -3,12 +3,32 @@ package org.frogforce503.FRCSIM;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import java.util.EnumMap;
 
 /**
  *
  * @author Bryce
  */
-public class SwervePlayer extends SwerveRobot{
+public class SwervePlayer extends AbstractControl{
+    private SwerveDrivetrain drivetrain;
+    private AbstractIntake intake;
+    private AbstractShooter shooter;
+
+    @Override
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {
+        if(subsystems.containsKey(SubsystemType.Drivetrain) && subsystems.containsKey(SubsystemType.Intake) && subsystems.containsKey(SubsystemType.Shooter)){
+            if(subsystems.get(SubsystemType.Drivetrain) instanceof SwerveDrivetrain){
+                this.drivetrain = (SwerveDrivetrain) subsystems.get(SubsystemType.Drivetrain);
+                this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
+                this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
+            } else {
+                throw new Error();
+            }
+        } else {
+            throw new Error();
+        }
+        setKeyMapping(tempMapping);
+    }
     
     public static enum SwerveType{
         FieldCentric(), RobotCentric();
@@ -16,10 +36,8 @@ public class SwervePlayer extends SwerveRobot{
     
     private SwerveType type;
     
-    public SwervePlayer(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance, SwervePlayer.SwerveKeyMapping keyMapping, Vector3f pos, SwerveType type){
-        super(rootNode, physicsSpace, alliance);
-        setKeyMapping(keyMapping);
-        //setPhysicsLocation(pos);
+    public SwervePlayer(SwerveKeyMapping keyMapping, SwerveType type){
+        tempMapping = keyMapping;
         this.type = type;
     }
     
@@ -30,18 +48,14 @@ public class SwervePlayer extends SwerveRobot{
                 omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
         switch(type){
             case FieldCentric:
-                super.updateFC(FWR, STR, omega);
+                drivetrain.updateFC(FWR, STR, omega);
                 break;
             case RobotCentric:
-                super.updateRC(FWR, STR, omega);
+                drivetrain.updateRC(FWR, STR, omega);
         }
     }
-
-    @Override
-    public void setPhysicsLocation(Vector3f pos) {
-    }
     
-    SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL;
+    SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL, tempMapping;
     
     public static class SwerveKeyMapping{
         public final String up, down, left, right, rotateCCW, rotateCW, load, shoot;

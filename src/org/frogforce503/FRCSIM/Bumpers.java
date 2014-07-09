@@ -9,31 +9,42 @@ import com.jme3.scene.shape.Box;
  *
  * @author Bryce Paputa
  */
-public class Bumper {
+public class Bumpers {
+    private final Geometry frontGeometry;
+    private final Geometry leftGeometry;
+    private final Geometry backGeometry;
+    private final Geometry rightGeometry;
     
-    public Bumper(Node chassisNode, float width, float length, float height, Alliance alliance){
+    public Bumpers(Node chassisNode, float width, float length, float height){
         Node bumperNode = new Node("Bumpers");
         
         Box frontBox = new Box(new Vector3f(length/2+Main.in(3.5f), height, width/2+.001f), new Vector3f(-length/2-Main.in(3.5f), height+Main.in(5), width/2+Main.in(3.5f)));
-        Geometry frontGeometry = new Geometry("Bumper Front", frontBox);
-        frontGeometry.setMaterial(alliance.material);
+        frontGeometry = new Geometry("Bumper Front", frontBox);
+        frontGeometry.setMaterial(Main.black);
         bumperNode.attachChild(frontGeometry);
         
         Box leftBox = new Box(new Vector3f(length/2+.001f, height, width/2), new Vector3f(length/2+Main.in(3.5f), height+Main.in(5), -width/2));
-        Geometry leftGeometry = new Geometry("Bumper Left", leftBox);
-        leftGeometry.setMaterial(alliance.material);
+        leftGeometry = new Geometry("Bumper Left", leftBox);
+        leftGeometry.setMaterial(Main.black);
         bumperNode.attachChild(leftGeometry);
         
         Box backBox = new Box(new Vector3f(-length/2-Main.in(3.5f), height, -width/2-.001f), new Vector3f(length/2+Main.in(3.5f), height+Main.in(5), -width/2-Main.in(3.5f)));
-        Geometry backGeometry = new Geometry("Bumper Front", backBox);
-        backGeometry.setMaterial(alliance.material);
+        backGeometry = new Geometry("Bumper Front", backBox);
+        backGeometry.setMaterial(Main.black);
         bumperNode.attachChild(backGeometry);
         
         Box rightBox = new Box(new Vector3f(-length/2-.001f, height, -width/2), new Vector3f(-length/2-Main.in(3.5f), height+Main.in(5), +width/2));
-        Geometry rightGeometry = new Geometry("Bumper Left", rightBox);
-        rightGeometry.setMaterial(alliance.material);
+        rightGeometry = new Geometry("Bumper Left", rightBox);
+        rightGeometry.setMaterial(Main.black);
         bumperNode.attachChild(rightGeometry);
         
         chassisNode.attachChild(bumperNode);
+    }
+    
+    public void registerAlliance(Alliance alliance){
+        frontGeometry.setMaterial(alliance.material);
+        leftGeometry.setMaterial(alliance.material);
+        backGeometry.setMaterial(alliance.material);
+        rightGeometry.setMaterial(alliance.material);
     }
 }

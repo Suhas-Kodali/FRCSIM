@@ -3,17 +3,37 @@ package org.frogforce503.FRCSIM;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import java.util.EnumMap;
+import java.util.HashMap;
 
 /**
  *
  * @author Bryce Paputa
  */
-public class TankPlayer extends TankRobot{
+public class TankPlayer extends AbstractControl{
+    TankDrivetrain drivetrain;
+    private AbstractIntake intake;
+    private AbstractShooter shooter;
+    private TankKeyMapping tempMapping;
     
-    public TankPlayer(Node rootNode, PhysicsSpace physicsSpace, Alliance alliance, TankKeyMapping keyMapping, Vector3f pos){
-        super(rootNode, physicsSpace, alliance);
-        setKeyMapping(keyMapping);
-        setPhysicsLocation(pos);
+    public TankPlayer(TankKeyMapping keyMapping){
+        tempMapping = keyMapping;
+    }
+    
+    @Override
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems){
+        if(subsystems.containsKey(SubsystemType.Drivetrain) && subsystems.containsKey(SubsystemType.Intake) && subsystems.containsKey(SubsystemType.Shooter)){
+            if(subsystems.get(SubsystemType.Drivetrain) instanceof TankDrivetrain){
+                this.drivetrain = (TankDrivetrain) subsystems.get(SubsystemType.Drivetrain);
+                this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
+                this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
+            } else {
+                throw new Error();
+            }
+        } else {
+            throw new Error();
+        }
+        setKeyMapping(tempMapping);
     }
     
     private TankKeyMapping keyMapping = TankKeyMapping.NULL;
@@ -24,7 +44,7 @@ public class TankPlayer extends TankRobot{
                 cright = Main.InputManager.isPressedi(keyMapping.right),
                 cup = Main.InputManager.isPressedi(keyMapping.up),
                 cdown = Main.InputManager.isPressedi(keyMapping.down);
-        super.update(cup, cdown, cleft, cright);
+        drivetrain.update(cup, cdown, cleft, cright);
     }
     
     public static class TankKeyMapping{

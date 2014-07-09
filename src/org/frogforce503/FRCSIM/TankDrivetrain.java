@@ -14,6 +14,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import static org.frogforce503.FRCSIM.Main.in;
@@ -22,19 +24,20 @@ import static org.frogforce503.FRCSIM.Main.in;
  *
  * @author Bryce Paputa
  */
-public abstract class TankRobot extends AbstractRobot{
+public class TankDrivetrain extends AbstractDrivetrain{
     protected VehicleControl vehicle;
     private final float accelerationForce = 175f;
     private final float turningForce = 100f;
     private final float frictionForce = 2f;
     private final float maxSpeed = 17;
-    private final Alliance alliance;
+    private Alliance alliance;
     private Node chassisNode, vehicleNode;
     private CollisionShape collisionShape;
     protected AbstractIntake intake;
     protected AbstractShooter shooter;
+    private Bumpers bumpers;
     
-    public TankRobot(Node rootNode, PhysicsSpace space, Alliance alliance) {
+    public TankDrivetrain() {
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
@@ -43,18 +46,13 @@ public abstract class TankRobot extends AbstractRobot{
         chassisNode.attachChild(chassisGeometry);
         
         
-        new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
+        bumpers = new Bumpers(chassisNode, Main.in(28), Main.in(28), Main.in(2));
         
         collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
-        
-        this.alliance = alliance;
-
         //create vehicle node
         vehicleNode=new Node("vehicleNode");
         vehicleNode.attachChild(chassisNode);
         vehicle = new VehicleControl(collisionShape, 400);
-        intake = new BasicIntake(chassisNode, space, vehicle);
-        shooter = new BasicShooter(intake, vehicle);
         vehicleNode.addControl(vehicle);
         
         //setting suspension values for wheels, this can be a bit tricky
@@ -116,16 +114,14 @@ public abstract class TankRobot extends AbstractRobot{
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
         }            
-        
-        rootNode.attachChild(vehicleNode);
-
-        space.add(vehicle);
-        vehicle.setPhysicsLocation(alliance.position[0]);
     }
     
     @Override
-    public void setPhysicsLocation(Vector3f pos){
-        vehicle.setPhysicsLocation(pos);
+    public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance){
+        rootNode.attachChild(vehicleNode);
+        space.add(vehicle);
+        this.alliance = alliance;
+        bumpers.registerAlliance(alliance);
     }
     
     private float lastTurn = 0;
@@ -155,8 +151,21 @@ public abstract class TankRobot extends AbstractRobot{
         if(vehicle.getLinearVelocity().length()<.1){
             vehicle.brake(frictionForce*5);
         }
-        
-        intake.update();
-        shooter.update();
     }
+
+    @Override
+    public VehicleControl getVehicleControl() {
+        return vehicle;
+    }
+    
+    @Override
+    public Node getVehicleNode() {
+        return vehicleNode;
+    }
+
+    @Override
+    public void update() {}
+
+    @Override
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {}
 }

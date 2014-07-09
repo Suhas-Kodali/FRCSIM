@@ -1,7 +1,9 @@
 package org.frogforce503.FRCSIM;
 
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.VehicleControl;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 
 /**
  *
@@ -10,10 +12,6 @@ import com.jme3.math.Vector3f;
 public class BasicShooter extends AbstractShooter{
     public static final int shootForce = 12;
     public static final float shootElevation = .6f;
-
-    public BasicShooter(AbstractIntake intake, VehicleControl vehicle){
-        super(intake, vehicle);
-    }
     
     @Override
     public void update() {
@@ -28,5 +26,9 @@ public class BasicShooter extends AbstractShooter{
     @Override
     public void postShot(){
         super.postShot();
+    }
+
+    @Override
+    public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance) {
     }
 }

@@ -16,21 +16,17 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import java.util.EnumMap;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
  *
  * @author Bryce
  */
-public abstract class SwerveRobot extends AbstractRobot{
+public class SwerveDrivetrain extends AbstractDrivetrain{
     private final Node chassisNode;
-    private final Geometry intakeGeometry;
-    private final Geometry intakeGeometry2;
-    private final GhostControl pullGhost;
-    private final Node intakeNode;
-    private final GhostControl holdGhost;
     private final CollisionShape collisionShape;
-    private final Alliance alliance;
+    private Alliance alliance;
     private final Node vehicleNode;
     private final VehicleControl vehicle;
     private final float frictionForce = 20f;
@@ -38,59 +34,22 @@ public abstract class SwerveRobot extends AbstractRobot{
     private float turnForce=500;
     private float maxSpeed=7;
     private float speedForce=500;
-    protected BasicIntake intake;
-    protected BasicShooter shooter;
-    public SwerveRobot(Node rootNode, PhysicsSpace space, Alliance alliance){
+    private Bumpers bumpers;
+    public SwerveDrivetrain(){
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
         chassisGeometry.setMaterial(Main.cage);
         chassisGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
-        Box intakeBox = new Box(in(1), in(12), in(6));
-        intakeGeometry = new Geometry("Intake", intakeBox);
-        intakeGeometry.setLocalTranslation(in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
-        intakeGeometry.setMaterial(Main.green);
         
-        
-        //chassisNode.attachChild(intakeGeometry);
-        intakeGeometry2 = new Geometry("Intake", intakeBox);
-        intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
-        intakeGeometry2.setMaterial(Main.green);
-        //chassisNode.attachChild(intakeGeometry2);
-        
-        //having incredle trouble changing the size of these ghostcontrols
-        
-        pullGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(4),in(3 + 6 + 5)/2,0)));  // a box-shaped ghost
-        //Node ghostNode = new Node("a ghost-controlled thing");
-        //ghostNode.addControl(ghost);
-        intakeNode = new Node("node");
-        intakeNode.addControl(pullGhost);
-        
-        //intakeNode.attachChild(intakeGeometry);
-        //intakeNode.attachChild(intakeGeometry2);
-        chassisNode.attachChild(intakeNode);
-        space.add(pullGhost);
-        
-        holdGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(0f)/2,in(18)/2,in(0f)/2)));  // a box-shaped ghost
-        Node holdGhostNode = new Node("a ghost-controlled thing");
-        holdGhostNode.addControl(holdGhost);
-        holdGhostNode.setLocalTranslation(new Vector3f(0,in(18)/2,0));
-        space.add(holdGhost);
-        
-        chassisNode.attachChild(holdGhostNode);
-        
-        
-        new Bumper(chassisNode, Main.in(28), Main.in(28), Main.in(2), alliance);
+        bumpers = new Bumpers(chassisNode, Main.in(28), Main.in(28), Main.in(2));
         
         collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
         
-        this.alliance = alliance;
         //create vehicle node
         vehicleNode=new Node("vehicleNode");
         vehicle = new VehicleControl(collisionShape, 400);
-        intake = new BasicIntake(chassisNode, space, vehicle);
-        shooter = new BasicShooter(intake, vehicle);
         vehicleNode.attachChild(chassisNode);
         vehicleNode.addControl(vehicle);
         
@@ -144,12 +103,14 @@ public abstract class SwerveRobot extends AbstractRobot{
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
         }
-        
+    }
+    
+    @Override
+    public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance){
         rootNode.attachChild(vehicleNode);
-
         space.add(vehicle);
-        
-        vehicle.setPhysicsLocation(alliance.position[0]);
+        this.alliance = alliance;
+        bumpers.registerAlliance(alliance);
     }
     
     protected void updateRC(float fwr, float str, float omega){
@@ -180,8 +141,6 @@ public abstract class SwerveRobot extends AbstractRobot{
         if(vehicle.getLinearVelocity().length()<.1){
             vehicle.brake(frictionForce*5);
         }
-        
-        intake.update();
     }
 
     void updateFC(float FWR, float STR, float omega) {
@@ -191,4 +150,20 @@ public abstract class SwerveRobot extends AbstractRobot{
         command.rotateAroundOrigin(angleFromX+FastMath.HALF_PI, true);
         updateRC(command.x, command.y, omega);
     }
+
+    @Override
+    public VehicleControl getVehicleControl() {
+        return vehicle;
+    }
+
+    @Override
+    public Node getVehicleNode() {
+        return vehicleNode;
+    }
+
+    @Override
+    public void update() {}
+
+    @Override
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {}
 }

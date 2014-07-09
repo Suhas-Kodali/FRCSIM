@@ -1,20 +1,33 @@
 package org.frogforce503.FRCSIM;
 
 import com.jme3.bullet.control.VehicleControl;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
 
 /**
  *
  * @author Bryce
  */
-public abstract class AbstractShooter {
-    protected final AbstractIntake intake;
-    protected final VehicleControl vehicle;
+public abstract class AbstractShooter extends AbstractSubsystem {
+    protected AbstractIntake intake;
+    protected VehicleControl vehicle;
+    protected AbstractDrivetrain drivetrain;
     
-    public AbstractShooter(AbstractIntake intake, VehicleControl vehicle){
-        this.intake = intake;
-        this.vehicle = vehicle;
+    @Override
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems){
+        if(subsystems.containsKey(SubsystemType.Intake)){
+            this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
+        } else {
+            throw new Error();
+        }
+        if(subsystems.containsKey(SubsystemType.Drivetrain)){
+            this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
+        } else {
+            throw new Error();
+        }
     }
     
     public abstract void update();
@@ -43,5 +56,9 @@ public abstract class AbstractShooter {
                 preShot();
             }
         }
+    }
+    
+    public SubsystemType getType(){
+        return SubsystemType.Shooter;
     }
 }

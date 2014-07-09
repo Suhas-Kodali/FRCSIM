@@ -14,6 +14,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 
 /**
  *
@@ -76,7 +77,13 @@ public class Main extends SimpleApplication implements ActionListener {
         
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
-        new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
+        //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
+        AbstractSubsystem drivetrain = new SwerveDrivetrain(), 
+                shooter = new BasicShooter(), 
+                intake = new BasicIntake(), 
+                control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.std, SwerveType.FieldCentric);
+        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, shooter, intake, control};
+        new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(0,0,0));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
@@ -124,7 +131,7 @@ public class Main extends SimpleApplication implements ActionListener {
     @Override
     public void simpleUpdate(float tpf) {
         if(isStarted){
-            AbstractRobot.updateAll();
+            Robot.updateAll();
             Ball.updateAll();
             field.update();
             scene.update();

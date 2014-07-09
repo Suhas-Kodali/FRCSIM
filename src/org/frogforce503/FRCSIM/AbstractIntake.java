@@ -1,10 +1,15 @@
 package org.frogforce503.FRCSIM;
 
+import com.jme3.bullet.control.VehicleControl;
+import java.util.EnumMap;
+
 /**
  *
  * @author Bryce
  */
-public abstract class AbstractIntake {
+public abstract class AbstractIntake extends AbstractSubsystem{
+    protected VehicleControl vehicle;
+    
     public abstract Ball getHeldBall();
     public abstract Ball getShootingBall();
     
@@ -43,4 +48,16 @@ public abstract class AbstractIntake {
             }
         }        
     };
+
+    @Override
+    public SubsystemType getType() {
+        return SubsystemType.Intake;
+    }
+    
+    @Override
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {
+        if(subsystems.containsKey(SubsystemType.Drivetrain)){
+            this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
+        }
+    }
 }

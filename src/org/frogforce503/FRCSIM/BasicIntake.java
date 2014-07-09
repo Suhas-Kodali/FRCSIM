@@ -10,6 +10,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
@@ -22,12 +24,12 @@ public class BasicIntake extends AbstractIntake{
     private final GhostControl pullGhost;
     private final Node intakeNode;
     private final GhostControl holdGhost;
-    private final VehicleControl vehicle;
     private Ball heldBall;
     private Ball shootingBall;
     private ArrayList<Ball> pulledBalls = new ArrayList<Ball>(6);
+    private final Node holdGhostNode;
     
-    public BasicIntake(Node chassisNode, PhysicsSpace space, VehicleControl vehicle){
+    public BasicIntake(){
         
         Box intakeBox = new Box(in(1), in(12), in(6));
         intakeGeometry = new Geometry("Intake", intakeBox);
@@ -35,11 +37,9 @@ public class BasicIntake extends AbstractIntake{
         intakeGeometry.setMaterial(Main.green);
         
         
-        //chassisNode.attachChild(intakeGeometry);
         intakeGeometry2 = new Geometry("Intake", intakeBox);
         intakeGeometry2.setLocalTranslation(-in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
         intakeGeometry2.setMaterial(Main.green);
-        //chassisNode.attachChild(intakeGeometry2);
         
         //having incredle trouble changing the size of these ghostcontrols
         
@@ -51,18 +51,19 @@ public class BasicIntake extends AbstractIntake{
         
         intakeNode.attachChild(intakeGeometry);
         intakeNode.attachChild(intakeGeometry2);
-        chassisNode.attachChild(intakeNode);
-        space.add(pullGhost);
         
         holdGhost = new GhostControl(new BoxCollisionShape(new Vector3f(in(0f)/2,in(18)/2,in(0f)/2)));  // a box-shaped ghost
-        Node holdGhostNode = new Node("a ghost-controlled thing");
+        holdGhostNode = new Node("a ghost-controlled thing");
         holdGhostNode.addControl(holdGhost);
         holdGhostNode.setLocalTranslation(new Vector3f(0,in(18)/2,0));
+    }
+
+    @Override
+    public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance) {
+        rootNode.attachChild(intakeNode);
+        space.add(pullGhost);
         space.add(holdGhost);
-        
-        chassisNode.attachChild(holdGhostNode);
-        
-        this.vehicle = vehicle;
+        rootNode.attachChild(holdGhostNode);
     }
 
     @Override
