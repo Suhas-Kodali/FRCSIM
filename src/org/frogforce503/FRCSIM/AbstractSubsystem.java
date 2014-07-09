@@ -16,6 +16,6 @@ public abstract class AbstractSubsystem {
     public abstract void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance);
     
     public static enum SubsystemType {
-        Drivetrain(), Shooter(), Intake(), Controller();
+        Drivetrain(), Shooter(), Intake(), Controller(), GoaliePole();
     }
 }

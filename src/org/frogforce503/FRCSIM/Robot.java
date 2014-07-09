@@ -13,9 +13,10 @@ import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
  * @author Bryce
  */
 public class Robot{
-    private EnumMap<SubsystemType, AbstractSubsystem> subsystems;
+    protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
     private Node robotNode;
     private static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
+    protected Alliance alliance;
     
     public static void updateAll(){
         for(Robot robot : robots){
@@ -47,6 +48,7 @@ public class Robot{
         rootNode.attachChild(robotNode);
         robotNode.addControl(new RigidBodyControl());
         setPhysicsLocation(pos);
+        this.alliance = alliance;
         robots.add(this);
     }
 
@@ -59,4 +61,33 @@ public class Robot{
     public final void setPhysicsLocation(Vector3f pos) {
         robotNode.getControl(RigidBodyControl.class).setPhysicsLocation(pos);
     }    
+    
+    public static class RobotPosition{
+        private final Vector3f pos;
+        private final Alliance alliance;
+        private final Vector3f forward;
+        public RobotPosition(Vector3f pos, Vector3f forward, Alliance alliance){
+            this.pos = pos;
+            this.forward = forward;
+            this.alliance = alliance;
+        }
+        
+        public RobotPosition(Robot robot){
+            pos = ((AbstractDrivetrain) robot.subsystems.get(SubsystemType.Drivetrain)).getVehicleControl().getPhysicsLocation();
+            forward = ((AbstractDrivetrain) robot.subsystems.get(SubsystemType.Drivetrain)).getVehicleControl().getForwardVector(null);
+            this.alliance = robot.alliance;
+        }
+        
+        public Vector3f getPosition(){
+            return pos;
+        }
+        
+        public Vector3f getForward(){
+            return forward;
+        }
+        
+        public Alliance getAlliance(){
+            return alliance;
+        }
+    }
 }
