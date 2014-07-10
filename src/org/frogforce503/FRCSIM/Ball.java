@@ -22,8 +22,10 @@ public class Ball {
     public static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public final int number;
     private static int count = 0;
+    PhysicsSpace space;
     
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
+        this.space = space;
         Sphere sphere = new Sphere(32, 32, Main.in(13));
         sphereGeometry = new Geometry("Sphere", sphere);
         sphereGeometry.setMaterial(alliance.material);
@@ -54,6 +56,11 @@ public class Ball {
     
     public Geometry getGeometry(){
         return this.sphereGeometry;
+    }
+    
+    public void destroy(){
+        getGeometry().removeFromParent();
+        space.remove(getGeometry());
     }
     
     @Override

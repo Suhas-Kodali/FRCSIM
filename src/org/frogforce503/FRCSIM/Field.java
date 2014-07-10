@@ -271,9 +271,7 @@ public class Field {
                         }
                         if(!inGhost){
                             outOfBoundsBalls.remove(ball);
-                            System.out.println("remove");
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
+                            ball.destroy();
                         }
                     }
                 }
@@ -295,9 +293,7 @@ public class Field {
                         }
                         if(!inGhost){
                             outOfBoundsBalls.remove(ball);
-                            System.out.println("remove");
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
+                            ball.destroy();
                         }
                         
                     }
@@ -323,9 +319,7 @@ public class Field {
                         }
                         if(!inGhost){
                             outOfBoundsBalls.remove(ball);
-                            System.out.println("remove");
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
+                            ball.destroy();
                         }
                         }
                     }
@@ -351,8 +345,7 @@ public class Field {
                         }
                         if(!inGhost){
                             outOfBoundsBalls.remove(ball);
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
+                            ball.destroy();
                         }
                     }
                
