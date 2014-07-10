@@ -54,7 +54,7 @@ public class Field {
         //rootNode.addLight(ambient);    
         PointLight lamp = new PointLight();
         lamp.setPosition(new Vector3f(0f, 40f, 0f));
-        lamp.setRadius(0);
+        lamp.setRadius(100);
         rootNode.addLight(lamp); 
         
         Box floorBox = new Box(140, 0.25f, 140);
@@ -413,4 +413,14 @@ public class Field {
                 
                 }
     }
+    
+    public Ball getOutOfBoundsBall(Alliance alliance){
+        for(Ball ball: outOfBoundsBalls){
+            if(ball.alliance == alliance){
+                return ball;
+            }
+        }
+        return null;
+    }
+    
 }

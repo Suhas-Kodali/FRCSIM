@@ -73,7 +73,8 @@ public class TankPlayer extends AbstractControl{
             if(shooter != null){
                 Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
             }
-            if(alliance == Main.field.blueHumanPlayer.alliance){
+            
+            if(drivetrain.alliance == Alliance.BLUE){
                 Main.InputManager.addListener(keyMapping.inbound, Main.field.blueHumanPlayer.action);
             }else{
                 Main.InputManager.addListener(keyMapping.inbound, Main.field.redHumanPlayer.action);
@@ -81,3 +82,4 @@ public class TankPlayer extends AbstractControl{
         }
     }
 }
+

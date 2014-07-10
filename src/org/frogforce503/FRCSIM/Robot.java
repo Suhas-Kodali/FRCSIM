@@ -15,7 +15,7 @@ import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
 public class Robot{
     protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
     private Node robotNode;
-    private static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
+    protected static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
     protected Alliance alliance;
     
     public static void updateAll(){
@@ -63,7 +63,7 @@ public class Robot{
         robotNode.getControl(RigidBodyControl.class).setPhysicsLocation(pos);
     }    
     
-    public ArrayList<RobotPosition> getRobotPositions(){
+    public static ArrayList<RobotPosition> getRobotPositions(){
         ArrayList<RobotPosition> positions = new ArrayList<RobotPosition>();
         for(Robot robot : robots){
             positions.add(new RobotPosition(robot));

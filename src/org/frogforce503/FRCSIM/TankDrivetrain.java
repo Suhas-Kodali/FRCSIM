@@ -24,7 +24,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
     private final float turningForce = 100f;
     private final float frictionForce = 2f;
     private final float maxSpeed = 17;
-    private Alliance alliance;
+    protected Alliance alliance;
     private Node chassisNode, vehicleNode;
     private CollisionShape collisionShape;
     protected AbstractIntake intake;
