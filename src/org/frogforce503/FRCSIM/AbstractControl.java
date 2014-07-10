@@ -9,6 +9,7 @@ import com.jme3.scene.Node;
  */
 public abstract class AbstractControl extends AbstractSubsystem{
     protected Alliance alliance;
+    
     public SubsystemType getType(){
         return SubsystemType.Controller;
     }

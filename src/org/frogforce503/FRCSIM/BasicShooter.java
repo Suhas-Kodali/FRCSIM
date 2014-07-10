@@ -20,7 +20,7 @@ public class BasicShooter extends AbstractShooter{
     @Override
     public void preShot(){
         super.preShot();
-        intake.getShootingBall().getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null)).add(new Vector3f(0, shootElevation, 0)).mult(shootForce).add(vehicle.getLinearVelocity()));
+        intake.getShootingBall().getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null).add(0, 0.6f, 0)).mult(new Vector3f(50f,50f,50f)));
     }
     
     @Override

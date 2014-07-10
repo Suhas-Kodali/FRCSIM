@@ -18,10 +18,10 @@ public class Ball {
     public final Alliance alliance;
     public Geometry sphereGeometry;
     private RigidBodyControl sphereControl;
-    public static final float drag = 1f/18f;
+    public static final float drag = 1f/3f;
     public static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public final int number;
-    private static int count=0;
+    private static int count = 0;
     
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
         Sphere sphere = new Sphere(32, 32, Main.in(13));
@@ -30,6 +30,7 @@ public class Ball {
         sphereControl = new RigidBodyControl(.907f);
         sphereGeometry.addControl(sphereControl);
         sphereControl.setUserObject(this);
+        sphereControl.setPhysicsLocation(new Vector3f(1, 0, 0));
         rootNode.attachChild(sphereGeometry);
         space.add(sphereGeometry);
         this.alliance = alliance;        

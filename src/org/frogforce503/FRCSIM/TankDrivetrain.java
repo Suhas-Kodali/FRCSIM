@@ -1,9 +1,7 @@
 package org.frogforce503.FRCSIM;
 
 import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.VehicleControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.math.FastMath;
@@ -13,11 +11,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
@@ -65,7 +59,6 @@ public class TankDrivetrain extends AbstractDrivetrain{
         vehicle.setSuspensionStiffness(stiffness);
         vehicle.setFrictionSlip(1.5f);
         vehicle.setMass(30);
-
         //Create four wheels and add them at their locations
         Vector3f wheelDirection = new Vector3f(0, -1, 0);
         Vector3f wheelAxle = new Vector3f(-1, 0, 0);
