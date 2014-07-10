@@ -1,10 +1,6 @@
 package org.frogforce503.FRCSIM;
 
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import java.util.EnumMap;
-import java.util.HashMap;
 
 /**
  *
@@ -67,11 +63,14 @@ public class TankPlayer extends AbstractControl{
         if(keyMapping != TankKeyMapping.NULL){
             Main.InputManager.removeListener(keyMapping.load);
             Main.InputManager.removeListener(keyMapping.shoot);
+            Main.InputManager.removeListener(keyMapping.inbound);
         }
         keyMapping = src;
         if(keyMapping != TankKeyMapping.NULL){
             Main.InputManager.addListener(keyMapping.load, intake.toggle);
             Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
+            Main.InputManager.addListener(keyMapping.inbound, Main.field.redHumanPlayer.action);
+            
         }
     }
 }

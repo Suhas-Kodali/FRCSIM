@@ -58,8 +58,8 @@ public class SwervePlayer extends AbstractControl{
     SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL, tempMapping;
     
     public static class SwerveKeyMapping{
-        public final String up, down, left, right, rotateCCW, rotateCW, load, shoot;
-        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load, String shoot){
+        public final String up, down, left, right, rotateCCW, rotateCW, load, shoot, inbound;
+        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load, String shoot, String inbound){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -68,21 +68,28 @@ public class SwervePlayer extends AbstractControl{
             this.rotateCW = rotateCW;
             this.load = load;
             this.shoot = shoot;
+            this.inbound = inbound;
         }
-        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r", "space");
-        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space");
-        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "");
+        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r", "space", "p");
+        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space", "i");
+        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "");
     }
     
     public void setKeyMapping(SwerveKeyMapping src){
         if(keyMapping != SwerveKeyMapping.NULL){
             Main.InputManager.removeListener(keyMapping.load);
             Main.InputManager.removeListener(keyMapping.shoot);
+            Main.InputManager.removeListener(keyMapping.inbound);
         }
         keyMapping = src;
         if(keyMapping != SwerveKeyMapping.NULL){
             Main.InputManager.addListener(keyMapping.load, intake.toggle);
             Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
+            if(alliance == Main.field.blueHumanPlayer.alliance){
+                Main.InputManager.addListener(keyMapping.inbound, Main.field.blueHumanPlayer.action);
+            }else{
+                Main.InputManager.addListener(keyMapping.inbound, Main.field.redHumanPlayer.action);
+            }
         }
     }
     

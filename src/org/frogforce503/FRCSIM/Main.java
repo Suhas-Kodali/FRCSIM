@@ -34,7 +34,7 @@ public class Main extends SimpleApplication implements ActionListener {
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
-        appSettings.setResolution(1280, 768);
+        //appSettings.setResolution(1280, 400);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
@@ -78,16 +78,16 @@ public class Main extends SimpleApplication implements ActionListener {
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
         //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
-        AbstractSubsystem drivetrain = new SwerveDrivetrain(), 
+        AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
-                control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.std, SwerveType.FieldCentric);
+                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, shooter, intake, control};
-        new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(0,0,0));
+        new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(0,0,0)).setPhysicsLocation(new Vector3f(0, 100, 0));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         
         cam.setLocation(new Vector3f(0,12,12));
         cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
