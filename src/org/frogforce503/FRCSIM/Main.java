@@ -82,7 +82,7 @@ public class Main extends SimpleApplication implements ActionListener {
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
                 control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.std, SwerveType.FieldCentric);
-        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, shooter, intake, control};
+        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(0,0,0));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);

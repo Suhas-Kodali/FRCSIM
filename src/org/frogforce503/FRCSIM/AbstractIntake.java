@@ -56,8 +56,6 @@ public abstract class AbstractIntake extends AbstractSubsystem{
     
     @Override
     public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {
-        if(subsystems.containsKey(SubsystemType.Drivetrain)){
-            this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
-        }
+        this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
     }
 }

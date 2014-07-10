@@ -27,13 +27,14 @@ public class Robot{
     public Robot(AbstractSubsystem[] subsystems, Node rootNode, PhysicsSpace space, Alliance alliance, Vector3f pos){
         this.subsystems = new EnumMap<SubsystemType, AbstractSubsystem>(SubsystemType.class);
         for(AbstractSubsystem subsystem : subsystems){
+            if(this.subsystems.containsKey(subsystem.getType())){
+                throw new IllegalArgumentException("Robot cannot have duplicate subsystems!\nDuplicate: " + subsystem);
+            }
             this.subsystems.put(subsystem.getType(), subsystem);
         }
         
-        try{
-            this.subsystems.get(SubsystemType.Drivetrain);
-        } catch (Exception e) {
-            throw new Error();
+        if(this.subsystems.get(SubsystemType.Drivetrain) == null) {
+            throw new IllegalArgumentException("Robot must have a drivetrain!");
         }
         
         robotNode = ((AbstractDrivetrain) this.subsystems.get(SubsystemType.Drivetrain)).getVehicleNode();
@@ -61,6 +62,14 @@ public class Robot{
     public final void setPhysicsLocation(Vector3f pos) {
         robotNode.getControl(RigidBodyControl.class).setPhysicsLocation(pos);
     }    
+    
+    public ArrayList<RobotPosition> getRobotPositions(){
+        ArrayList<RobotPosition> positions = new ArrayList<RobotPosition>();
+        for(Robot robot : robots){
+            positions.add(new RobotPosition(robot));
+        }
+        return positions;
+    }
     
     public static class RobotPosition{
         private final Vector3f pos;

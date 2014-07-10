@@ -21,13 +21,9 @@ public abstract class AbstractShooter extends AbstractSubsystem {
         if(subsystems.containsKey(SubsystemType.Intake)){
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
         } else {
-            throw new Error();
+            throw new IllegalArgumentException("Robots with shooters must have intakes!");
         }
-        if(subsystems.containsKey(SubsystemType.Drivetrain)){
-            this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
-        } else {
-            throw new Error();
-        }
+        this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
     }
     
     public abstract void update();

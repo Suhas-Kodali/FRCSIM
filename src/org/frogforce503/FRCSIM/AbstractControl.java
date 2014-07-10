@@ -14,6 +14,6 @@ public abstract class AbstractControl extends AbstractSubsystem{
     }
     
     public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance){
-    this.alliance = alliance;
+        this.alliance = alliance;
     }
 }

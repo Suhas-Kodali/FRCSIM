@@ -22,16 +22,12 @@ public class TankPlayer extends AbstractControl{
     
     @Override
     public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems){
-        if(subsystems.containsKey(SubsystemType.Drivetrain) && subsystems.containsKey(SubsystemType.Intake) && subsystems.containsKey(SubsystemType.Shooter)){
-            if(subsystems.get(SubsystemType.Drivetrain) instanceof TankDrivetrain){
-                this.drivetrain = (TankDrivetrain) subsystems.get(SubsystemType.Drivetrain);
-                this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
-                this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
-            } else {
-                throw new Error();
-            }
+        if(subsystems.get(SubsystemType.Drivetrain) instanceof TankDrivetrain){
+            this.drivetrain = (TankDrivetrain) subsystems.get(SubsystemType.Drivetrain);
+            this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
+            this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
         } else {
-            throw new Error();
+            throw new IllegalArgumentException("TankPlayer only controls TankDrivetrains");
         }
         setKeyMapping(tempMapping);
     }
@@ -65,13 +61,21 @@ public class TankPlayer extends AbstractControl{
     
     public void setKeyMapping(TankKeyMapping src){
         if(keyMapping != TankKeyMapping.NULL){
-            Main.InputManager.removeListener(keyMapping.load);
-            Main.InputManager.removeListener(keyMapping.shoot);
+            if(intake != null){
+                Main.InputManager.removeListener(keyMapping.load);
+            }
+            if(shooter != null){
+                Main.InputManager.removeListener(keyMapping.shoot);
+            }
         }
         keyMapping = src;
         if(keyMapping != TankKeyMapping.NULL){
-            Main.InputManager.addListener(keyMapping.load, intake.toggle);
-            Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
+            if(intake != null){
+                Main.InputManager.addListener(keyMapping.load, intake.toggle);
+            }
+            if(shooter != null){
+                Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
+            }
         }
     }
 }
