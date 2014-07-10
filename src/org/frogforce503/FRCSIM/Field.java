@@ -33,7 +33,7 @@ public class Field {
     
     public final static float width = Main.in(24*12+8);
     public final static float length = Main.in(54*12);
-    public final GhostControl eastGhost, eastGoalGhost, southGhost, northGhost, westGhost; 
+    public final GhostControl redSideGhost, redGoalGhost, southGhost, northGhost, westGhost; 
     public static Integer score = 0;
     private final Vector3f humanPlayer = new Vector3f(0, 0, 0);
     private boolean isScoring = false;
@@ -42,6 +42,7 @@ public class Field {
     public HumanPlayer redHumanPlayer = new HumanPlayer(Alliance.RED);
     public HumanPlayer blueHumanPlayer = new HumanPlayer(Alliance.BLUE);
     public ArrayList<Ball> outOfBoundsBalls = new ArrayList<Ball>(2);
+    public ArrayList<Ball> scoredBalls = new ArrayList<Ball>();
     private PhysicsSpace space;
     private Node rootNode;
     
@@ -126,7 +127,7 @@ public class Field {
         rootNode.attachChild(goal2Geometry);
         space.add(goal2Geometry);
         
-        eastGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f))));
+        redSideGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f))));
         //eastGhost.setPhysicsLocation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+10.75f + 6)/2, 0));
 //        Box test = new Box(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f));
 //        Geometry testG = new Geometry("Goal", test);
@@ -136,10 +137,10 @@ public class Field {
 //        rootNode.attachChild(testG);
 //        space.add(testG);
         Node eastGhostNode = new Node("a ghost-controlled thing");
-        eastGhostNode.addControl(eastGhost);
+        eastGhostNode.addControl(redSideGhost);
         eastGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(60), Main.in(37 + 6*12+10.75f + 6)/2, 0));
         rootNode.attachChild(eastGhostNode);
-        space.add(eastGhost);
+        space.add(redSideGhost);
         
         westGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f))));
         //eastGhost.setPhysicsLocation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+10.75f + 6)/2, 0));
@@ -172,7 +173,7 @@ public class Field {
         rootNode.attachChild(northGhostNode);
         space.add(northGhost);
         
-        eastGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
+        redGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
         
         Box test1 = new Box(Main.in(6)/2, Main.in(37)/2, width/2);
         Geometry testG1 = new Geometry("Goal", test1);
@@ -182,10 +183,10 @@ public class Field {
         rootNode.attachChild(testG1);
         //space.add(testG);
         Node eastGoalGhostNode = new Node("a thing");
-        eastGoalGhostNode.addControl(eastGoalGhost);
+        eastGoalGhostNode.addControl(redGoalGhost);
         eastGoalGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(18)/2, Main.in(37)/2  + Main.in(6*12+10.75f), 0));
         rootNode.attachChild(eastGoalGhostNode);
-        space.add(eastGoalGhost);
+        space.add(redGoalGhost);
         
         int number; 
                 
@@ -249,18 +250,29 @@ public class Field {
     }
     
     public void update(){
-                System.out.println(outOfBoundsBalls);
-                for(int j = eastGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                    if(eastGhost.getOverlapping(j).getUserObject() instanceof Ball && !isInbounding){
-                        Ball ball = ((Ball) eastGhost.getOverlapping(j).getUserObject());
+                for(int j = redSideGhost.getOverlappingObjects().size()-1; j >=0; j--){
+                    if(redSideGhost.getOverlapping(j).getUserObject() instanceof Ball && !isInbounding){
+                        Ball ball = ((Ball) redSideGhost.getOverlapping(j).getUserObject());
+                        if(scoredBalls.contains(ball)){
+                            scoredBalls.remove(ball);
+                        }
                         if(outOfBoundsBalls.size() == 1){
                             if(!outOfBoundsBalls.contains(ball) && outOfBoundsBalls.get(0).alliance != ball.alliance ){
                                 outOfBoundsBalls.add(ball);
                             }
                         }else if(outOfBoundsBalls.size() == 0){
                             outOfBoundsBalls.add(ball);
-                        }else{
-                            space.remove(ball.getRigidBodyControl());
+                        }
+                        boolean inGhost = false;
+                        for(Ball outBall: outOfBoundsBalls){
+                            if(outBall == ball){
+                                inGhost = true;
+                            }
+                        }
+                        if(!inGhost){
+                            outOfBoundsBalls.remove(ball);
+                            System.out.println("remove");
+                            ball.getGeometry().removeFromParent();
                             space.remove(ball.getGeometry());
                         }
                     }
@@ -274,12 +286,21 @@ public class Field {
                             }
                         }else if(outOfBoundsBalls.size() == 0){
                             outOfBoundsBalls.add(ball);
-                        }else{
-                            space.remove(ball.getRigidBodyControl());
+                        }
+                        boolean inGhost = false;
+                        for(Ball outBall: outOfBoundsBalls){
+                            if(outBall == ball){
+                                inGhost = true;
+                            }
+                        }
+                        if(!inGhost){
+                            outOfBoundsBalls.remove(ball);
+                            System.out.println("remove");
+                            ball.getGeometry().removeFromParent();
                             space.remove(ball.getGeometry());
                         }
+                        
                     }
-               
                 
                 }
                 
@@ -293,12 +314,19 @@ public class Field {
                             }
                         }else if(outOfBoundsBalls.size() == 0){
                             outOfBoundsBalls.add(ball);
-                        }else{
-                            space.remove(ball.getRigidBodyControl());
+                        }
+                        boolean inGhost = false;
+                        for(Ball outBall: outOfBoundsBalls){
+                            if(outBall == ball){
+                                inGhost = true;
+                            }
+                        }
+                        if(!inGhost){
+                            outOfBoundsBalls.remove(ball);
+                            System.out.println("remove");
+                            ball.getGeometry().removeFromParent();
                             space.remove(ball.getGeometry());
                         }
-                        }else{
-                            outOfBoundsBalls.remove(ball);
                         }
                     }
                
@@ -314,8 +342,16 @@ public class Field {
                             }
                         }else if(outOfBoundsBalls.size() == 0){
                             outOfBoundsBalls.add(ball);
-                        }else{
-                            space.remove(ball.getRigidBodyControl());
+                        }
+                        boolean inGhost = false;
+                        for(Ball outBall: outOfBoundsBalls){
+                            if(outBall == ball){
+                                inGhost = true;
+                            }
+                        }
+                        if(!inGhost){
+                            outOfBoundsBalls.remove(ball);
+                            ball.getGeometry().removeFromParent();
                             space.remove(ball.getGeometry());
                         }
                     }
@@ -323,12 +359,11 @@ public class Field {
                 
                 }
                 
-                for(int j = eastGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                    if(eastGoalGhost.getOverlapping(j).getUserObject() instanceof Ball && !isWaiting){
+                for(int j = redGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
+                    if(redGoalGhost.getOverlapping(j).getUserObject() instanceof Ball && !scoredBalls.contains(redGoalGhost.getOverlapping(j).getUserObject()) && ((Ball) redGoalGhost.getOverlapping(j).getUserObject()).alliance == Alliance.RED){
                             score = score + 1;
-                            isWaiting = true;
+                            scoredBalls.add(((Ball) redGoalGhost.getOverlapping(j).getUserObject()));
                             Main.scene.updateVariables();
-                            (new Timer()).schedule(new TimerTask(){public void run(){isWaiting = false;}}, 1000);
                         }
                 }
                 for(Ball ball : outOfBoundsBalls){
