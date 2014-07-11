@@ -82,7 +82,7 @@ public class Main extends SimpleApplication implements ActionListener {
         AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
-                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
+                control = new TankPlayer(TankPlayer.TankKeyMapping.std);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
         
@@ -90,9 +90,9 @@ public class Main extends SimpleApplication implements ActionListener {
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         
-        cam.setLocation(new Vector3f(0,12,12));
-        cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
-        flyCam.setEnabled(false);
+        cam.setLocation(new Vector3f(0, 12, 12));
+        cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
+        flyCam.setEnabled(true);
         
         isStarted = true;
     }

@@ -31,10 +31,14 @@ public class HumanPlayer {
     }
     
     protected void giveBall(Ball ball){
-        ball.capture();
+        ball.capture(this);
+        System.out.println("3");
+        System.out.println(currentBall);
         if(currentBall == null){
             currentBall = ball;
+            System.out.println("2");
         } else {
+        System.out.println("4");
             ballQueue.add(ball);
         }
     }
@@ -53,19 +57,33 @@ public class HumanPlayer {
     
     private boolean isAutoThrowing = true;
     private static float autoThrowRadius = 4;
-    private static float throwForce = 3;
+    private static float throwForce = 10;
+    private static float holdRange = .05f;
+    private static float pullForce = 10;
+    private boolean isBallHeld = false;
     public void update(){
-        if(isAutoThrowing && currentBall != null){
+        if(isAutoThrowing && currentBall != null && isBallHeld){
             for(RobotPosition pos : Robot.getRobotPositions()){
                 if(pos.getAlliance() == alliance && pos.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius){
                     doThrow(pos.getPosition());
-                    System.out.println("throw");
+                    System.out.println("throw " + currentBall);
                 }
             }
         }
         
-        if(currentBall != null){
-            currentBall.setVelocity(holdingPosition.subtract(currentBall.getPosition()).mult(2));
+        if(currentBall != null && !isBallHeld){
+            currentBall.setVelocity(holdingPosition.subtract(currentBall.getPosition()).mult(pullForce));
+            if(holdingPosition.subtract(currentBall.getPosition()).length() < holdRange){
+                isBallHeld = true;
+            }
+        }
+        
+        if(currentBall != null && isBallHeld){
+            currentBall.setPosition(holdingPosition);
+        }
+        
+        for(Ball ball : ballQueue){
+            ball.setVelocity(holdingPosition.mult(1.2f).subtract(ball.getPosition()).mult(2));
         }
     }
     
@@ -80,9 +98,10 @@ public class HumanPlayer {
     public void doThrow(Vector3f target){
         target = target.add((rand.nextFloat()-.5f), (rand.nextFloat()-.5f), (rand.nextFloat()-.5f));
         if(currentBall != null){
-            currentBall.setVelocity(target.subtract(currentBall.getPosition()).mult(throwForce));
+            currentBall.setVelocity(target.subtract(currentBall.getPosition()).normalize().mult(throwForce));
             currentBall.release();
             currentBall = null;
+            isBallHeld = false;
             if(ballQueue.isEmpty() == false){
                 currentBall = ballQueue.remove(0);
             }
@@ -93,8 +112,7 @@ public class HumanPlayer {
         Alliance alliance = ball.alliance;
         if(ball.isScored()){
             ball.destroy();
-        }
-        if(exitPos.x * alliance.side < 0){
+        } else if(exitPos.x * alliance.side < 0){
             if(exitPos.z > 0){
                 ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.FarPosZ)).giveBall(ball);
                 System.out.println("FarPosZ");
@@ -114,7 +132,6 @@ public class HumanPlayer {
         public final Vector3f holdingPosition;
         private HumanPlayerPosition(Vector3f holdingPosition){
             this.holdingPosition = holdingPosition;
-            
         }
     }
 }
