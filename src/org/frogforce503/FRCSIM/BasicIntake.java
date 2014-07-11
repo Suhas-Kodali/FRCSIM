@@ -71,6 +71,7 @@ public class BasicIntake extends AbstractIntake{
         super.preShot();
         shootingBall = heldBall;
         heldBall = null;
+        shootingBall.release();
         if(pulledBalls.contains(heldBall)){
             pulledBalls.remove(heldBall);
         } 
@@ -105,6 +106,7 @@ public class BasicIntake extends AbstractIntake{
             for(int j = holdGhost.getOverlappingObjects().size()-1; j>=0; j--){
                 if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball){
                     heldBall = (Ball) holdGhost.getOverlapping(j).getUserObject();
+                    heldBall.capture();
                     if(pulledBalls.contains(heldBall)){
                         pulledBalls.remove(heldBall);
                     }

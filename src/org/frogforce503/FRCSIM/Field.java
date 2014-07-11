@@ -41,38 +41,36 @@ public class Field {
     public boolean isInbounding = false;
     public ArrayList<Ball> scoredBalls = new ArrayList<Ball>();
     private Plane[] exitPlane = new Plane[4];
-    private Vector3f exitPlanePosition = new Vector3f(length/2 + Main.in(60), 0, width/2 + Main.in(60));
-    private Vector3f exitPlaneRotation = new Vector3f(1, 0, 0);
     private PhysicsSpace space;
     private Node rootNode;
+    private final Plane floorPlane;
     
     
     public Field(Node rootNode, AssetManager assetManager, PhysicsSpace space) {
         this.space = space;
-        space.addCollisionListener((new ExitFieldListener()));
         this.rootNode = rootNode;
-        AmbientLight ambient = new AmbientLight();
-        //rootNode.addLight(ambient);    
+        
         PointLight lamp = new PointLight();
         lamp.setPosition(new Vector3f(0f, 40f, 0f));
         lamp.setRadius(100);
         rootNode.addLight(lamp); 
+        
+        Vector3f exitPlanePosition = new Vector3f(length/2 + Main.in(20f), 0, width/2 + Main.in(20f));
+        Vector3f exitPlaneRotation = new Vector3f(-1, 0, 0);
         for(int i = 0; i < 2; i++){
             for(int j = 0; j < 2; j++){
                 exitPlane[j+i*2] = new Plane();
                 exitPlane[j+i*2].setOriginNormal(exitPlanePosition, exitPlaneRotation);
-                exitPlaneRotation.cross(new Vector3f(0, 0, 1));
-                System.out.println(exitPlaneRotation);
-                System.out.println(exitPlanePosition);
+                exitPlaneRotation = exitPlaneRotation.cross(Vector3f.UNIT_Y);
             }
-            exitPlanePosition.negate();
+            exitPlanePosition = exitPlanePosition.negate();
         }
         
         Box floorBox = new Box(140, 0.25f, 140);
         Geometry floorGeometry = new Geometry("Floor Box", floorBox);
         floorGeometry.setMaterial(Main.darkGray);
         floorGeometry.setLocalTranslation(0, -0, 0);
-        Plane floorPlane = new Plane();
+        floorPlane = new Plane();
         floorPlane.setOriginNormal(new Vector3f(0, 0.25f, 0), Vector3f.UNIT_Y);
         RigidBodyControl floorControl = new RigidBodyControl(new PlaneCollisionShape(floorPlane), 0);
         floorGeometry.addControl(floorControl);
@@ -218,23 +216,23 @@ public class Field {
     
     public void update(){                
                 for(int j = redGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                    if(redGoalGhost.getOverlapping(j).getUserObject() instanceof Ball && !scoredBalls.contains(redGoalGhost.getOverlapping(j).getUserObject()) && ((Ball) redGoalGhost.getOverlapping(j).getUserObject()).alliance == Alliance.RED){
+                    if(redGoalGhost.getOverlapping(j).getUserObject() instanceof Ball && !((Ball) redGoalGhost.getOverlapping(j).getUserObject()).isScored() && ((Ball) redGoalGhost.getOverlapping(j).getUserObject()).alliance == Alliance.RED){
                             score = score + 1;
-                            scoredBalls.add(((Ball) redGoalGhost.getOverlapping(j).getUserObject()));
+                            //scoredBalls.add();
+                            ((Ball) redGoalGhost.getOverlapping(j).getUserObject()).score();
                             Main.scene.updateVariables();
                             
                         }
                 }
     }
     
-    public static class ExitFieldListener implements PhysicsCollisionListener{
-
-        public void collision(PhysicsCollisionEvent event) {
-            
+    public boolean isBallOutOfBounds(Ball ball){
+        for(Plane plane : exitPlane){
+            if(plane.pseudoDistance(ball.getPosition()) < Main.in(0) && floorPlane.pseudoDistance(ball.getPosition()) < Main.in(14f)){
+                return true;
+            }
         }
-        
+        return false;
     }
-    
-   
     
 }

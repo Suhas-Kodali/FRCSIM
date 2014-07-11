@@ -18,8 +18,6 @@ public enum Alliance {
     
     Alliance(Material color, Vector3f farHumanPlayer, Vector3f closeHumanPlayer) {
         this.material = color;
-        this.farHumanPlayer = farHumanPlayer;
-        this.closeHumanPlayer = closeHumanPlayer;
         for(int i = 0; i < 3; i++){
             if(material == Main.red){
                 position[i] = new Vector3f(Main.field.length/2 - zOff, 0, (Main.field.width - xOff)/2 - (((Main.field.width - xOff)/(2f))*i));
@@ -31,8 +29,10 @@ public enum Alliance {
         if(material == Main.red){
             side = -1;
         } else {
-            side = 1;
+            side = +1;
         }
+        this.farHumanPlayer = farHumanPlayer.mult(side);
+        this.closeHumanPlayer = closeHumanPlayer.mult(side);
     }
     
 }

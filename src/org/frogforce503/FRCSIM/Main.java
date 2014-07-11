@@ -10,6 +10,7 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class Main extends SimpleApplication implements ActionListener {
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
-        //appSettings.setResolution(1280, 400);
+        appSettings.setResolution(1280, 768);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
@@ -135,6 +136,7 @@ public class Main extends SimpleApplication implements ActionListener {
             Ball.updateAll();
             field.update();
             scene.update();
+            HumanPlayer.updateAll();
         }
     }
     
@@ -177,5 +179,9 @@ public class Main extends SimpleApplication implements ActionListener {
         } else {
             InputManager.release(binding);
         }
+    }
+    
+    public static Node getRoot(){
+        return app.rootNode;
     }
 }

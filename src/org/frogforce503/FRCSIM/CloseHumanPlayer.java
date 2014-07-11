@@ -6,7 +6,7 @@ import com.jme3.math.Vector3f;
  *
  * @author Bryce
  */
-public class CloseHumanPlayer extends FarHumanPlayer{
+public class CloseHumanPlayer extends HumanPlayer{
     public CloseHumanPlayer(Alliance alliance, HumanPlayerPosition humanPlayerPosition){
         super(alliance, humanPlayerPosition);
     }
