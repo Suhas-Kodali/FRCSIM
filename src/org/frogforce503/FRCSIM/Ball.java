@@ -22,8 +22,11 @@ public class Ball {
     public static final ArrayList<Ball> balls = new ArrayList<Ball>(6);
     public final int number;
     private static int count = 0;
+    private boolean scored = false;
+    private PhysicsSpace space;
     
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
+        this.space = space;
         Sphere sphere = new Sphere(32, 32, Main.in(13));
         sphereGeometry = new Geometry("Sphere", sphere);
         sphereGeometry.setMaterial(alliance.material);
@@ -70,5 +73,34 @@ public class Ball {
         int hash = 3;
         hash = 59 * hash + this.number;
         return hash;
+    }
+    
+    public void score(){
+        this.scored = true;
+    }
+    
+    public boolean isScored(){
+        return scored;
+    }
+    
+    public void destroy(){
+        getGeometry().removeFromParent();
+        space.remove(getGeometry());
+    }
+    
+    public Vector3f getPosition(){
+        return sphereControl.getPhysicsLocation();
+    }
+    
+    public Vector3f getVelocity(){
+        return sphereControl.getLinearVelocity();
+    }
+    
+    public void setVelocity(Vector3f v){
+        sphereControl.setLinearVelocity(v);
+    }
+    
+    public void setPosition(Vector3f pos){
+        sphereControl.setPhysicsLocation(pos);
     }
 }

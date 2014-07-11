@@ -2,6 +2,8 @@ package org.frogforce503.FRCSIM;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.control.GhostControl;
@@ -15,8 +17,6 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  *
@@ -33,22 +33,21 @@ public class Field {
     
     public final static float width = Main.in(24*12+8);
     public final static float length = Main.in(54*12);
-    public final GhostControl redSideGhost, redGoalGhost, southGhost, northGhost, westGhost; 
+    public final GhostControl redGoalGhost; 
     public static Integer score = 0;
     private final Vector3f humanPlayer = new Vector3f(0, 0, 0);
     private boolean isScoring = false;
     private boolean isWaiting = false;
     public boolean isInbounding = false;
-    public HumanPlayer redHumanPlayer = new HumanPlayer(Alliance.RED);
-    public HumanPlayer blueHumanPlayer = new HumanPlayer(Alliance.BLUE);
-    public ArrayList<Ball> outOfBoundsBalls = new ArrayList<Ball>(2);
     public ArrayList<Ball> scoredBalls = new ArrayList<Ball>();
+    private Plane[] exitPlane = new Plane[4];
     private PhysicsSpace space;
     private Node rootNode;
     
     
     public Field(Node rootNode, AssetManager assetManager, PhysicsSpace space) {
         this.space = space;
+        space.addCollisionListener((new ExitFieldListener()));
         this.rootNode = rootNode;
         AmbientLight ambient = new AmbientLight();
         //rootNode.addLight(ambient);    
@@ -56,6 +55,10 @@ public class Field {
         lamp.setPosition(new Vector3f(0f, 40f, 0f));
         lamp.setRadius(100);
         rootNode.addLight(lamp); 
+        
+        for(int i = 0; i < exitPlane.length; i++){
+            exitPlane[0].setOriginNormal(new Vector3f(), new Vector3f());
+        }
         
         Box floorBox = new Box(140, 0.25f, 140);
         Geometry floorGeometry = new Geometry("Floor Box", floorBox);
@@ -127,52 +130,7 @@ public class Field {
         rootNode.attachChild(goal2Geometry);
         space.add(goal2Geometry);
         
-        redSideGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f))));
-        //eastGhost.setPhysicsLocation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+10.75f + 6)/2, 0));
-//        Box test = new Box(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f));
-//        Geometry testG = new Geometry("Goal", test);
-//        testG.setMaterial(Main.green);
-//        testG.setLocalTranslation(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+10.75f + 6)/2, 0);
-//        testG.addControl(new RigidBodyControl(4));
-//        rootNode.attachChild(testG);
-//        space.add(testG);
-        Node eastGhostNode = new Node("a ghost-controlled thing");
-        eastGhostNode.addControl(redSideGhost);
-        eastGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(60), Main.in(37 + 6*12+10.75f + 6)/2, 0));
-        rootNode.attachChild(eastGhostNode);
-        space.add(redSideGhost);
-        
-        westGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f))));
-        //eastGhost.setPhysicsLocation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+10.75f + 6)/2, 0));
-//        Box test = new Box(Main.in(500)/2, Main.in(37 + 6*12+10.75f)/2, width/2 + Main.in(20f));
-//        Geometry testG = new Geometry("Goal", test);
-//        testG.setMaterial(Main.green);
-//        testG.setLocalTranslation(length/2 + Main.in(500)/2 + Main.in(15), Main.in(37 + 6*12+10.75f + 6)/2, 0);
-//        testG.addControl(new RigidBodyControl(4));
-//        rootNode.attachChild(testG);
-//        space.add(testG);
-        Node westGhostNode = new Node("a ghost-controlled thing");
-        westGhostNode.addControl(westGhost);
-        westGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(500)/2 + Main.in(60), Main.in(37 + 6*12+10.75f + 6)/2, 0).mult(Vector3f.UNIT_X.mult(-1)));
-        rootNode.attachChild(westGhostNode);
-        space.add(westGhost);
-        
-        southGhost = new GhostControl(new BoxCollisionShape(new Vector3f(length/2, Main.in(37 + 6*12+10.75f)/2, Main.in(500)/2)));
-       
-        Node southGhostNode = new Node("a ghost-controlled thing");
-        southGhostNode.addControl(southGhost);
-        southGhostNode.setLocalTranslation(new Vector3f(0, Main.in(37 + 6*12+10.75f + 6)/2, Main.in(500)/2 + width/2 + Main.in(20)));
-        rootNode.attachChild(southGhostNode);
-        space.add(southGhost);
-        
-        northGhost = new GhostControl(new BoxCollisionShape(new Vector3f(length/2, Main.in(37 + 6*12+10.75f)/2, Main.in(500)/2)));
-       
-        Node northGhostNode = new Node("a ghost-controlled thing");
-        northGhostNode.addControl(northGhost);
-        northGhostNode.setLocalTranslation(new Vector3f(0, Main.in(37 + 6*12+10.75f + 6)/2, Main.in(500)/2 + width/2 + Main.in(20)).mult((Vector3f.UNIT_Z).mult(-1)));
-        rootNode.attachChild(northGhostNode);
-        space.add(northGhost);
-        
+      
         redGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
         
         Box test1 = new Box(Main.in(6)/2, Main.in(37)/2, width/2);
@@ -246,181 +204,31 @@ public class Field {
         space.add(sphereGeometry);
         
         }
+       
         
     }
     
     public void update(){
-                for(int j = redSideGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                    if(redSideGhost.getOverlapping(j).getUserObject() instanceof Ball && !isInbounding){
-                        Ball ball = ((Ball) redSideGhost.getOverlapping(j).getUserObject());
-                        if(scoredBalls.contains(ball)){
-                            scoredBalls.remove(ball);
-                        }
-                        if(outOfBoundsBalls.size() == 1){
-                            if(!outOfBoundsBalls.contains(ball) && outOfBoundsBalls.get(0).alliance != ball.alliance ){
-                                outOfBoundsBalls.add(ball);
-                            }
-                        }else if(outOfBoundsBalls.size() == 0){
-                            outOfBoundsBalls.add(ball);
-                        }
-                        boolean inGhost = false;
-                        for(Ball outBall: outOfBoundsBalls){
-                            if(outBall == ball){
-                                inGhost = true;
-                            }
-                        }
-                        if(!inGhost){
-                            outOfBoundsBalls.remove(ball);
-                            System.out.println("remove");
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
-                        }
-                    }
-                }
-                for(int j = southGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                    if(southGhost.getOverlapping(j).getUserObject() instanceof Ball && !isInbounding){
-                        Ball ball = ((Ball) southGhost.getOverlapping(j).getUserObject());
-                        if(outOfBoundsBalls.size() == 1){
-                            if(!outOfBoundsBalls.contains(ball) && outOfBoundsBalls.get(0).alliance != ball.alliance ){
-                                outOfBoundsBalls.add(ball);
-                            }
-                        }else if(outOfBoundsBalls.size() == 0){
-                            outOfBoundsBalls.add(ball);
-                        }
-                        boolean inGhost = false;
-                        for(Ball outBall: outOfBoundsBalls){
-                            if(outBall == ball){
-                                inGhost = true;
-                            }
-                        }
-                        if(!inGhost){
-                            outOfBoundsBalls.remove(ball);
-                            System.out.println("remove");
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
-                        }
-                        
-                    }
                 
-                }
-                
-                for(int j = northGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                    if(northGhost.getOverlapping(j).getUserObject() instanceof Ball && !isInbounding){
-                        Ball ball = ((Ball) northGhost.getOverlapping(j).getUserObject());
-                        if(!outOfBoundsBalls.contains(ball)){
-                        if(outOfBoundsBalls.size() == 1){
-                            if(outOfBoundsBalls.get(0).alliance != ball.alliance ){
-                                outOfBoundsBalls.add(ball);
-                            }
-                        }else if(outOfBoundsBalls.size() == 0){
-                            outOfBoundsBalls.add(ball);
-                        }
-                        boolean inGhost = false;
-                        for(Ball outBall: outOfBoundsBalls){
-                            if(outBall == ball){
-                                inGhost = true;
-                            }
-                        }
-                        if(!inGhost){
-                            outOfBoundsBalls.remove(ball);
-                            System.out.println("remove");
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
-                        }
-                        }
-                    }
-               
-                
-                }
-                
-                for(int j = westGhost.getOverlappingObjects().size()-1; j >=0; j--){
-                    if(westGhost.getOverlapping(j).getUserObject() instanceof Ball && !isInbounding){
-                        Ball ball = ((Ball) westGhost.getOverlapping(j).getUserObject());
-                        if(outOfBoundsBalls.size() == 1){
-                            if(!outOfBoundsBalls.contains(ball) && outOfBoundsBalls.get(0).alliance != ball.alliance ){
-                                outOfBoundsBalls.add(ball);
-                            }
-                        }else if(outOfBoundsBalls.size() == 0){
-                            outOfBoundsBalls.add(ball);
-                        }
-                        boolean inGhost = false;
-                        for(Ball outBall: outOfBoundsBalls){
-                            if(outBall == ball){
-                                inGhost = true;
-                            }
-                        }
-                        if(!inGhost){
-                            outOfBoundsBalls.remove(ball);
-                            ball.getGeometry().removeFromParent();
-                            space.remove(ball.getGeometry());
-                        }
-                    }
-               
-                
-                }
                 
                 for(int j = redGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
                     if(redGoalGhost.getOverlapping(j).getUserObject() instanceof Ball && !scoredBalls.contains(redGoalGhost.getOverlapping(j).getUserObject()) && ((Ball) redGoalGhost.getOverlapping(j).getUserObject()).alliance == Alliance.RED){
                             score = score + 1;
                             scoredBalls.add(((Ball) redGoalGhost.getOverlapping(j).getUserObject()));
                             Main.scene.updateVariables();
+                            
                         }
-                }
-                for(Ball ball : outOfBoundsBalls){
-                    if(ball.getRigidBodyControl().getPhysicsLocation().z > 0){
-                        if(ball.getRigidBodyControl().getPhysicsLocation().x < 0){
-                            if(ball.alliance == blueHumanPlayer.alliance){
-                                humanPlayer.set(blueHumanPlayer.close);
-                            }else if(ball.alliance == redHumanPlayer.alliance){
-                                humanPlayer.set(redHumanPlayer.far);
-                            }else{
-                                throw new Error();
-                            }
-                        }else{
-                            if(ball.alliance == blueHumanPlayer.alliance){
-                                humanPlayer.set(blueHumanPlayer.far);
-                            }else if(ball.alliance == redHumanPlayer.alliance){
-                                humanPlayer.set(redHumanPlayer.close);
-                            }else{
-                                throw new Error();
-                            }
-                        }
-                    }else if(ball.getRigidBodyControl().getPhysicsLocation().z < 0){
-                    if(ball.getRigidBodyControl().getPhysicsLocation().x < 0){
-                        if(ball.alliance == blueHumanPlayer.alliance){
-                            humanPlayer.set(blueHumanPlayer.close.subtract(0, 0, width + Main.in(28 + 28)));
-                        }else if(ball.alliance == redHumanPlayer.alliance){
-                            humanPlayer.set(redHumanPlayer.far.subtract(0, 0, width + Main.in(28 + 28)));
-                        }else{
-                            throw new Error();
-                        }
-                    }else{
-                        if(ball.alliance == blueHumanPlayer.alliance){
-                            humanPlayer.set(blueHumanPlayer.far.subtract(0, 0, width + Main.in(28 + 28)));
-                        }else if(ball.alliance == redHumanPlayer.alliance){
-                            humanPlayer.set(redHumanPlayer.close.subtract(0, 0, width + Main.in(28 + 28)));
-                        }else{
-                            throw new Error();
-                        }
-                    }
-                    }
-                     
-                    if(ball.getRigidBodyControl().getPhysicsLocation().distance(humanPlayer) < 2){
-                        ball.getRigidBodyControl().setLinearVelocity((humanPlayer.subtract(ball.getRigidBodyControl().getPhysicsLocation())).mult(5));
-                    }else{
-                        ball.getRigidBodyControl().applyCentralForce(humanPlayer.subtract(ball.getRigidBodyControl().getPhysicsLocation()).mult(3));
-                    }
-                
                 }
     }
     
-    public Ball getOutOfBoundsBall(Alliance alliance){
-        for(Ball ball: outOfBoundsBalls){
-            if(ball.alliance == alliance){
-                return ball;
-            }
+    public static class ExitFieldListener implements PhysicsCollisionListener{
+
+        public void collision(PhysicsCollisionEvent event) {
+            System.out.println(event.getObjectA());
         }
-        return null;
+        
     }
+    
+   
     
 }

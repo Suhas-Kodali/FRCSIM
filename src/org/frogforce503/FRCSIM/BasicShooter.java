@@ -10,7 +10,7 @@ import com.jme3.scene.Node;
  * @author Bryce
  */
 public class BasicShooter extends AbstractShooter{
-    public static final int shootForce = 12;
+    public static final int shootForce = 50;
     public static final float shootElevation = .6f;
     
     @Override
@@ -20,7 +20,7 @@ public class BasicShooter extends AbstractShooter{
     @Override
     public void preShot(){
         super.preShot();
-        intake.getShootingBall().getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null).add(0, 0.6f, 0)).mult(new Vector3f(50f,50f,50f)));
+        intake.getShootingBall().getRigidBodyControl().setLinearVelocity((vehicle.getForwardVector(null).add(0, 0.6f, 0)).mult(shootForce));
     }
     
     @Override

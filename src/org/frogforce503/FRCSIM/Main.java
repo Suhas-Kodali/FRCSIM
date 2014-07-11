@@ -91,7 +91,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         cam.setLocation(new Vector3f(0,12,12));
         cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
-        flyCam.setEnabled(true);
+        flyCam.setEnabled(false);
         
         isStarted = true;
     }
