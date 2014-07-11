@@ -44,9 +44,6 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
-        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
-        scene.initScreens();
-        scene.startScreen();
         red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         red.getAdditionalRenderState().setWireframe(false);
         red.setColor("Color", ColorRGBA.Red); 
@@ -68,6 +65,9 @@ public class Main extends SimpleApplication implements ActionListener {
         darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         darkGray.getAdditionalRenderState().setWireframe(false);
         darkGray.setColor("Color", ColorRGBA.DarkGray); 
+        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
+        scene.initScreens();
+        scene.startScreen();
         
         
         
@@ -85,14 +85,20 @@ public class Main extends SimpleApplication implements ActionListener {
                 control = new TankPlayer(TankPlayer.TankKeyMapping.std);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+        AbstractSubsystem drivetrainwasd = new TankDrivetrain(), 
+                shooterwasd = new BasicShooter(), 
+                intakewasd = new BasicIntake(), 
+                controlwasd = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
+        AbstractSubsystem[] subsystemswasd = new AbstractSubsystem[]{drivetrainwasd, intakewasd, controlwasd, shooterwasd};
+        new Robot(subsystemswasd, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(1,0,0));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         
         cam.setLocation(new Vector3f(0, 12, 12));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
-        flyCam.setEnabled(true);
+        flyCam.setEnabled(false);
         
         isStarted = true;
     }
@@ -134,9 +140,9 @@ public class Main extends SimpleApplication implements ActionListener {
         if(isStarted){
             Robot.updateAll();
             Ball.updateAll();
+            HumanPlayer.updateAll();
             field.update();
             scene.update();
-            HumanPlayer.updateAll();
         }
     }
     

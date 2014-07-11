@@ -66,7 +66,7 @@ public class HumanPlayer {
             for(RobotPosition pos : Robot.getRobotPositions()){
                 if(pos.getAlliance() == alliance && pos.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius){
                     doThrow(pos.getPosition());
-                    System.out.println("throw " + currentBall);
+                    break;
                 }
             }
         }

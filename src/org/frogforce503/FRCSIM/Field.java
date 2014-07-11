@@ -34,11 +34,7 @@ public class Field {
     public final static float width = Main.in(24*12+8);
     public final static float length = Main.in(54*12);
     public final GhostControl redGoalGhost; 
-    public static int score = 0;
-    public boolean isInbounding = false;
-    public ArrayList<Ball> scoredBalls = new ArrayList<Ball>();
     private Plane[] exitPlane = new Plane[4];
-    private final Plane floorPlane;
     
     
     public Field(Node rootNode, AssetManager assetManager, PhysicsSpace space) {
@@ -63,7 +59,7 @@ public class Field {
         Geometry floorGeometry = new Geometry("Floor Box", floorBox);
         floorGeometry.setMaterial(Main.darkGray);
         floorGeometry.setLocalTranslation(0, -0, 0);
-        floorPlane = new Plane();
+        Plane floorPlane = new Plane();
         floorPlane.setOriginNormal(new Vector3f(0, 0.25f, 0), Vector3f.UNIT_Y);
         RigidBodyControl floorControl = new RigidBodyControl(new PlaneCollisionShape(floorPlane), 0);
         floorGeometry.addControl(floorControl);
@@ -209,9 +205,8 @@ public class Field {
             if(redGoalGhost.getOverlapping(j).getUserObject() instanceof Ball){
                 Ball ball = (Ball) redGoalGhost.getOverlapping(j).getUserObject();
                 if(!ball.isScored() && ball.alliance == Alliance.RED && Math.abs(ball.getPosition().x) > Main.in(54*12/2)){
-                    score = score + 10;
+                    Alliance.RED.incrementScore(10 + ball.getAssistScore());
                     ball.score();
-                    Main.scene.updateVariables();
                 }
             }
         }
@@ -219,7 +214,7 @@ public class Field {
     
     public boolean isBallOutOfBounds(Ball ball){
         for(Plane plane : exitPlane){
-            if(plane.pseudoDistance(ball.getPosition()) < Main.in(0) && floorPlane.pseudoDistance(ball.getPosition()) < Main.in(13f)){
+            if(plane.pseudoDistance(ball.getPosition()) < Main.in(0) && (ball.getPosition().y) < Main.in(14f)+.25f){
                 return true;
             }
         }

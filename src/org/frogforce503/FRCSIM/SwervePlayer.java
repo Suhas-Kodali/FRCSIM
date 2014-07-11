@@ -13,13 +13,15 @@ public class SwervePlayer extends AbstractControl{
     private SwerveDrivetrain drivetrain;
     private AbstractIntake intake;
     private AbstractShooter shooter;
-
+    private Robot robot;
+    
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
         if(subsystems.get(SubsystemType.Drivetrain) instanceof SwerveDrivetrain){
             this.drivetrain = (SwerveDrivetrain) subsystems.get(SubsystemType.Drivetrain);
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
             this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
+            this.robot = robot;
         } else {
             throw new IllegalArgumentException("SwervePlayer only controls SwerveDrivetrains");
         }

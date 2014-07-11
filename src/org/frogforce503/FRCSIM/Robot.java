@@ -39,7 +39,7 @@ public class Robot{
         
         robotNode = ((AbstractDrivetrain) this.subsystems.get(SubsystemType.Drivetrain)).getVehicleNode();
         for(AbstractSubsystem subsystem : subsystems){
-            subsystem.registerOtherSubsystems(this.subsystems);
+            subsystem.registerOtherSubsystems(this.subsystems, this);
             if(subsystem instanceof AbstractDrivetrain){
                 subsystem.registerPhysics(rootNode, space, alliance);
             } else {
@@ -68,6 +68,7 @@ public class Robot{
         for(Robot robot : robots){
             positions.add(new RobotPosition(robot));
         }
+        
         return positions;
     }
     

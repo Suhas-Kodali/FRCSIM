@@ -15,7 +15,7 @@ public enum Alliance {
     public Vector3f[] position = new Vector3f[3];
     private float zOff = Main.in(120), xOff = Main.in(60); 
     public final int side;
-    
+    private int score = 0;
     Alliance(Material color, Vector3f farHumanPlayer, Vector3f closeHumanPlayer) {
         this.material = color;
         for(int i = 0; i < 3; i++){
@@ -35,4 +35,12 @@ public enum Alliance {
         this.closeHumanPlayer = closeHumanPlayer.mult(side);
     }
     
+    public void incrementScore(int amount){
+        score += amount;
+        Main.scene.updateVariables();
+    }
+    
+    public int getScore(){
+        return score;
+    }
 }

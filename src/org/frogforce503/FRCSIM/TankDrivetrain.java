@@ -160,5 +160,5 @@ public class TankDrivetrain extends AbstractDrivetrain{
     public void update() {}
 
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {}
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {}
 }

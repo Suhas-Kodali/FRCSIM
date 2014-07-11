@@ -15,15 +15,17 @@ public abstract class AbstractShooter extends AbstractSubsystem {
     protected AbstractIntake intake;
     protected VehicleControl vehicle;
     protected AbstractDrivetrain drivetrain;
+    protected Robot robot;
     
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems){
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot){
         if(subsystems.containsKey(SubsystemType.Intake)){
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
         } else {
             throw new IllegalArgumentException("Robots with shooters must have intakes!");
         }
         this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
+        this.robot = robot;
     }
     
     public abstract void update();

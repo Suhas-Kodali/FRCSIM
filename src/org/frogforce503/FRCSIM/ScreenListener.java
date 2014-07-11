@@ -62,6 +62,6 @@ public class ScreenListener extends AbstractAppState implements ScreenController
     }
     
     public String getScore(){
-        return new Integer(Field.score).toString();
+        return new Integer(Alliance.RED.getScore()).toString();
   }
 }
