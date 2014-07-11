@@ -61,11 +61,11 @@ public class Field {
             for(int j = 0; j < 2; j++){
                 exitPlane[j+i*2] = new Plane();
                 exitPlane[j+i*2].setOriginNormal(exitPlanePosition, exitPlaneRotation);
-                exitPlaneRotation.cross(new Vector3f(0, 0, 1));
+                exitPlaneRotation = exitPlaneRotation.cross(new Vector3f(0, 1, 0));
                 System.out.println(exitPlaneRotation);
                 System.out.println(exitPlanePosition);
             }
-            exitPlanePosition.negate();
+            exitPlanePosition = exitPlanePosition.negate();
         }
         
         Box floorBox = new Box(140, 0.25f, 140);
