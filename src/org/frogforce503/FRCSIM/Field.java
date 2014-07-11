@@ -57,7 +57,8 @@ public class Field {
         rootNode.addLight(lamp); 
         
         for(int i = 0; i < exitPlane.length; i++){
-            exitPlane[0].setOriginNormal(new Vector3f(), new Vector3f());
+            exitPlane[i] = new Plane();
+            exitPlane[i].setOriginNormal(new Vector3f(), new Vector3f());
         }
         
         Box floorBox = new Box(140, 0.25f, 140);
@@ -208,9 +209,7 @@ public class Field {
         
     }
     
-    public void update(){
-                
-                
+    public void update(){                
                 for(int j = redGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
                     if(redGoalGhost.getOverlapping(j).getUserObject() instanceof Ball && !scoredBalls.contains(redGoalGhost.getOverlapping(j).getUserObject()) && ((Ball) redGoalGhost.getOverlapping(j).getUserObject()).alliance == Alliance.RED){
                             score = score + 1;
