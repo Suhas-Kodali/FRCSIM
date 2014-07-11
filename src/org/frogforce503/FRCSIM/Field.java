@@ -41,6 +41,8 @@ public class Field {
     public boolean isInbounding = false;
     public ArrayList<Ball> scoredBalls = new ArrayList<Ball>();
     private Plane[] exitPlane = new Plane[4];
+    private Vector3f exitPlanePosition = new Vector3f(length/2 + Main.in(60), 0, width/2 + Main.in(60));
+    private Vector3f exitPlaneRotation = new Vector3f(1, 0, 0);
     private PhysicsSpace space;
     private Node rootNode;
     
@@ -55,10 +57,15 @@ public class Field {
         lamp.setPosition(new Vector3f(0f, 40f, 0f));
         lamp.setRadius(100);
         rootNode.addLight(lamp); 
-        
-        for(int i = 0; i < exitPlane.length; i++){
-            exitPlane[i] = new Plane();
-            exitPlane[i].setOriginNormal(new Vector3f(), new Vector3f());
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 2; j++){
+                exitPlane[j+i*2] = new Plane();
+                exitPlane[j+i*2].setOriginNormal(exitPlanePosition, exitPlaneRotation);
+                exitPlaneRotation.cross(new Vector3f(0, 0, 1));
+                System.out.println(exitPlaneRotation);
+                System.out.println(exitPlanePosition);
+            }
+            exitPlanePosition.negate();
         }
         
         Box floorBox = new Box(140, 0.25f, 140);
@@ -223,7 +230,7 @@ public class Field {
     public static class ExitFieldListener implements PhysicsCollisionListener{
 
         public void collision(PhysicsCollisionEvent event) {
-            System.out.println(event.getObjectA());
+            
         }
         
     }
