@@ -60,7 +60,7 @@ public class Robot{
     }
 
     public final void setPhysicsLocation(Vector3f pos) {
-        robotNode.getControl(RigidBodyControl.class).setPhysicsLocation(pos);
+        ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl().setPhysicsLocation(pos);
     }    
     
     public static ArrayList<RobotPosition> getRobotPositions(){

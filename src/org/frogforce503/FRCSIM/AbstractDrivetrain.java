@@ -18,5 +18,7 @@ public abstract class AbstractDrivetrain extends AbstractSubsystem{
     public abstract VehicleControl getVehicleControl();
     public abstract Node getVehicleNode();
     public abstract void driveTowardsPoint(Vector3f point);
-    
+    public Vector3f getPosition(){
+        return getVehicleControl().getPhysicsLocation();
+    }
 }

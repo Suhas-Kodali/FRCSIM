@@ -1,5 +1,6 @@
 package org.frogforce503.FRCSIM;
 
+import org.frogforce503.FRCSIM.AI.AIControl;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
@@ -15,6 +16,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.frogforce503.FRCSIM.AI.TestAI;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 
 /**
@@ -85,6 +87,10 @@ public class Main extends SimpleApplication implements ActionListener {
                 control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.wasd, SwerveType.FieldCentric);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+        AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
+                aicontrol = new TestAI();
+        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
+        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(1,0,1));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);

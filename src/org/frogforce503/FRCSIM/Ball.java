@@ -230,20 +230,4 @@ public class Ball {
             }
         }*/
     }
-    
-    public static enum Zone{
-        Red(), White(), Blue();
-        public static Zone getZone(Vector3f point){
-            if(Math.abs(point.x) <= Main.in(9*12)){
-                return White;
-            }
-            if(point.x > Main.in(9*12)){
-                return Red;
-            }
-            if(point.x < Main.in(-9*12)){
-                return Blue;
-            }
-            throw new Error();
-        }
-    }
 }
