@@ -79,18 +79,12 @@ public class Main extends SimpleApplication implements ActionListener {
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
         //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
-        AbstractSubsystem drivetrain = new TankDrivetrain(), 
+        AbstractSubsystem drivetrain = new SwerveDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
-                control = new TankPlayer(TankPlayer.TankKeyMapping.std);
+                control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.wasd, SwerveType.FieldCentric);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-        AbstractSubsystem drivetrainwasd = new TankDrivetrain(), 
-                shooterwasd = new BasicShooter(), 
-                intakewasd = new BasicIntake(), 
-                controlwasd = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
-        AbstractSubsystem[] subsystemswasd = new AbstractSubsystem[]{drivetrainwasd, intakewasd, controlwasd, shooterwasd};
-        new Robot(subsystemswasd, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(1,0,0));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);

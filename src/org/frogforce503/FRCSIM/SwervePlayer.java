@@ -41,15 +41,19 @@ public class SwervePlayer extends AbstractControl{
     
     @Override
     public void update() {
-        float FWR = Main.InputManager.isPressedi(keyMapping.up)-Main.InputManager.isPressedi(keyMapping.down),
-                STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left),
-                omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
-        switch(type){
-            case FieldCentric:
-                drivetrain.updateFC(FWR, STR, omega);
-                break;
-            case RobotCentric:
-                drivetrain.updateRC(FWR, STR, omega);
+        if(Main.InputManager.isPressed("g")){
+            drivetrain.driveTowardsPoint(Vector3f.ZERO);
+        } else {
+            float FWR = Main.InputManager.isPressedi(keyMapping.up)-Main.InputManager.isPressedi(keyMapping.down),
+                    STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left),
+                    omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
+            switch(type){
+                case FieldCentric:
+                    drivetrain.updateFC(FWR, STR, omega);
+                    break;
+                case RobotCentric:
+                    drivetrain.updateRC(FWR, STR, omega);
+            }
         }
     }
     

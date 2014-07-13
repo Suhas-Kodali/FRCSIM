@@ -1,5 +1,6 @@
 package org.frogforce503.FRCSIM;
 
+import com.jme3.math.Vector3f;
 import java.util.EnumMap;
 
 /**
@@ -34,6 +35,10 @@ public class TankPlayer extends AbstractControl{
     
     @Override
     public void update() {
+        if(Main.InputManager.isPressed("g")){
+            drivetrain.driveTowardsPoint(Vector3f.ZERO);
+            return;
+        }
         float cleft = Main.InputManager.isPressedi(keyMapping.left),
                 cright = Main.InputManager.isPressedi(keyMapping.right),
                 cup = Main.InputManager.isPressedi(keyMapping.up),
