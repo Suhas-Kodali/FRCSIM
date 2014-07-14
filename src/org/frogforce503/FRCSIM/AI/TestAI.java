@@ -1,6 +1,7 @@
 package org.frogforce503.FRCSIM.AI;
 
 import org.frogforce503.FRCSIM.Ball;
+import org.frogforce503.FRCSIM.Robot;
 import org.frogforce503.FRCSIM.Zone;
 
 /**
@@ -8,13 +9,12 @@ import org.frogforce503.FRCSIM.Zone;
  * @author Bryce
  */
 public class TestAI extends AIControl{
-    Zone[] zones = Zone.values();
-    int i = 0;
+    Robot target;
+    public TestAI(Robot target){
+        this.target = target;
+    }
+    
     public AbstractProgram chooseNextProgram() {
-        i++;
-        if(i>2){
-            i = 0;
-        }
-        return new GoToZoneProgram(zones[i], 1);
+        return new GoToProgram(new InterferencePosition(Ball.balls.get(0)), -1);
     }
 }

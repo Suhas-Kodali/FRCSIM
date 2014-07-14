@@ -38,6 +38,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static boolean isStarted = false;
     public static Scene scene;
     public static TankKeyMapping keyMapping;
+    public static Joystick[] joysticks;
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
@@ -54,11 +55,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public void simpleInitApp() {
         
         initMaterials();
-        
-        Joystick[] joysticks = inputManager.getJoysticks();
-        for(Joystick joystick : joysticks){
-            InputManager.addJoystick(joystick.getJoyId(), 0, 1);
-        }
+        setupKeys();
         
         inputManager.addRawInputListener( new JoystickEventManager() );
         
@@ -70,34 +67,6 @@ public class Main extends SimpleApplication implements ActionListener {
         stateManager.attach(bulletAppState);
     }
 
-    private void setupKeys() {
-        
-        int[] keys = new int[]{KeyInput.KEY_A,KeyInput.KEY_B,KeyInput.KEY_C,
-                KeyInput.KEY_D,KeyInput.KEY_E,KeyInput.KEY_F,KeyInput.KEY_G,
-                KeyInput.KEY_H,KeyInput.KEY_I,KeyInput.KEY_J,KeyInput.KEY_K,
-                KeyInput.KEY_L,KeyInput.KEY_M,KeyInput.KEY_N,KeyInput.KEY_O,
-                KeyInput.KEY_P,KeyInput.KEY_Q,KeyInput.KEY_R,KeyInput.KEY_S,
-                KeyInput.KEY_T,KeyInput.KEY_U,KeyInput.KEY_V,KeyInput.KEY_W,
-                KeyInput.KEY_X,KeyInput.KEY_Y,KeyInput.KEY_Z};
-        for(char i = 0; i+'a' <= 'z'; i++){
-            inputManager.addMapping(new String(new char[]{(char)(i+'a')}), new KeyTrigger(keys[i]));
-            inputManager.addListener(this, new String(new char[]{(char)(i+'a')}));
-        }
-        inputManager.addMapping("left", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("right", new KeyTrigger(KeyInput.KEY_RIGHT));
-        inputManager.addMapping("up", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("down", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("space", new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addMapping("enter", new KeyTrigger(KeyInput.KEY_RETURN));
-        inputManager.addMapping("pgdwn", new KeyTrigger(KeyInput.KEY_PGDN));
-        inputManager.addListener(this, "left");
-        inputManager.addListener(this, "right");
-        inputManager.addListener(this, "up");
-        inputManager.addListener(this, "down");
-        inputManager.addListener(this, "space");
-        inputManager.addListener(this, "enter");
-        inputManager.addListener(this, "pgdwn");
-    }
     
     public static float in(float in){
         return in/39.3701f;
@@ -130,12 +99,6 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public void startGame(){
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-        setupKeys();
-         
-        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
-        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
-        //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
-        
         AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
@@ -146,12 +109,59 @@ public class Main extends SimpleApplication implements ActionListener {
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         //new Ball(rootN
         //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+//        AbstractSubsystem drivetrain = new TankDrivetrain(), 
+//                shooter = new BasicShooter(), 
+//                intake = new BasicIntake(),
+//                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
+//        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
+//        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+//        AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
+//                aicontrol = new TestAI(player);
+//        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
+//        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
+        
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         
         cam.setLocation(new Vector3f(Field.length, 12, 12));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
         
         isStarted = true;
+    }
+
+    private void setupKeys() {
+        
+        int[] keys = new int[]{KeyInput.KEY_A,KeyInput.KEY_B,KeyInput.KEY_C,
+                KeyInput.KEY_D,KeyInput.KEY_E,KeyInput.KEY_F,KeyInput.KEY_G,
+                KeyInput.KEY_H,KeyInput.KEY_I,KeyInput.KEY_J,KeyInput.KEY_K,
+                KeyInput.KEY_L,KeyInput.KEY_M,KeyInput.KEY_N,KeyInput.KEY_O,
+                KeyInput.KEY_P,KeyInput.KEY_Q,KeyInput.KEY_R,KeyInput.KEY_S,
+                KeyInput.KEY_T,KeyInput.KEY_U,KeyInput.KEY_V,KeyInput.KEY_W,
+                KeyInput.KEY_X,KeyInput.KEY_Y,KeyInput.KEY_Z};
+        for(char i = 0; i+'a' <= 'z'; i++){
+            inputManager.addMapping(new String(new char[]{(char)(i+'a')}), new KeyTrigger(keys[i]));
+            inputManager.addListener(this, new String(new char[]{(char)(i+'a')}));
+        }
+        inputManager.addMapping("left", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("right", new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping("up", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("down", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("space", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("enter", new KeyTrigger(KeyInput.KEY_RETURN));
+        inputManager.addMapping("pgdwn", new KeyTrigger(KeyInput.KEY_PGDN));
+        inputManager.addListener(this, "left");
+        inputManager.addListener(this, "right");
+        inputManager.addListener(this, "up");
+        inputManager.addListener(this, "down");
+        inputManager.addListener(this, "space");
+        inputManager.addListener(this, "enter");
+        inputManager.addListener(this, "pgdwn");
+        joysticks = inputManager.getJoysticks();
+        for(Joystick joystick : joysticks){
+            InputManager.addJoystick(joystick.getJoyId(), 0, 1);
+        }
+        
+        inputManager.addRawInputListener( new JoystickEventManager() );
     }
     
     @Override
@@ -177,7 +187,8 @@ public class Main extends SimpleApplication implements ActionListener {
 
         public void onJoyButtonEvent(JoyButtonEvent evt) {
             if(evt.isPressed()){
-            InputManager.press(evt.getButton().getName());
+                InputManager.press(evt.getButton().getName());
+                System.out.println(evt.getButton().getName());
             }else{
                 InputManager.release(evt.getButton().getName());
             }
@@ -235,19 +246,11 @@ public class Main extends SimpleApplication implements ActionListener {
             }
         }
         
-        public static float getAxisValue(int id, int axis, boolean negative){
-            if(negative){
-                if(axisMaps.get(id).get(axis) < -0.1){
-                    return -axisMaps.get(id).get(axis);
-                }else{
-                    return 0;
-                }
+        public static float getAxisValue(int id, int axis){
+            if(axisMaps.get(id).get(axis) > 0.1 || axisMaps.get(id).get(axis) < -0.1){
+                return axisMaps.get(id).get(axis);
             }else{
-                if(axisMaps.get(id).get(axis) > 0.1){
-                    return axisMaps.get(id).get(axis);
-                }else{
-                    return 0;
-                }
+                return 0;
             }
         }
         

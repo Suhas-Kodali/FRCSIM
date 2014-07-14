@@ -1,12 +1,13 @@
 package org.frogforce503.FRCSIM;
 
+import org.frogforce503.FRCSIM.AI.Position;
 import com.jme3.math.Vector3f;
 
 /**
  *
  * @author Bryce
  */
-public enum Zone {
+public enum Zone implements Position{
     Red, White, Blue;
 
     public static Zone getZone(Vector3f point) {
@@ -22,7 +23,7 @@ public enum Zone {
         throw new Error();
     }
 
-    public Vector3f getCenter() {
+    public Vector3f getPosition() {
         switch (this) {
             case Red:
                 return new Vector3f(Main.in(18*12), 0, 0);

@@ -58,7 +58,7 @@ public class Scene {
                       valignCenter();
                       height("50%");
                       width("50%");
-                      interactOnClick("changeScreen(controls_screen)");
+                      interactOnClick("changeScreen(tank_controls)");
                     }});
  
                 }});
@@ -86,7 +86,7 @@ public class Scene {
         // </layer>
       }}.build(nifty));
      
-        nifty.addScreen("controls_screen", new ScreenBuilder("controls"){{
+        nifty.addScreen("tank_controls", new ScreenBuilder("controls"){{
         controller(new ScreenListener()); // Screen properties       
  
         // <layer>
@@ -135,6 +135,7 @@ public class Scene {
  
                 }});
                 
+                if(Main.joysticks.length > 0){
                 panel(new PanelBuilder("Joystick") {{
                     childLayoutCenter();
                     valignCenter();
@@ -152,7 +153,7 @@ public class Scene {
                       interactOnRelease("setJoystickControl()");
                     }});
  
-                }});
+                }});}
             // </panel>
           }});
         // </layer>
