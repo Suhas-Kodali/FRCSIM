@@ -23,8 +23,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.frogforce503.FRCSIM.AI.TestAI;
-import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
+import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 
 /**
  *
@@ -33,11 +32,12 @@ import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 public class Main extends SimpleApplication implements ActionListener {
 
     public static Material red, black, blue, green, darkGray, cage;
-    public static Scene scene;
     public static Field field;
     public static Main app;
     public static BulletAppState bulletAppState;
     public static boolean isStarted = false;
+    public static Scene scene;
+    public static TankKeyMapping keyMapping;
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
@@ -52,71 +52,22 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
+        
+        initMaterials();
+        
         Joystick[] joysticks = inputManager.getJoysticks();
         for(Joystick joystick : joysticks){
             InputManager.addJoystick(joystick.getJoyId(), 0, 1);
         }
         
         inputManager.addRawInputListener( new JoystickEventManager() );
+        
         scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
+        
         scene.initScreens();
         scene.startScreen();
-        red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        red.getAdditionalRenderState().setWireframe(false);
-        red.setColor("Color", ColorRGBA.Red); 
-        black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        black.getAdditionalRenderState().setWireframe(false);
-        black.setColor("Color", ColorRGBA.Black); 
-        cage = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        cage.getAdditionalRenderState().setWireframe(false);
-        cage.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        TextureKey key = new TextureKey("Textures/cage.png");
-        Texture tex = assetManager.loadTexture(key);
-        cage.setTexture("ColorMap", tex);
-        blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        blue.getAdditionalRenderState().setWireframe(false);
-        blue.setColor("Color", ColorRGBA.Blue);
-        green = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        green.getAdditionalRenderState().setWireframe(false);
-        green.setColor("Color", ColorRGBA.Green); 
-        darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        darkGray.getAdditionalRenderState().setWireframe(false);
-        darkGray.setColor("Color", ColorRGBA.DarkGray); 
-        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
-        scene.initScreens();
-        scene.startScreen();
-        
-        
-        
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-        setupKeys();
-        
-        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
-        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
-        //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
-        AbstractSubsystem drivetrain = new SwerveDrivetrain(), 
-                shooter = new BasicShooter(), 
-                intake = new BasicIntake(), 
-                control = new TankPlayer(TankPlayer.TankKeyMapping.joy);
-                control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.wasd, SwerveType.FieldCentric);
-        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
-        new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-        AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
-                aicontrol = new TestAI();
-        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
-        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(1,0,1));
-        
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-        
-        cam.setLocation(new Vector3f(0, 12, 12));
-        cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
-        flyCam.setEnabled(false);
-        
-        isStarted = true;
     }
 
     private void setupKeys() {
@@ -150,8 +101,59 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public static float in(float in){
         return in/39.3701f;
-    }    
-
+    }
+    
+    public void initMaterials(){
+        red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        red.getAdditionalRenderState().setWireframe(false);
+        red.setColor("Color", ColorRGBA.Red); 
+        black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        black.getAdditionalRenderState().setWireframe(false);
+        black.setColor("Color", ColorRGBA.Black); 
+        cage = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        cage.getAdditionalRenderState().setWireframe(false);
+        cage.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        TextureKey key = new TextureKey("Textures/cage.png");
+        Texture tex = assetManager.loadTexture(key);
+        cage.setTexture("ColorMap", tex);
+        blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        blue.getAdditionalRenderState().setWireframe(false);
+        blue.setColor("Color", ColorRGBA.Blue);
+        green = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        green.getAdditionalRenderState().setWireframe(false);
+        green.setColor("Color", ColorRGBA.Green); 
+        darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        darkGray.getAdditionalRenderState().setWireframe(false);
+        darkGray.setColor("Color", ColorRGBA.DarkGray); 
+       
+    }
+    
+    public void startGame(){
+        field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
+        setupKeys();
+         
+        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
+        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
+        //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
+        
+        AbstractSubsystem drivetrain = new TankDrivetrain(), 
+                shooter = new BasicShooter(), 
+                intake = new BasicIntake(), 
+                control = new TankPlayer(keyMapping);
+        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
+        new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+        
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        //new Ball(rootN
+        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+        
+        cam.setLocation(new Vector3f(Field.length, 12, 12));
+        cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
+        flyCam.setEnabled(false);
+        
+        isStarted = true;
+    }
+    
     @Override
     public void simpleUpdate(float tpf) {
         if(isStarted){
@@ -258,7 +260,6 @@ public class Main extends SimpleApplication implements ActionListener {
     public void onAction(String binding, boolean value, float tpf) {
         if(value == true){
             InputManager.press(binding);
-            InputManager shit = new InputManager();
         } else {
             InputManager.release(binding);
         }
