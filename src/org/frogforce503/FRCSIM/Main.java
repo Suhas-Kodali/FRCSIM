@@ -3,9 +3,17 @@ package org.frogforce503.FRCSIM;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.input.Joystick;
 import com.jme3.input.KeyInput;
+import com.jme3.input.RawInputListener;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.event.JoyAxisEvent;
+import com.jme3.input.event.JoyButtonEvent;
+import com.jme3.input.event.KeyInputEvent;
+import com.jme3.input.event.MouseButtonEvent;
+import com.jme3.input.event.MouseMotionEvent;
+import com.jme3.input.event.TouchEvent;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
@@ -15,7 +23,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
+import java.util.Map;
 
 /**
  *
@@ -29,13 +37,12 @@ public class Main extends SimpleApplication implements ActionListener {
     public static Main app;
     public static BulletAppState bulletAppState;
     public static boolean isStarted = false;
-    
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
         appSettings.setSettingsDialogImage("Textures/first-vertical.png");
         appSettings.setUseJoysticks(true);
-        appSettings.setResolution(1280, 768);
+        appSettings.setResolution(1280, 600);
         app.setDisplayFps(false);
         app.setDisplayStatView(false);
         app.setSettings(appSettings);
@@ -44,6 +51,12 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
+        Joystick[] joysticks = inputManager.getJoysticks();
+        for(Joystick joystick : joysticks){
+            InputManager.addJoystick(joystick.getJoyId(), 0, 1);
+        }
+        
+        inputManager.addRawInputListener( new JoystickEventManager() );
         scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
         scene.initScreens();
         scene.startScreen();
@@ -82,7 +95,7 @@ public class Main extends SimpleApplication implements ActionListener {
         AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
-                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
+                control = new TankPlayer(TankPlayer.TankKeyMapping.joy);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
         
@@ -98,6 +111,7 @@ public class Main extends SimpleApplication implements ActionListener {
     }
 
     private void setupKeys() {
+        
         int[] keys = new int[]{KeyInput.KEY_A,KeyInput.KEY_B,KeyInput.KEY_C,
                 KeyInput.KEY_D,KeyInput.KEY_E,KeyInput.KEY_F,KeyInput.KEY_G,
                 KeyInput.KEY_H,KeyInput.KEY_I,KeyInput.KEY_J,KeyInput.KEY_K,
@@ -140,10 +154,40 @@ public class Main extends SimpleApplication implements ActionListener {
         }
     }
     
+    public static final class JoystickEventManager implements RawInputListener{
+
+        public void beginInput() {}
+
+        public void endInput() {}
+
+        public void onJoyAxisEvent(JoyAxisEvent evt) {
+            InputManager.joystickAxisEvent(evt.getJoyIndex(), evt.getAxisIndex(), evt.getValue());
+        }
+
+        public void onJoyButtonEvent(JoyButtonEvent evt) {
+            if(evt.isPressed()){
+            InputManager.press(evt.getButton().getName());
+            }else{
+                InputManager.release(evt.getButton().getName());
+            }
+        }
+
+        public void onMouseMotionEvent(MouseMotionEvent evt) {}
+
+        public void onMouseButtonEvent(MouseButtonEvent evt) {}
+
+        public void onKeyEvent(KeyInputEvent evt) {}
+
+        public void onTouchEvent(TouchEvent evt) {}
+        
+    }
+    
     public static final class InputManager{
         private InputManager() {}
+        private static ArrayList<HashMap<Integer, Float>> axisMaps = new ArrayList<HashMap<Integer, Float>>();
         private static ArrayList<String> pressed = new ArrayList<String>();
         private static HashMap<String, Runnable> listeners = new HashMap<String, Runnable>();
+        
         public static void press(String key){
             pressed.add(key);
             if(listeners.containsKey(key)){
@@ -167,6 +211,35 @@ public class Main extends SimpleApplication implements ActionListener {
             listeners.remove(key);
         }
         
+        public static void addJoystick(int id, int upDownAxis, int leftRightAxis){
+            HashMap<Integer, Float> axes = new HashMap();
+            axes.put(upDownAxis, 0f);
+            axes.put(leftRightAxis, 0f);
+            axisMaps.add(id, axes);
+        }
+        
+        public static void joystickAxisEvent(int id, int axis, float value){
+            if(axisMaps.get(id).get(axis) != null){
+                axisMaps.get(id).put(axis, value);
+            }
+        }
+        
+        public static float getAxisValue(int id, int axis, boolean negative){
+            if(negative){
+                if(axisMaps.get(id).get(axis) < -0.1){
+                    return -axisMaps.get(id).get(axis);
+                }else{
+                    return 0;
+                }
+            }else{
+                if(axisMaps.get(id).get(axis) > 0.1){
+                    return axisMaps.get(id).get(axis);
+                }else{
+                    return 0;
+                }
+            }
+        }
+        
         public static int isPressedi(String key){
             return (pressed.contains(key)?1:0);
         }
@@ -176,6 +249,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public void onAction(String binding, boolean value, float tpf) {
         if(value == true){
             InputManager.press(binding);
+            InputManager shit = new InputManager();
         } else {
             InputManager.release(binding);
         }

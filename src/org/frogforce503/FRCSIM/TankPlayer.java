@@ -32,16 +32,29 @@ public class TankPlayer extends AbstractControl{
     
     @Override
     public void update() {
-        float cleft = Main.InputManager.isPressedi(keyMapping.left),
-                cright = Main.InputManager.isPressedi(keyMapping.right),
-                cup = Main.InputManager.isPressedi(keyMapping.up),
-                cdown = Main.InputManager.isPressedi(keyMapping.down);
+        float cleft, cright, cup, cdown;
+        if(keyMapping.joystick == null){
+            cleft = Main.InputManager.isPressedi(keyMapping.left);
+            cright = Main.InputManager.isPressedi(keyMapping.right);
+            cup = Main.InputManager.isPressedi(keyMapping.up);
+            cdown = Main.InputManager.isPressedi(keyMapping.down);
+        }else{
+            cleft = Main.InputManager.getAxisValue(keyMapping.joystick, 1, true);
+            cright = Main.InputManager.getAxisValue(keyMapping.joystick, 1, false);
+            cup = Main.InputManager.getAxisValue(keyMapping.joystick, 0, true);
+            cdown = Main.InputManager.getAxisValue(keyMapping.joystick, 0, false);
+            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 1, true));
+            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 1, false));
+            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 0, true));
+            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 0, false));
+        }
         drivetrain.update(cup, cdown, cleft, cright);
     }
     
     public static class TankKeyMapping{
         public final String up, down, left, right, load, shoot, inbound;
-        public TankKeyMapping(String up, String down, String left, String right, String load, String shoot, String inbound){
+        public final Integer joystick;
+        public TankKeyMapping(String up, String down, String left, String right, String load, String shoot, String inbound, Integer joystick){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -49,10 +62,13 @@ public class TankPlayer extends AbstractControl{
             this.load = load;
             this.shoot = shoot;
             this.inbound = inbound;
+            this.joystick = joystick;
         }
-        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgdwn", "enter", "p");
-        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "r", "space", "i");
-        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "", "", "", "");
+       
+        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgdwn", "enter", "p", null);
+        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "r", "space", "i", null);
+        public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "Button 1", "Button 0", "Button 5", 0);
+        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "", "", "", "", null);
     }
     
     public void setKeyMapping(TankKeyMapping src){

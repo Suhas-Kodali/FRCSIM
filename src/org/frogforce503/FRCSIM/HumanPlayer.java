@@ -114,7 +114,6 @@ public class HumanPlayer {
         public final Vector3f holdingPosition;
         private HumanPlayerPosition(Vector3f holdingPosition){
             this.holdingPosition = holdingPosition;
-            
         }
     }
 }
