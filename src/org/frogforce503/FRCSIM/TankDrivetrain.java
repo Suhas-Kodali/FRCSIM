@@ -121,12 +121,17 @@ public class TankDrivetrain extends AbstractDrivetrain{
     protected void update(float cup, float cdown, float cleft, float cright){
         float left = 0;
         float right = 0;
-        float curSpeed = Math.abs(vehicle.getCurrentVehicleSpeedKmHour());
-        float accelerationFactor = (maxSpeed-curSpeed)/maxSpeed * accelerationForce;
-        
         float curTurn = cleft-cright;
-        left  += accelerationFactor * (cup-cdown) + turningForce * curTurn;
-        right += accelerationFactor * (cup-cdown) - turningForce * curTurn;
+        float curPow = cup-cdown, accelerationFactor;
+        
+        float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
+        if(curPow*curSpeed > 0){
+            accelerationFactor = (maxSpeed-Math.abs(curSpeed))/maxSpeed * accelerationForce;
+        } else {
+            accelerationFactor = accelerationForce;
+        }
+        left  += accelerationFactor * (curPow) + turningForce * curTurn;
+        right += accelerationFactor * (curPow) - turningForce * curTurn;
         
         if(Math.abs(lastTurn)>.1 && Math.abs(curTurn)<.1){
             vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
@@ -160,5 +165,30 @@ public class TankDrivetrain extends AbstractDrivetrain{
     public void update() {}
 
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {}
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {}
+
+    
+    private float straightAngleThreshold = FastMath.PI/6;
+    @Override
+    public void driveTowardsPoint(Vector3f point) {
+        float turn = 1, pow = 1;
+        Vector3f vehicleVector = vehicle.getForwardVector(null), vectorToPoint = point.subtract(vehicle.getPhysicsLocation());
+        float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c);
+        if(FastMath.abs(angle)>FastMath.HALF_PI){
+            vehicleVector = vehicle.getForwardVector(null).negate();
+            vectorToPoint = point.subtract(vehicle.getPhysicsLocation());
+            s = vehicleVector.cross(vectorToPoint).length();
+            c = vehicleVector.dot(vectorToPoint);
+            angle = FastMath.atan2(s, c);   
+            pow = -1;
+            if(FastMath.abs(angle)>FastMath.QUARTER_PI){
+                angle = 3;
+                pow = 0;                        
+            }
+        }
+        
+        pow *= vectorToPoint.dot(vehicleVector);
+        turn *= angle * vectorToPoint.length() / 10; 
+        update(pow, 0, turn, 0);
+    }
 }

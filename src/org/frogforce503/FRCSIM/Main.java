@@ -23,7 +23,8 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import org.frogforce503.FRCSIM.AI.TestAI;
+import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 
 /**
  *
@@ -81,6 +82,9 @@ public class Main extends SimpleApplication implements ActionListener {
         darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         darkGray.getAdditionalRenderState().setWireframe(false);
         darkGray.setColor("Color", ColorRGBA.DarkGray); 
+        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
+        scene.initScreens();
+        scene.startScreen();
         
         
         
@@ -92,19 +96,24 @@ public class Main extends SimpleApplication implements ActionListener {
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
         //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
-        AbstractSubsystem drivetrain = new TankDrivetrain(), 
+        AbstractSubsystem drivetrain = new SwerveDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
                 control = new TankPlayer(TankPlayer.TankKeyMapping.joy);
+                control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.wasd, SwerveType.FieldCentric);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+        AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
+                aicontrol = new TestAI();
+        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
+        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(1,0,1));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         
-        cam.setLocation(new Vector3f(0,12,12));
-        cam.lookAt(new Vector3f(0,0,0), Vector3f.UNIT_Y);
+        cam.setLocation(new Vector3f(0, 12, 12));
+        cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
         
         isStarted = true;
@@ -148,9 +157,9 @@ public class Main extends SimpleApplication implements ActionListener {
         if(isStarted){
             Robot.updateAll();
             Ball.updateAll();
+            HumanPlayer.updateAll();
             field.update();
             scene.update();
-            HumanPlayer.updateAll();
         }
     }
     

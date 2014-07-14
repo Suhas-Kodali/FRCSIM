@@ -13,13 +13,15 @@ public class SwervePlayer extends AbstractControl{
     private SwerveDrivetrain drivetrain;
     private AbstractIntake intake;
     private AbstractShooter shooter;
-
+    private Robot robot;
+    
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
         if(subsystems.get(SubsystemType.Drivetrain) instanceof SwerveDrivetrain){
             this.drivetrain = (SwerveDrivetrain) subsystems.get(SubsystemType.Drivetrain);
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
             this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
+            this.robot = robot;
         } else {
             throw new IllegalArgumentException("SwervePlayer only controls SwerveDrivetrains");
         }
@@ -39,15 +41,19 @@ public class SwervePlayer extends AbstractControl{
     
     @Override
     public void update() {
-        float FWR = Main.InputManager.isPressedi(keyMapping.up)-Main.InputManager.isPressedi(keyMapping.down),
-                STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left),
-                omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
-        switch(type){
-            case FieldCentric:
-                drivetrain.updateFC(FWR, STR, omega);
-                break;
-            case RobotCentric:
-                drivetrain.updateRC(FWR, STR, omega);
+        if(Main.InputManager.isPressed("g")){
+            drivetrain.driveTowardsPoint(Vector3f.ZERO);
+        } else {
+            float FWR = Main.InputManager.isPressedi(keyMapping.up)-Main.InputManager.isPressedi(keyMapping.down),
+                    STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left),
+                    omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
+            switch(type){
+                case FieldCentric:
+                    drivetrain.updateFC(FWR, STR, omega);
+                    break;
+                case RobotCentric:
+                    drivetrain.updateRC(FWR, STR, omega);
+            }
         }
     }
     

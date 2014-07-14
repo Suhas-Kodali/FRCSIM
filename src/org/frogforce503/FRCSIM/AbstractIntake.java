@@ -9,6 +9,7 @@ import java.util.EnumMap;
  */
 public abstract class AbstractIntake extends AbstractSubsystem{
     protected VehicleControl vehicle;
+    protected Robot robot;
     
     public abstract Ball getHeldBall();
     public abstract Ball getShootingBall();
@@ -55,7 +56,8 @@ public abstract class AbstractIntake extends AbstractSubsystem{
     }
     
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
         this.vehicle = ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl();
+        this.robot = robot;
     }
 }

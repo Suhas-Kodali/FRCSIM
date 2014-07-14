@@ -29,11 +29,11 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     private Alliance alliance;
     private final Node vehicleNode;
     private final VehicleControl vehicle;
-    private final float frictionForce = 20f;
-    private float maxTurn=7;
+    private final float frictionForce = 300f;
+    private float maxTurn=5;
     private float turnForce=500;
-    private float maxSpeed=7;
-    private float speedForce=500;
+    private float maxSpeed=5;
+    private float speedForce=1000;
     private Bumpers bumpers;
     public SwerveDrivetrain(){
         chassisNode = new Node("chassis Node");
@@ -103,6 +103,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
         }
+        vehicle.setDamping(.5f, .5f);
     }
     
     @Override
@@ -113,12 +114,23 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         bumpers.registerAlliance(alliance);
     }
     
-    protected void updateRC(float fwr, float str, float omega){
-        Vector2f V = new Vector2f(str, fwr);
-        float l2 = Main.in(11.25f);
+    protected void updateRC(float FWR, float STR, float omega){
+        FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
+        STR = (STR>1? 1 : (STR<-1? -1 : STR));
+        Vector2f V = new Vector2f(STR, FWR);
+        float l2 = Main.in(11.25f), speedFactor = speedForce, turnFactor = turnForce;
         
-        float speedFactor = (maxSpeed-vehicle.getLinearVelocity().length())/maxSpeed * speedForce;
-        float turnFactor = (maxTurn-Math.abs(vehicle.getAngularVelocity().dot(Vector3f.UNIT_Y)))/maxTurn * turnForce;
+        Vector2f forwardDirectionProjection = new Vector2f(vehicle.getForwardVector(null).x, vehicle.getForwardVector(null).z);
+        float angleFromX = forwardDirectionProjection.getAngle();
+        Vector2f command = new Vector2f(FWR, STR);
+        command.rotateAroundOrigin(angleFromX+FastMath.HALF_PI, false);
+        
+        if(command.dot(new Vector2f(vehicle.getLinearVelocity().z, -vehicle.getLinearVelocity().x))<0){
+            speedFactor *= (maxSpeed-vehicle.getLinearVelocity().length())/maxSpeed;
+        } 
+        if(vehicle.getAngularVelocity().dot(Vector3f.UNIT_Y) * omega < 0){
+            turnFactor *= (maxTurn-Math.abs(vehicle.getAngularVelocity().dot(Vector3f.UNIT_Y)))/maxTurn;
+        }
         
         V.mult(speedFactor, V);
         l2 *= turnFactor;
@@ -144,6 +156,11 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     }
 
     void updateFC(float FWR, float STR, float omega) {
+        System.out.print(FWR + "=>");
+        FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
+        STR = (STR>1? 1 : (STR<-1? -1 : STR));
+        System.out.println(FWR);
+        
         Vector2f forwardDirectionProjection = new Vector2f(vehicle.getForwardVector(null).x, vehicle.getForwardVector(null).z);
         float angleFromX = forwardDirectionProjection.getAngle();
         Vector2f command = new Vector2f(FWR, STR);
@@ -165,5 +182,11 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     public void update() {}
 
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems) {}
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {}
+    
+    public void driveTowardsPoint(Vector3f point){
+        Vector3f curPos = vehicle.getPhysicsLocation();
+        float z = (curPos.z-point.z), x = (point.x - curPos.x);
+        updateFC(z, x, 0);
+    }
 }

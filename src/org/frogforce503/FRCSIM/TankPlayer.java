@@ -1,5 +1,6 @@
 package org.frogforce503.FRCSIM;
 
+import com.jme3.math.Vector3f;
 import java.util.EnumMap;
 
 /**
@@ -11,13 +12,14 @@ public class TankPlayer extends AbstractControl{
     private AbstractIntake intake;
     private AbstractShooter shooter;
     private TankKeyMapping tempMapping;
+    private Robot robot;
     
     public TankPlayer(TankKeyMapping keyMapping){
         tempMapping = keyMapping;
     }
     
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems){
+    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot){
         if(subsystems.get(SubsystemType.Drivetrain) instanceof TankDrivetrain){
             this.drivetrain = (TankDrivetrain) subsystems.get(SubsystemType.Drivetrain);
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
@@ -26,6 +28,7 @@ public class TankPlayer extends AbstractControl{
             throw new IllegalArgumentException("TankPlayer only controls TankDrivetrains");
         }
         setKeyMapping(tempMapping);
+        this.robot = robot;
     }
     
     private TankKeyMapping keyMapping = TankKeyMapping.NULL;
@@ -43,10 +46,10 @@ public class TankPlayer extends AbstractControl{
             cright = Main.InputManager.getAxisValue(keyMapping.joystick, 1, false);
             cup = Main.InputManager.getAxisValue(keyMapping.joystick, 0, true);
             cdown = Main.InputManager.getAxisValue(keyMapping.joystick, 0, false);
-            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 1, true));
-            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 1, false));
-            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 0, true));
-            System.out.println(Main.InputManager.getAxisValue(keyMapping.joystick, 0, false));
+        }
+        if(Main.InputManager.isPressed("g")){
+            drivetrain.driveTowardsPoint(Vector3f.ZERO);
+            return;
         }
         drivetrain.update(cup, cdown, cleft, cright);
     }
