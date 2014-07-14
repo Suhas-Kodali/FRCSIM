@@ -35,20 +35,29 @@ public class TankPlayer extends AbstractControl{
     
     @Override
     public void update() {
+        float cleft, cright, cup, cdown;
+        if(keyMapping.joystick == -1){
+            cleft = Main.InputManager.isPressedi(keyMapping.left);
+            cright = Main.InputManager.isPressedi(keyMapping.right);
+            cup = Main.InputManager.isPressedi(keyMapping.up);
+            cdown = Main.InputManager.isPressedi(keyMapping.down);
+        }else{
+            cleft = 0;
+            cright = Main.InputManager.getAxisValue(keyMapping.joystick, 1);
+            cup = 0;
+            cdown = Main.InputManager.getAxisValue(keyMapping.joystick, 0);
+        }
         if(Main.InputManager.isPressed("g")){
             drivetrain.driveTowardsPoint(Vector3f.ZERO);
             return;
         }
-        float cleft = Main.InputManager.isPressedi(keyMapping.left),
-                cright = Main.InputManager.isPressedi(keyMapping.right),
-                cup = Main.InputManager.isPressedi(keyMapping.up),
-                cdown = Main.InputManager.isPressedi(keyMapping.down);
         drivetrain.update(cup, cdown, cleft, cright);
     }
     
     public static class TankKeyMapping{
         public final String up, down, left, right, load, shoot, inbound;
-        public TankKeyMapping(String up, String down, String left, String right, String load, String shoot, String inbound){
+        public final int joystick;
+        public TankKeyMapping(String up, String down, String left, String right, String load, String shoot, String inbound, int joystick){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -56,10 +65,13 @@ public class TankPlayer extends AbstractControl{
             this.load = load;
             this.shoot = shoot;
             this.inbound = inbound;
+            this.joystick = joystick;
         }
-        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgdwn", "enter", "p");
-        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "r", "space", "i");
-        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "", "", "", "");
+       
+        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgdwn", "enter", "p", -1);
+        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "r", "space", "i", -1);
+        public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "Button 1", "Button 0", "Button 5", 0);
+        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "", "", "", "", -1);
     }
     
     public void setKeyMapping(TankKeyMapping src){

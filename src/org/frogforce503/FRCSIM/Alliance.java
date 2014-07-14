@@ -23,7 +23,6 @@ public enum Alliance {
                 position[i] = new Vector3f(Main.field.length/2 - zOff, 0, (Main.field.width - xOff)/2 - (((Main.field.width - xOff)/(2f))*i));
             }else{
                 position[i] = new Vector3f(-Main.field.length/2 + zOff, 0, (Main.field.width - xOff)/2 - (((Main.field.width - xOff)/(2f))*i));
-                System.out.println(position[i]);
             }
         }
         if(material == Main.red){
