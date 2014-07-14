@@ -146,7 +146,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
             vehicle.accelerate(i, right);
         }
         
-        vehicle.brake(frictionForce);
+        vehicle.brake(frictionForce * 1f / (1-Math.abs(curPow)));
     }
 
     @Override
@@ -166,7 +166,6 @@ public class TankDrivetrain extends AbstractDrivetrain{
     public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {}
 
     
-    private float straightAngleThreshold = FastMath.PI/6;
     @Override
     public void driveTowardsPoint(Vector3f point) {
         float turn = 1, pow = 1;
@@ -174,18 +173,18 @@ public class TankDrivetrain extends AbstractDrivetrain{
         float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c);
         if(FastMath.abs(angle)>FastMath.HALF_PI){
             vehicleVector = vehicle.getForwardVector(null).negate();
-            vectorToPoint = point.subtract(vehicle.getPhysicsLocation());
-            s = vehicleVector.cross(vectorToPoint).length();
-            c = vehicleVector.dot(vectorToPoint);
-            angle = FastMath.atan2(s, c);   
+            angle = FastMath.PI-angle;   
             pow = -1;
-            if(FastMath.abs(angle)>FastMath.QUARTER_PI){
+            if(FastMath.abs(angle)>FastMath.PI/6){
                 angle = 3;
                 pow = 0;                        
             }
         }
         
         pow *= vectorToPoint.dot(vehicleVector);
+        if(vectorToPoint.dot(vehicleVector) < 0){
+            pow *= 1.5;
+        }
         turn *= angle * vectorToPoint.length() / 10; 
         update(pow, 0, turn, 0);
     }
