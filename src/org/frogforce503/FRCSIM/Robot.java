@@ -1,5 +1,6 @@
 package org.frogforce503.FRCSIM;
 
+import org.frogforce503.FRCSIM.AI.Position;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.math.Vector3f;
@@ -12,7 +13,7 @@ import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
  *
  * @author Bryce
  */
-public class Robot{
+public class Robot implements Position{
     protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
     private Node robotNode;
     protected static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
@@ -62,6 +63,29 @@ public class Robot{
     public final void setPhysicsLocation(Vector3f pos) {
         ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVehicleControl().setPhysicsLocation(pos);
     }    
+    
+    public AbstractDrivetrain getDrivetrain(){
+        return (AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain);
+    }
+    
+    public Vector3f getPosition(){
+        return ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getPosition();
+    }
+    
+    public static Robot getClosestRobot(Vector3f point, Alliance alliance){
+        float minDistance = Float.MAX_VALUE;
+        Robot robot = null;
+        for(Robot curRobot : robots){
+            if(curRobot.alliance == alliance){
+                float curDistance = curRobot.getPosition().subtract(point).length();
+                if(curDistance < minDistance){
+                    minDistance = curDistance;
+                    robot = curRobot;
+                }
+            }
+        }
+        return robot;
+    }
     
     public static ArrayList<RobotPosition> getRobotPositions(){
         ArrayList<RobotPosition> positions = new ArrayList<RobotPosition>();

@@ -103,6 +103,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
         }
+        vehicle.setFriction(.1f);
         vehicle.setDamping(.5f, .5f);
     }
     

@@ -81,20 +81,18 @@ public class Main extends SimpleApplication implements ActionListener {
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
         //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
         //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
-        AbstractSubsystem drivetrain = new SwerveDrivetrain(), 
+        AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
-                control = new SwervePlayer(SwervePlayer.SwerveKeyMapping.wasd, SwerveType.FieldCentric);
+                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
-        new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
         AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
-                aicontrol = new TestAI();
+                aicontrol = new TestAI(player);
         AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
-        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(1,0,1));
+        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         
         cam.setLocation(new Vector3f(0, 12, 12));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);

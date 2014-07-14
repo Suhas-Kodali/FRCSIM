@@ -1,5 +1,6 @@
 package org.frogforce503.FRCSIM;
 
+import org.frogforce503.FRCSIM.AI.Position;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
@@ -17,7 +18,7 @@ import java.util.Random;
  *
  * @author Bryce Paputa
  */
-public class Ball {
+public class Ball implements Position{
     
     public final Alliance alliance;
     public Geometry sphereGeometry;
@@ -92,8 +93,8 @@ public class Ball {
             //ball.setPosition(new Vector3f(((new Random()).nextFloat()-.5f)*Main.in(54*24), ((new Random()).nextFloat()-.5f)*5, ((new Random()).nextFloat()-.5f)*Main.in(25*24)));
         }
         if(blueCount<=0){
-            Ball ball = new Ball(Main.getRoot(), Main.bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-            ball.setPosition(Vector3f.UNIT_X.mult(Main.in(32*12)));
+            //Ball ball = new Ball(Main.getRoot(), Main.bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+            //ball.setPosition(Vector3f.UNIT_X.mult(Main.in(32*12)));
         }
     }
     
@@ -142,11 +143,12 @@ public class Ball {
         return owner != null;
     }
     
+    boolean doesExist = true;
     public void destroy(){
         getGeometry().removeFromParent();
         space.remove(getGeometry());
         balls.remove(this);
-        
+        doesExist = false;
         switch(alliance){
             case RED:
                 redCount--;
@@ -157,7 +159,10 @@ public class Ball {
     }
     
     public Vector3f getPosition(){
-        return sphereControl.getPhysicsLocation();
+        if(doesExist){
+            return sphereControl.getPhysicsLocation();
+        }
+        return null;
     }
     
     public Vector3f getVelocity(){
@@ -199,35 +204,5 @@ public class Ball {
         }
         int assistsNum = assists.size();
         return 5 * (assistsNum * (assistsNum - 1));
-        /*for(Entry e : occurrences.entrySet()){
-            ArrayList<Zone> list = (ArrayList<Zone>) e.getValue();
-            if(list.size() == 1){
-                if(!assists.contains(list.get(0))){
-                    assists.add(list.get(0));
-                }
-            }
-        }
-        for(Entry e : occurrences.entrySet()){
-            ArrayList<Zone> list = (ArrayList<Zone>) e.getValue();
-            if(list.size() == 2){
-                if(!assists.contains(list.get(0))){
-                    assists.add(list.get(0));
-                } else if (!assists.contains(list.get(1))){
-                    assists.add(list.get(1));
-                }
-            }
-        }
-        for(Entry e : occurrences.entrySet()){
-            ArrayList<Zone> list = (ArrayList<Zone>) e.getValue();
-            if(list.size() == 3){
-                if(!assists.contains(list.get(0))){
-                    assists.add(list.get(0));
-                } else if (!assists.contains(list.get(1))){
-                    assists.add(list.get(1));
-                } else if (!assists.contains(list.get(2))){
-                    assists.add(list.get(2));
-                }
-            }
-        }*/
     }
 }

@@ -106,6 +106,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
             vehicle.addWheel(node, new Vector3f(pos[i][0], pos[i][2], pos[i][1]),
                     wheelDirection, wheelAxle, restLength, radius, false);
             vehicleNode.attachChild(node);
+            vehicle.setFriction(.1f);   
         }            
     }
     
@@ -146,9 +147,6 @@ public class TankDrivetrain extends AbstractDrivetrain{
         }
         
         vehicle.brake(frictionForce);
-        if(vehicle.getLinearVelocity().length()<.1){
-            vehicle.brake(frictionForce*5);
-        }
     }
 
     @Override
