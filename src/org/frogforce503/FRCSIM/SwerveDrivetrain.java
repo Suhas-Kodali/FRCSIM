@@ -150,10 +150,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
             vehicle.accelerate(i, FSW[i][0]);
         }
         
-        vehicle.brake(frictionForce);
-        if(vehicle.getLinearVelocity().length()<.1){
-            vehicle.brake(frictionForce*5);
-        }
+        vehicle.brake(frictionForce * 2f / (Math.abs(FWR)+Math.abs(STR)));
     }
 
     void updateFC(float FWR, float STR, float omega) {
