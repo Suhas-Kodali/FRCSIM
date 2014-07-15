@@ -11,6 +11,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import static org.frogforce503.FRCSIM.Main.in;
 
@@ -20,9 +21,10 @@ import static org.frogforce503.FRCSIM.Main.in;
  */
 public class TankDrivetrain extends AbstractDrivetrain{
     protected VehicleControl vehicle;
-    private final float accelerationForce = 175f;
-    private final float turningForce = 100f;
-    private final float frictionForce = 2f;
+    private final float mass = 30000;
+    private final float accelerationForce = 175f * mass/30f;
+    private final float turningForce = 100f * mass/30f;
+    private final float frictionForce = 2f * mass/30f;
     private final float maxSpeed = 17;
     protected Alliance alliance;
     private Node chassisNode, vehicleNode;
@@ -31,7 +33,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
     protected AbstractShooter shooter;
     private Bumpers bumpers;
     
-    public TankDrivetrain() {
+    public TankDrivetrain(ArrayList<AbstractSubsystem> subsystems, PhysicsSpace space) {
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
@@ -41,6 +43,10 @@ public class TankDrivetrain extends AbstractDrivetrain{
         
         
         bumpers = new Bumpers(chassisNode, Main.in(28), Main.in(28), Main.in(2));
+        for(AbstractSubsystem subsystem : subsystems){
+            subsystem.registerPhysics(chassisNode, space, alliance);
+        }
+        
         
         collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
         //create vehicle node
@@ -58,7 +64,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
         vehicle.setSuspensionDamping(dampValue * 2.0f * FastMath.sqrt(stiffness));
         vehicle.setSuspensionStiffness(stiffness);
         vehicle.setFrictionSlip(1.5f);
-        vehicle.setMass(30);
+        vehicle.setMass(mass);
         //Create four wheels and add them at their locations
         Vector3f wheelDirection = new Vector3f(0, -1, 0);
         Vector3f wheelAxle = new Vector3f(-1, 0, 0);

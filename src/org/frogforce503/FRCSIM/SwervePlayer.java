@@ -60,8 +60,8 @@ public class SwervePlayer extends AbstractControl{
     SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL, tempMapping;
     
     public static class SwerveKeyMapping{
-        public final String up, down, left, right, rotateCCW, rotateCW, load, shoot, inbound;
-        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load, String shoot, String inbound){
+        public final String up, down, left, right, rotateCCW, rotateCW, load, shoot, spit, inbound;
+        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load, String shoot, String spit, String inbound){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -70,11 +70,12 @@ public class SwervePlayer extends AbstractControl{
             this.rotateCW = rotateCW;
             this.load = load;
             this.shoot = shoot;
+            this.spit = spit;
             this.inbound = inbound;
         }
-        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r", "space", "p");
-        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space", "i");
-        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "");
+        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r", "space", "c", "p");
+        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space", "shift", "i");
+        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "", "");
     }
     
     public void setKeyMapping(SwerveKeyMapping src){

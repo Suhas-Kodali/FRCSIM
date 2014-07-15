@@ -40,8 +40,8 @@ public class TankPlayer extends AbstractControl{
             turn = Main.InputManager.isPressedi(keyMapping.left) - Main.InputManager.isPressedi(keyMapping.right);
             power = Main.InputManager.isPressedi(keyMapping.up) - Main.InputManager.isPressedi(keyMapping.down);
         }else{
-            turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 1)/1.5f;
-            power = -Main.InputManager.getAxisValue(keyMapping.joystick, 0);
+            power = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, .5f);
+            turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 1, .5f);
         }
         if(Main.InputManager.isPressed("g")){
             drivetrain.driveTowardsPoint(Vector3f.ZERO);
@@ -51,23 +51,24 @@ public class TankPlayer extends AbstractControl{
     }
     
     public static class TankKeyMapping{
-        public final String up, down, left, right, load, shoot, inbound;
+        public final String up, down, left, right, load, shoot, spit, inbound;
         public final int joystick;
-        public TankKeyMapping(String up, String down, String left, String right, String load, String shoot, String inbound, int joystick){
+        public TankKeyMapping(String up, String down, String left, String right, String load, String shoot, String spit, String inbound, int joystick){
             this.up = up;
             this.down = down;
             this.left = left;
             this.right = right;
             this.load = load;
             this.shoot = shoot;
+            this.spit = spit;
             this.inbound = inbound;
             this.joystick = joystick;
         }
        
-        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgdwn", "enter", "p", -1);
-        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "r", "space", "i", -1);
-        public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "Button 1", "Button 0", "Button 5", 0);
-        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "", "", "", "", -1);
+        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgdwn", "enter", "shift", "p", -1);
+        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "r", "space", "c", "i", -1);
+        public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "Button 1", "Button 0", "Button 2", "Button 5", 0);
+        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "", "", "", "", "", -1);
     }
     
     public void setKeyMapping(TankKeyMapping src){
@@ -77,6 +78,9 @@ public class TankPlayer extends AbstractControl{
             }
             if(shooter != null){
                 Main.InputManager.removeListener(keyMapping.shoot);
+            }
+            if(shooter != null){
+                Main.InputManager.removeListener(keyMapping.spit);
             }
             Main.InputManager.removeListener(keyMapping.inbound);
         }
@@ -88,7 +92,9 @@ public class TankPlayer extends AbstractControl{
             if(shooter != null){
                 Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
             }
-            
+            if(shooter != null){
+                Main.InputManager.addListener(keyMapping.spit, shooter.spit);
+            }
         }
     }
 }

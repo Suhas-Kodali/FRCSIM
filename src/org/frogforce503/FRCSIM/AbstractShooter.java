@@ -30,7 +30,7 @@ public abstract class AbstractShooter extends AbstractSubsystem {
     
     public abstract void update();
     
-    protected void preShot(){
+    protected void preShot(float force){
         isShooting = true;
         (new Timer()).schedule(new TimerTask(){public void run(){intake.postShot(); postShot(); }}, shootLength);        
     }
@@ -43,15 +43,22 @@ public abstract class AbstractShooter extends AbstractSubsystem {
     private boolean isShooting = false;
     public Runnable shoot = new Runnable(){
         public void run(){
-            shoot();
+            System.out.println("shoot");
+            shoot(12);
         }
     };
     
-    public void shoot(){
+    public Runnable spit = new Runnable(){
+        public void run(){
+            shoot(3);
+        }
+    };
+    
+    public void shoot(float force){
         if(intake.hasBall() && ! isShooting){
             intake.preShot();
             if(intake.readyToShoot()){
-                preShot();
+                preShot(force);
             }
         }
     }
