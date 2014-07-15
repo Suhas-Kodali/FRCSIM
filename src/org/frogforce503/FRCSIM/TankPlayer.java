@@ -35,23 +35,19 @@ public class TankPlayer extends AbstractControl{
     
     @Override
     public void update() {
-        float cleft, cright, cup, cdown;
+        float power, turn;
         if(keyMapping.joystick == -1){
-            cleft = Main.InputManager.isPressedi(keyMapping.left);
-            cright = Main.InputManager.isPressedi(keyMapping.right);
-            cup = Main.InputManager.isPressedi(keyMapping.up);
-            cdown = Main.InputManager.isPressedi(keyMapping.down);
+            turn = Main.InputManager.isPressedi(keyMapping.left) - Main.InputManager.isPressedi(keyMapping.right);
+            power = Main.InputManager.isPressedi(keyMapping.up) - Main.InputManager.isPressedi(keyMapping.down);
         }else{
-            cleft = 0;
-            cright = Main.InputManager.getAxisValue(keyMapping.joystick, 1)/1.5f;
-            cup = 0;
-            cdown = Main.InputManager.getAxisValue(keyMapping.joystick, 0);
+            turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 1)/1.5f;
+            power = -Main.InputManager.getAxisValue(keyMapping.joystick, 0);
         }
         if(Main.InputManager.isPressed("g")){
             drivetrain.driveTowardsPoint(Vector3f.ZERO);
             return;
         }
-        drivetrain.update(cup, cdown, cleft, cright);
+        drivetrain.update(power, turn);
     }
     
     public static class TankKeyMapping{

@@ -25,10 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-<<<<<<< HEAD
 import org.frogforce503.FRCSIM.AI.TestAI;
-=======
->>>>>>> origin/master
+
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 
 /**

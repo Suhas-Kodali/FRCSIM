@@ -184,6 +184,6 @@ public class TankDrivetrain extends AbstractDrivetrain{
             pow *= 1.5;
         }
         turn *= angle * vectorToPoint.length() / 10; 
-        update(pow, 0, turn, 0);
+        update(pow, turn);
     }
 }
