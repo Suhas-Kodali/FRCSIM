@@ -23,8 +23,10 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.frogforce503.FRCSIM.AI.TestAI;
-import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
+import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 
 /**
  *
@@ -33,11 +35,13 @@ import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 public class Main extends SimpleApplication implements ActionListener {
 
     public static Material red, black, blue, green, darkGray, cage;
-    public static Scene scene;
     public static Field field;
     public static Main app;
     public static BulletAppState bulletAppState;
     public static boolean isStarted = false;
+    public static Scene scene;
+    public static TankKeyMapping keyMapping;
+    public static Joystick[] joysticks;
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
@@ -52,6 +56,25 @@ public class Main extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
+        
+        initMaterials();
+        setupKeys();
+        
+        
+        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
+        
+        scene.initScreens();
+        scene.startScreen();
+        bulletAppState = new BulletAppState();
+        stateManager.attach(bulletAppState);
+    }
+
+    
+    public static float in(float in){
+        return in/39.3701f;
+    }
+    
+    public void initMaterials(){
         red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         red.getAdditionalRenderState().setWireframe(false);
         red.setColor("Color", ColorRGBA.Red); 
@@ -73,20 +96,11 @@ public class Main extends SimpleApplication implements ActionListener {
         darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         darkGray.getAdditionalRenderState().setWireframe(false);
         darkGray.setColor("Color", ColorRGBA.DarkGray); 
-        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
-        scene.initScreens();
-        scene.startScreen();
-        
-        
-        
-        bulletAppState = new BulletAppState();
-        stateManager.attach(bulletAppState);
+       
+    }
+    
+    public void startGame(){
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-        setupKeys();
-        
-        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, TankPlayer.TankKeyMapping.std, Vector3f.ZERO);
-        //new TankPlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, TankPlayer.TankKeyMapping.wasd, new Vector3f(1,0,1));
-        //new SwervePlayer(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, SwervePlayer.SwerveKeyMapping.std, new Vector3f(1,0,1), SwervePlayer.SwerveType.FieldCentric);
         AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(),
@@ -100,7 +114,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         
-        cam.setLocation(new Vector3f(0, 12, 12));
+        cam.setLocation(new Vector3f(Field.length, 12, 12));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
         
@@ -134,7 +148,7 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addListener(this, "space");
         inputManager.addListener(this, "enter");
         inputManager.addListener(this, "pgdwn");
-        Joystick[] joysticks = inputManager.getJoysticks();
+        joysticks = inputManager.getJoysticks();
         for(Joystick joystick : joysticks){
             InputManager.addJoystick(joystick.getJoyId(), 0, 1);
         }
@@ -142,10 +156,6 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addRawInputListener( new JoystickEventManager() );
     }
     
-    public static float in(float in){
-        return in/39.3701f;
-    }    
-
     @Override
     public void simpleUpdate(float tpf) {
         if(isStarted){
@@ -169,7 +179,7 @@ public class Main extends SimpleApplication implements ActionListener {
 
         public void onJoyButtonEvent(JoyButtonEvent evt) {
             if(evt.isPressed()){
-            InputManager.press(evt.getButton().getName());
+                InputManager.press(evt.getButton().getName());
             }else{
                 InputManager.release(evt.getButton().getName());
             }
@@ -207,6 +217,8 @@ public class Main extends SimpleApplication implements ActionListener {
         }
         
         public static void addListener(String key, Runnable function){
+            System.out.println(key);
+            System.out.println(function);
             listeners.put(key, function);
         }
         
@@ -227,11 +239,16 @@ public class Main extends SimpleApplication implements ActionListener {
             }
         }
         
+        private static float scale(float input, float sensitivity){
+            return sensitivity * (input*input*input) + (1-sensitivity) * input;
+        }
+        
         public static float getAxisValue(int id, int axis){
-            if(id == -1){
+            if(axisMaps.get(id).get(axis) > 0.1 || axisMaps.get(id).get(axis) < -0.1){
+                return scale(axisMaps.get(id).get(axis), 0.1f);
+            }else{
                 return 0;
             }
-            return axisMaps.get(id).get(axis);
         }
         
         public static int isPressedi(String key){

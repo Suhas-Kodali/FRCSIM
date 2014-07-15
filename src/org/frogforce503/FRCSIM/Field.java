@@ -74,10 +74,10 @@ public class Field {
         Box truss = new Box(new Vector3f(-Main.in(6), Main.in(62), Main.in(-170.2f)), new Vector3f(Main.in(6), Main.in(74), Main.in(170.2f)));
         Geometry trussGeometry = new Geometry("truss", truss);
         trussGeometry.setMaterial(Main.green);
-        rootNode.attachChild(trussGeometry);
         trussGeometry.setLocalTranslation(Vector3f.ZERO);
         RigidBodyControl trussControl = new RigidBodyControl(0);
         trussGeometry.addControl(trussControl);
+        rootNode.attachChild(trussGeometry);
         space.add(trussGeometry);
         
         for(int i = -1; i <= 1; i+=2){
@@ -157,13 +157,6 @@ public class Field {
       
         redGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
         
-        Box test1 = new Box(Main.in(6)/2, Main.in(37)/2, width/2);
-        Geometry testG1 = new Geometry("Goal", test1);
-        testG1.setMaterial(Main.blue);
-        testG1.setLocalTranslation(new Vector3f(length/2 + Main.in(18)/2, Main.in(37)/2  + Main.in(6*12+10.75f), 0));
-        //testG.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(testG1);
-        //space.add(testG);
         Node redGoalGhostNode = new Node("a thing");
         redGoalGhostNode.addControl(redGoalGhost);
         redGoalGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(18)/2, Main.in(37)/2  + Main.in(6*12+10.75f), 0));
@@ -171,14 +164,7 @@ public class Field {
         space.add(redGoalGhostNode);
         
         blueGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
-        
-        Box test2 = new Box(Main.in(6)/2, Main.in(37)/2, width/2);
-        Geometry testG2 = new Geometry("Goal", test2);
-        testG2.setMaterial(Main.red);
-        testG2.setLocalTranslation(new Vector3f(-length/2 - Main.in(18)/2, Main.in(37)/2  + Main.in(6*12+10.75f), 0));
-        //testG.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(testG2);
-        //space.add(testG);
+       
         Node blueGoalGhostNode = new Node("a thing");
         blueGoalGhostNode.addControl(blueGoalGhost);
         blueGoalGhostNode.setLocalTranslation(new Vector3f(-length/2 - Main.in(18)/2, Main.in(37)/2  + Main.in(6*12+10.75f), 0));

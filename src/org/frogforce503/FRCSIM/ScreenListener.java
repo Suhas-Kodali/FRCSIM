@@ -7,6 +7,7 @@ import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import static org.frogforce503.FRCSIM.Scene.nifty;
+import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 
 /**
  *
@@ -56,6 +57,24 @@ public class ScreenListener extends AbstractAppState implements ScreenController
         Main.scene.screen = nextScreen;
         nifty.gotoScreen(nextScreen);
     }
+    
+    public void setJoystickControl(){
+        Main.keyMapping = TankKeyMapping.joy;
+        Main.app.startGame();
+        changeScreen("hud");
+    }
+    
+    public void setWasdControl(){
+        Main.keyMapping = TankKeyMapping.wasd;
+        Main.app.startGame();
+        changeScreen("hud");
+    }
+    
+    public void setStdControl(){
+        Main.keyMapping = TankKeyMapping.std;
+        Main.app.startGame();
+        changeScreen("hud");
+    }
 
     public void quitGame() {
         Main.app.stop();  
@@ -63,5 +82,5 @@ public class ScreenListener extends AbstractAppState implements ScreenController
     
     public String getScore(){
         return new Integer(Alliance.RED.getScore()).toString();
-  }
+    }
 }

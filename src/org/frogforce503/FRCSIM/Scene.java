@@ -58,7 +58,7 @@ public class Scene {
                       valignCenter();
                       height("50%");
                       width("50%");
-                      interactOnClick("changeScreen(hud)");
+                      interactOnClick("changeScreen(tank_controls)");
                     }});
  
                 }});
@@ -86,7 +86,78 @@ public class Scene {
         // </layer>
       }}.build(nifty));
      
-        // </screen>
+        nifty.addScreen("tank_controls", new ScreenBuilder("controls"){{
+        controller(new ScreenListener()); // Screen properties       
+ 
+        // <layer>
+        layer(new LayerBuilder("Layer_ID") {{
+            childLayoutVertical(); // layer properties, add more...
+            
+               height("100%");
+               width("100%");
+ 
+            // <panel>
+            panel(new PanelBuilder("panel_bottom_left") {{
+                    childLayoutCenter();
+                    valignCenter();
+                    alignLeft();
+                    backgroundColor("#000");
+                    height("33%");
+                    width("100%");
+ 
+                    // add control
+                    control(new ButtonBuilder("wasdButton", "WASD") {{
+                      alignCenter();
+                      valignCenter();
+                      height("50%");
+                      width("50%");
+                      interactOnRelease("setWasdControl()");
+                    }});
+ 
+                }});
+ 
+                panel(new PanelBuilder("panel_bottom_right") {{
+                    childLayoutCenter();
+                    valignCenter();
+                    alignRight();
+                    backgroundColor("#000");
+                    height("33%");
+                    width("100%");
+ 
+                    // add control
+                    control(new ButtonBuilder("STDButton", "STD") {{
+                      alignCenter();
+                      valignCenter();
+                      height("50%");
+                      width("50%");
+                      interactOnRelease("setStdControl()");
+                    }});
+ 
+                }});
+                
+                if(Main.joysticks.length > 0){
+                panel(new PanelBuilder("Joystick") {{
+                    childLayoutCenter();
+                    valignCenter();
+                    alignRight();
+                    backgroundColor("#000");
+                    height("33%");
+                    width("100%");
+ 
+                    // add control
+                    control(new ButtonBuilder("Joystick", "Joystick") {{
+                      alignCenter();
+                      valignCenter();
+                      height("50%");
+                      width("50%");
+                      interactOnRelease("setJoystickControl()");
+                    }});
+ 
+                }});}
+            // </panel>
+          }});
+        // </layer>
+      }}.build(nifty));
      
      nifty.addScreen("hud", new ScreenBuilder("Hello Nifty Screen"){{
         controller(new ScreenListener()); // Screen properties       
