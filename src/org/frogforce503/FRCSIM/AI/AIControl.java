@@ -18,7 +18,7 @@ import org.frogforce503.FRCSIM.Robot;
 public abstract class AIControl extends AbstractProgram{
     private Deque<AbstractProgram> programList = new ArrayDeque(3);
     private EnumMap<SubsystemType, AbstractSubsystem> subsystems; 
-    private Robot robot;
+    protected Robot robot;
     @Override
     public void update() {
         if(programList.isEmpty()){

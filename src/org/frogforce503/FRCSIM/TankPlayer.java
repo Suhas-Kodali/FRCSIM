@@ -43,7 +43,7 @@ public class TankPlayer extends AbstractControl{
             cdown = Main.InputManager.isPressedi(keyMapping.down);
         }else{
             cleft = 0;
-            cright = Main.InputManager.getAxisValue(keyMapping.joystick, 1);
+            cright = Main.InputManager.getAxisValue(keyMapping.joystick, 1)/1.5f;
             cup = 0;
             cdown = Main.InputManager.getAxisValue(keyMapping.joystick, 0);
         }

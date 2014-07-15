@@ -13,6 +13,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
+import static org.frogforce503.FRCSIM.Robot.robots;
 
 /**
  *
@@ -98,6 +99,20 @@ public class Ball implements Position{
         }
     }
     
+    public static Ball getClosestBall(Vector3f point, Alliance alliance){
+        float minDistance = Float.MAX_VALUE;
+        Ball ball = null;
+        for(Ball curBall : balls){
+            if(curBall.alliance == alliance){
+                float curDistance = curBall.getPosition().subtract(point).length();
+                if(curDistance < minDistance){
+                    minDistance = curDistance;
+                    ball = curBall;
+                }
+            }
+        }
+        return ball;
+    }
     public RigidBodyControl getRigidBodyControl(){
         return this.sphereControl;
     }

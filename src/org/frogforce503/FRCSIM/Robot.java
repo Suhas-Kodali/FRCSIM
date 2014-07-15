@@ -17,7 +17,7 @@ public class Robot implements Position{
     protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
     private Node robotNode;
     protected static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
-    protected Alliance alliance;
+    public Alliance alliance;
     
     public static void updateAll(){
         for(Robot robot : robots){

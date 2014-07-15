@@ -90,11 +90,11 @@ public class Main extends SimpleApplication implements ActionListener {
         AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(),
-                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
+                control = new TankPlayer(TankPlayer.TankKeyMapping.joy);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
         AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
-                aicontrol = new TestAI(player);
+                aicontrol = new TestAI();
         AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
         new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
         
