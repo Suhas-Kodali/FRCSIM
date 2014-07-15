@@ -74,10 +74,10 @@ public class Field {
         Box truss = new Box(new Vector3f(-Main.in(6), Main.in(62), Main.in(-170.2f)), new Vector3f(Main.in(6), Main.in(74), Main.in(170.2f)));
         Geometry trussGeometry = new Geometry("truss", truss);
         trussGeometry.setMaterial(Main.green);
-        rootNode.attachChild(trussGeometry);
         trussGeometry.setLocalTranslation(Vector3f.ZERO);
         RigidBodyControl trussControl = new RigidBodyControl(0);
         trussGeometry.addControl(trussControl);
+        rootNode.attachChild(trussGeometry);
         space.add(trussGeometry);
         
         for(int i = -1; i <= 1; i+=2){

@@ -72,7 +72,11 @@ public class HumanPlayer {
         }
         
         if(currentBall != null && !isBallHeld){
-            currentBall.setVelocity(holdingPosition.subtract(currentBall.getPosition()).mult(pullForce));
+            if(currentBall.getRigidBodyControl().getPhysicsLocation().distance(holdingPosition) < 2){
+                currentBall.setVelocity(holdingPosition.subtract(currentBall.getPosition()).mult(pullForce));
+            }else{
+                currentBall.getRigidBodyControl().applyCentralForce(holdingPosition.subtract(currentBall.getPosition()).mult(3));
+            }
             if(holdingPosition.subtract(currentBall.getPosition()).length() < holdRange){
                 isBallHeld = true;
             }

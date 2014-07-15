@@ -23,6 +23,8 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 
 /**
@@ -57,7 +59,6 @@ public class Main extends SimpleApplication implements ActionListener {
         initMaterials();
         setupKeys();
         
-        inputManager.addRawInputListener( new JoystickEventManager() );
         
         scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
         
@@ -188,7 +189,6 @@ public class Main extends SimpleApplication implements ActionListener {
         public void onJoyButtonEvent(JoyButtonEvent evt) {
             if(evt.isPressed()){
                 InputManager.press(evt.getButton().getName());
-                System.out.println(evt.getButton().getName());
             }else{
                 InputManager.release(evt.getButton().getName());
             }
@@ -226,6 +226,8 @@ public class Main extends SimpleApplication implements ActionListener {
         }
         
         public static void addListener(String key, Runnable function){
+            System.out.println(key);
+            System.out.println(function);
             listeners.put(key, function);
         }
         
@@ -246,9 +248,13 @@ public class Main extends SimpleApplication implements ActionListener {
             }
         }
         
+        private static float scale(float input, float sensitivity){
+            return sensitivity * (input*input*input) + (1-sensitivity) * input;
+        }
+        
         public static float getAxisValue(int id, int axis){
             if(axisMaps.get(id).get(axis) > 0.1 || axisMaps.get(id).get(axis) < -0.1){
-                return axisMaps.get(id).get(axis);
+                return scale(axisMaps.get(id).get(axis), 0.1f);
             }else{
                 return 0;
             }
