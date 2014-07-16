@@ -23,6 +23,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.frogforce503.FRCSIM.AI.TestAI;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 import org.frogforce503.FRCSIM.TankPlayer.TankType;
 
@@ -99,13 +100,16 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public void startGame(){
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-        AbstractSubsystem drivetrain = new TankDrivetrain(), 
-                shooter = new BasicShooter(), 
-                intake = new BasicIntake(), 
+        AbstractSubsystem shooter = new BasicShooter(), 
+                intake = new BasicIntake(),
                 control = new TankPlayer(keyMapping, TankType.tank);
-        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
-        new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-        
+        ArrayList<AbstractSubsystem> subsystems = new ArrayList<AbstractSubsystem>(4);
+        subsystems.add(shooter);
+        subsystems.add(intake);
+        subsystems.add(control);
+        AbstractDrivetrain drivetrain = new TankDrivetrain(subsystems, bulletAppState.getPhysicsSpace());
+        subsystems.add(drivetrain);
+        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         //new Ball(rootN
         //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
@@ -119,10 +123,13 @@ public class Main extends SimpleApplication implements ActionListener {
 //                aicontrol = new TestAI(player);
 //        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
 //        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
+
+        
+       
         
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         
-        cam.setLocation(new Vector3f(Field.length, 12, 12));
+        cam.setLocation(new Vector3f(0, 12, 12));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
         
@@ -150,6 +157,7 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addMapping("enter", new KeyTrigger(KeyInput.KEY_RETURN));
         inputManager.addMapping("pgdwn", new KeyTrigger(KeyInput.KEY_PGDN));
         inputManager.addMapping("pgup", new KeyTrigger(KeyInput.KEY_PGUP));
+        inputManager.addMapping("shift", new KeyTrigger(KeyInput.KEY_RSHIFT));
         inputManager.addListener(this, "left");
         inputManager.addListener(this, "right");
         inputManager.addListener(this, "up");
@@ -158,6 +166,7 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addListener(this, "enter");
         inputManager.addListener(this, "pgdwn");
         inputManager.addListener(this, "pgup");
+        inputManager.addListener(this, "shift");
         joysticks = inputManager.getJoysticks();
         for(Joystick joystick : joysticks){
             InputManager.addJoystick(joystick.getJoyId(), 0, 1);
@@ -253,12 +262,8 @@ public class Main extends SimpleApplication implements ActionListener {
             return sensitivity * (input*input*input) + (1-sensitivity) * input;
         }
         
-        public static float getAxisValue(int id, int axis){
-            if(axisMaps.get(id).get(axis) > 0.1 || axisMaps.get(id).get(axis) < -0.1){
-                return scale(axisMaps.get(id).get(axis), 0.1f);
-            }else{
-                return 0;
-            }
+        public static float getAxisValue(int id, int axis, float sensitivity){
+            return scale(axisMaps.get(id).get(axis), sensitivity);
         }
         
         public static int isPressedi(String key){

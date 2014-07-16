@@ -9,12 +9,10 @@ import org.frogforce503.FRCSIM.Zone;
  * @author Bryce
  */
 public class TestAI extends AIControl{
-    Robot target;
-    public TestAI(Robot target){
-        this.target = target;
-    }
+    public TestAI(){}
+    
     
     public AbstractProgram chooseNextProgram() {
-        return new GoToProgram(new InterferencePosition(Ball.balls.get(0)), -1);
+        return new GoToProgram(new InterferencePosition(robot), -1);
     }
 }

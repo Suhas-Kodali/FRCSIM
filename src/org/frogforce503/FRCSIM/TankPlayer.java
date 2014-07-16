@@ -42,36 +42,32 @@ public class TankPlayer extends AbstractControl{
     
     @Override
     public void update() {
-        float cleft, cright, cup, cdown;
         switch(type){
             case arcade:
-                System.out.println(type);
+                float power, turn;
                 if(keyMapping.joystick == -1){
-                    cleft = Main.InputManager.isPressedi(keyMapping.left);
-                    cright = Main.InputManager.isPressedi(keyMapping.right);
-                    cup = Main.InputManager.isPressedi(keyMapping.up);
-                    cdown = Main.InputManager.isPressedi(keyMapping.down);
+                    turn = Main.InputManager.isPressedi(keyMapping.left) - Main.InputManager.isPressedi(keyMapping.right);
+                    power = Main.InputManager.isPressedi(keyMapping.up) - Main.InputManager.isPressedi(keyMapping.down);
                 }else{
-                    cleft = 0;
-                    cright = Main.InputManager.getAxisValue(keyMapping.joystick, 1);
-                    cup = 0;
-                    cdown = Main.InputManager.getAxisValue(keyMapping.joystick, 0);
+                    power = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, .5f);
+                    turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 1, .5f);
                 }
-                drivetrain.updateArcade(cup, cdown, cleft, cright);
+                if(Main.InputManager.isPressed("g")){
+                    drivetrain.driveTowardsPoint(Vector3f.ZERO);
+                    return;
+                }
+                drivetrain.updateArcade(power, turn);
                 break;
             case tank:
+                float left, right;
                 if(keyMapping.joystick == -1){
-                    cleft = Main.InputManager.isPressedButtonsi(keyMapping.leftForward, keyMapping.left);
-                    cright = Main.InputManager.isPressedButtonsi(keyMapping.rightForward, keyMapping.right);
-                    cup = 0;
-                    cdown = 0;
+                    left = Main.InputManager.isPressedButtonsi(keyMapping.leftForward, keyMapping.left);
+                    right = Main.InputManager.isPressedButtonsi(keyMapping.rightForward, keyMapping.right);
                 }else{
-                    cleft = Main.InputManager.getAxisValue(keyMapping.joystick, 0);
-                    cright = Main.InputManager.getAxisValue(keyMapping.extraJoystick, 0);
-                    cup = 0;
-                    cdown = 0;
+                    left = Main.InputManager.getAxisValue(keyMapping.joystick, 0, 0.9f);
+                    right = Main.InputManager.getAxisValue(keyMapping.extraJoystick, 0, 0.9f);
                 }
-                drivetrain.updateTank(cleft, cright);
+                drivetrain.updateTank(left, right);
         }
         if(Main.InputManager.isPressed("g")){
             drivetrain.driveTowardsPoint(Vector3f.ZERO);

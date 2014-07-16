@@ -1,5 +1,6 @@
 package org.frogforce503.FRCSIM;
 
+import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -63,10 +64,26 @@ public class HumanPlayer {
     private boolean isBallHeld = false;
     public void update(){
         if(isAutoThrowing && currentBall != null && isBallHeld){
-            for(RobotPosition pos : Robot.getRobotPositions()){
-                if(pos.getAlliance() == alliance && pos.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius){
-                    doThrow(pos.getPosition());
-                    break;
+            Robot goodRobot = Robot.getClosestRobot(currentBall.getPosition(), alliance);
+            if(goodRobot.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius 
+                    && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3){
+                Robot badRobot = Robot.getClosestRobot(goodRobot.getPosition(), alliance == Alliance.RED? Alliance.BLUE : Alliance.RED);
+                if(badRobot == null){
+                    doThrow(goodRobot.getPosition());
+                } else if(badRobot.isTall){
+                    Plane goodRobotBallPlane = new Plane();
+                    goodRobotBallPlane.setPlanePoints(goodRobot.getPosition(), currentBall.getPosition(), goodRobot.getPosition().add(currentBall.getPosition()).scaleAdd(.5f, Vector3f.UNIT_Y));
+                    if(Math.abs(goodRobotBallPlane.pseudoDistance(badRobot.getPosition()))< 1){
+                        Plane goodRobotOrthoPlane = new Plane();
+                        goodRobotOrthoPlane.setOriginNormal(goodRobot.getPosition(), goodRobot.getPosition().subtract(currentBall.getPosition()));
+                        if(goodRobotOrthoPlane.pseudoDistance(badRobot.getPosition()) > 0){
+                            doThrow(goodRobot.getPosition());
+                        }
+                    } else {
+                        doThrow(goodRobot.getPosition());
+                    }                    
+                } else {
+                    doThrow(goodRobot.getPosition());
                 }
             }
         }

@@ -15,17 +15,16 @@ import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
  */
 public class Robot implements Position{
     protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
-    private Node robotNode;
     protected static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
-    protected Alliance alliance;
-    
+    public Alliance alliance;
+    public final boolean isTall;
     public static void updateAll(){
         for(Robot robot : robots){
             robot.update();
         }
     }
     
-    public Robot(AbstractSubsystem[] subsystems, Node rootNode, PhysicsSpace space, Alliance alliance, Vector3f pos){
+    public Robot(ArrayList<AbstractSubsystem> subsystems, Node rootNode, PhysicsSpace space, Alliance alliance, Vector3f pos){
         this.subsystems = new EnumMap<SubsystemType, AbstractSubsystem>(SubsystemType.class);
         for(AbstractSubsystem subsystem : subsystems){
             if(this.subsystems.containsKey(subsystem.getType())){
@@ -38,19 +37,14 @@ public class Robot implements Position{
             throw new IllegalArgumentException("Robot must have a drivetrain!");
         }
         
-        robotNode = ((AbstractDrivetrain) this.subsystems.get(SubsystemType.Drivetrain)).getVehicleNode();
         for(AbstractSubsystem subsystem : subsystems){
             subsystem.registerOtherSubsystems(this.subsystems, this);
-            if(subsystem instanceof AbstractDrivetrain){
-                subsystem.registerPhysics(rootNode, space, alliance);
-            } else {
-                subsystem.registerPhysics(robotNode, space, alliance);
-            }
         }
-        rootNode.attachChild(robotNode);
-        robotNode.addControl(new RigidBodyControl());
+        this.subsystems.get(SubsystemType.Drivetrain).registerPhysics(rootNode, space, alliance);
         setPhysicsLocation(pos);
         this.alliance = alliance;
+        isTall = this.subsystems.containsKey(SubsystemType.Box);
+        
         robots.add(this);
     }
 
@@ -70,6 +64,10 @@ public class Robot implements Position{
     
     public Vector3f getPosition(){
         return ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getPosition();
+    }
+    
+    public Vector3f getVelocity(){
+        return ((AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain)).getVelocity();
     }
     
     public static Robot getClosestRobot(Vector3f point, Alliance alliance){
@@ -100,16 +98,19 @@ public class Robot implements Position{
         private final Vector3f pos;
         private final Alliance alliance;
         private final Vector3f forward;
-        public RobotPosition(Vector3f pos, Vector3f forward, Alliance alliance){
+        private final boolean isTall;
+        public RobotPosition(Vector3f pos, Vector3f forward, Alliance alliance, boolean isTall){
             this.pos = pos;
             this.forward = forward;
             this.alliance = alliance;
+            this.isTall = isTall;
         }
         
         public RobotPosition(Robot robot){
             pos = ((AbstractDrivetrain) robot.subsystems.get(SubsystemType.Drivetrain)).getVehicleControl().getPhysicsLocation();
             forward = ((AbstractDrivetrain) robot.subsystems.get(SubsystemType.Drivetrain)).getVehicleControl().getForwardVector(null);
             this.alliance = robot.alliance;
+            this.isTall = robot.isTall;
         }
         
         public Vector3f getPosition(){
@@ -122,6 +123,10 @@ public class Robot implements Position{
         
         public Alliance getAlliance(){
             return alliance;
+        }
+        
+        public boolean isTall(){
+            return isTall;
         }
     }
 }

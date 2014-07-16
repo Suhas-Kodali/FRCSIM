@@ -21,4 +21,7 @@ public abstract class AbstractDrivetrain extends AbstractSubsystem{
     public Vector3f getPosition(){
         return getVehicleControl().getPhysicsLocation();
     }
+    public Vector3f getVelocity(){
+        return getVehicleControl().getLinearVelocity();
+    }
 }
