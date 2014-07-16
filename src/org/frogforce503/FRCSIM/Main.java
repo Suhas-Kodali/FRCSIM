@@ -23,9 +23,8 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
+import org.frogforce503.FRCSIM.TankPlayer.TankType;
 
 /**
  *
@@ -83,7 +82,7 @@ public class Main extends SimpleApplication implements ActionListener {
         cage = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         cage.getAdditionalRenderState().setWireframe(false);
         cage.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        TextureKey key = new TextureKey("Textures/cage.png");
+        TextureKey key = new TextureKey("Textures/goalTest.png");
         Texture tex = assetManager.loadTexture(key);
         cage.setTexture("ColorMap", tex);
         blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
@@ -103,7 +102,7 @@ public class Main extends SimpleApplication implements ActionListener {
         AbstractSubsystem drivetrain = new TankDrivetrain(), 
                 shooter = new BasicShooter(), 
                 intake = new BasicIntake(), 
-                control = new TankPlayer(keyMapping);
+                control = new TankPlayer(keyMapping, TankType.tank);
         AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
         new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
         
@@ -150,6 +149,7 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addMapping("space", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("enter", new KeyTrigger(KeyInput.KEY_RETURN));
         inputManager.addMapping("pgdwn", new KeyTrigger(KeyInput.KEY_PGDN));
+        inputManager.addMapping("pgup", new KeyTrigger(KeyInput.KEY_PGUP));
         inputManager.addListener(this, "left");
         inputManager.addListener(this, "right");
         inputManager.addListener(this, "up");
@@ -157,6 +157,7 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addListener(this, "space");
         inputManager.addListener(this, "enter");
         inputManager.addListener(this, "pgdwn");
+        inputManager.addListener(this, "pgup");
         joysticks = inputManager.getJoysticks();
         for(Joystick joystick : joysticks){
             InputManager.addJoystick(joystick.getJoyId(), 0, 1);
@@ -262,6 +263,16 @@ public class Main extends SimpleApplication implements ActionListener {
         
         public static int isPressedi(String key){
             return (pressed.contains(key)?1:0);
+        }
+        
+        public static int isPressedButtonsi(String keyPos, String keyNeg){
+            if(pressed.contains(keyPos)){
+                return 1;
+            }else if(pressed.contains(keyNeg)){
+                return -1;
+            }else{
+                return 0;
+            }
         }
     }
     

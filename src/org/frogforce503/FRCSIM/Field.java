@@ -93,7 +93,7 @@ public class Field {
         
         Box goal1 = new Box(Main.in(1)/2, Main.in(6*12+10.75f)/2, width/2 +Main.in(20));
         Geometry goal1Geometry = new Geometry("Goal", goal1);
-        goal1Geometry.setMaterial(Main.green);
+        goal1Geometry.setMaterial(Main.cage);
         goal1Geometry.setLocalTranslation(length/2, Main.in(6*12+10.75f)/2, 0);
         goal1Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal1Geometry);
