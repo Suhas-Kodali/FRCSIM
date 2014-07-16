@@ -84,7 +84,7 @@ public class Field {
         for(int i = -1; i <= 1; i+=2){
             Box northWall = new Box(length/2, Main.in(20f)/2, Main.in(20f)/2);
             Geometry northWall_geo = new Geometry("side_wall", northWall);
-            northWall_geo.setMaterial(Main.green);
+            northWall_geo.setMaterial(Main.cage);
             rootNode.attachChild(northWall_geo);
             northWall_geo.setLocalTranslation(0, Main.in(20)/2, i*width/2 + i*Main.in(20)/2);
             RigidBodyControl north_phy = new RigidBodyControl(0f);
@@ -127,7 +127,8 @@ public class Field {
         
         Box goal2 = new Box(Main.in(2)/2, Main.in(6*12+10.75f)/2, width/2 + Main.in(20));
         Geometry goal2Geometry = new Geometry("Goal", goal2);
-        goal2Geometry.setMaterial(Main.green);
+        goal2Geometry.setMaterial(Main.cage);
+        goal2Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         goal2Geometry.setLocalTranslation(-length/2, Main.in(6*12+10.75f)/2, 0);
         goal2Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2Geometry);
@@ -245,7 +246,7 @@ public class Field {
             sphereGeometry.setMaterial(Main.red);
             RigidBodyControl sphereControl = new RigidBodyControl(0f);
             sphereGeometry.setLocalTranslation(length/2, 
-                    y + Main.in(6*12+10.75f) + Main.in(37)/2,
+                    y + Main.in(6*12+10.75f) + Main.in(30)/2,
                     -x - width/2 + Main.in(20 + 3));
             sphereGeometry.addControl(sphereControl);
             rootNode.attachChild(sphereGeometry);
@@ -256,7 +257,7 @@ public class Field {
             sphereGeometry.setMaterial(Main.red);
             sphereControl = new RigidBodyControl(0f);
             sphereGeometry.setLocalTranslation(length/2, 
-                    -y + Main.in(6*12+10.75f) + Main.in(37)/2,
+                    -y + Main.in(6*12+10.75f) + Main.in(42)/2,
                     -x - width/2 + Main.in(20 + 3));
             sphereGeometry.addControl(sphereControl);
             rootNode.attachChild(sphereGeometry);
@@ -267,7 +268,7 @@ public class Field {
             sphereGeometry.setMaterial(Main.red);
             sphereControl = new RigidBodyControl(0f);
             sphereGeometry.setLocalTranslation(length/2, 
-                    y + Main.in(6*12+10.75f) + Main.in(37)/2,
+                    y + Main.in(6*12+10.75f) + Main.in(30)/2,
                     x + width/2 - Main.in(20 + 3));
             sphereGeometry.addControl(sphereControl);
             rootNode.attachChild(sphereGeometry);
@@ -278,7 +279,7 @@ public class Field {
             sphereGeometry.setMaterial(Main.red);
             sphereControl = new RigidBodyControl(0f);
             sphereGeometry.setLocalTranslation(length/2, 
-                    -y + Main.in(6*12+10.75f) + Main.in(37)/2,
+                    -y + Main.in(6*12+10.75f) + Main.in(42)/2,
                     x + width/2 - Main.in(20 + 3));
             sphereGeometry.addControl(sphereControl);
             rootNode.attachChild(sphereGeometry);

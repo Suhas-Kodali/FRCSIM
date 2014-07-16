@@ -102,7 +102,7 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         AbstractSubsystem shooter = new BasicShooter(), 
                 intake = new BasicIntake(),
-                control = new TankPlayer(keyMapping, TankType.tank);
+                control = new TankPlayer(keyMapping, TankType.arcade);
         ArrayList<AbstractSubsystem> subsystems = new ArrayList<AbstractSubsystem>(4);
         subsystems.add(shooter);
         subsystems.add(intake);
@@ -169,7 +169,9 @@ public class Main extends SimpleApplication implements ActionListener {
         inputManager.addListener(this, "shift");
         joysticks = inputManager.getJoysticks();
         for(Joystick joystick : joysticks){
-            InputManager.addJoystick(joystick.getJoyId(), 0, 1);
+            if(!InputManager.joysticks.contains(joystick)){
+                InputManager.addJoystick(joystick, 0, 1);
+            }
         }
         
         inputManager.addRawInputListener( new JoystickEventManager() );
@@ -217,6 +219,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static final class InputManager{
         private InputManager() {}
         private static ArrayList<HashMap<Integer, Float>> axisMaps = new ArrayList<HashMap<Integer, Float>>();
+        private static ArrayList<Joystick> joysticks = new ArrayList<Joystick>();
         private static ArrayList<String> pressed = new ArrayList<String>();
         private static HashMap<String, Runnable> listeners = new HashMap<String, Runnable>();
         
@@ -245,11 +248,12 @@ public class Main extends SimpleApplication implements ActionListener {
             listeners.remove(key);
         }
         
-        public static void addJoystick(int id, int upDownAxis, int leftRightAxis){
+        public static void addJoystick(Joystick joystick, int upDownAxis, int leftRightAxis){
             HashMap<Integer, Float> axes = new HashMap();
             axes.put(upDownAxis, 0f);
             axes.put(leftRightAxis, 0f);
-            axisMaps.add(id, axes);
+            joysticks.add(joystick);
+            axisMaps.add(joystick.getJoyId(), axes);
         }
         
         public static void joystickAxisEvent(int id, int axis, float value){
@@ -263,7 +267,16 @@ public class Main extends SimpleApplication implements ActionListener {
         }
         
         public static float getAxisValue(int id, int axis, float sensitivity){
-            return scale(axisMaps.get(id).get(axis), sensitivity);
+            if(id < axisMaps.size()){
+                if(axisMaps.get(id).get(axis) > 0.05 || axisMaps.get(id).get(axis) < -0.05){
+                System.out.println(scale(axisMaps.get(id).get(axis), sensitivity));
+                return scale(axisMaps.get(id).get(axis), sensitivity);
+                }else{
+                    return 0;
+                }
+            }else{
+                return 0;
+            }
         }
         
         public static int isPressedi(String key){

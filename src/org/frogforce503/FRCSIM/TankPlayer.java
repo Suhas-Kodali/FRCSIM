@@ -64,8 +64,8 @@ public class TankPlayer extends AbstractControl{
                     left = Main.InputManager.isPressedButtonsi(keyMapping.leftForward, keyMapping.left);
                     right = Main.InputManager.isPressedButtonsi(keyMapping.rightForward, keyMapping.right);
                 }else{
-                    left = Main.InputManager.getAxisValue(keyMapping.joystick, 0, 0.9f);
-                    right = Main.InputManager.getAxisValue(keyMapping.extraJoystick, 0, 0.9f);
+                    left = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, 0.5f);
+                    right = -Main.InputManager.getAxisValue(keyMapping.extraJoystick, 0, 0.5f);
                 }
                 drivetrain.updateTank(left, right);
         }
@@ -92,8 +92,8 @@ public class TankPlayer extends AbstractControl{
             this.extraJoystick = extraJoystick;
         }
        
-        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgup", "pgdwn", "l", "enter", "p", -1, -1);
-        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "e", "q", "r", "space", "i", -1, -1);
+        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgup", "pgdwn", "shift", "enter", "p", -1, -1);
+        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "q", "e", "r", "space", "i", -1, -1);
         public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "", "", "Button 1", "Button 0", "Button 5", 0, 1);
         public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "","", "", "", "", "", -1, -1);
     }
@@ -102,6 +102,7 @@ public class TankPlayer extends AbstractControl{
         if(keyMapping != TankKeyMapping.NULL){
             if(intake != null){
                 Main.InputManager.removeListener(keyMapping.load);
+                Main.InputManager.removeListener(keyMapping.rightForward);
             }
             if(shooter != null){
                 Main.InputManager.removeListener(keyMapping.shoot);
@@ -110,14 +111,23 @@ public class TankPlayer extends AbstractControl{
         }
         keyMapping = src;
         if(keyMapping != TankKeyMapping.NULL){
-            if(intake != null){
-                Main.InputManager.addListener(keyMapping.load, intake.toggle);
+            switch(type){
+                case tank:
+                    if(intake != null){
+                        Main.InputManager.addListener(keyMapping.load, intake.toggle);
+                    }
+                    break;
+                case arcade:
+                    if(intake != null){
+                        Main.InputManager.addListener(keyMapping.rightForward, intake.toggle);
+                    }
             }
+            
             if(shooter != null){
                 Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
             }
-            
         }
     }
 }
+
 
