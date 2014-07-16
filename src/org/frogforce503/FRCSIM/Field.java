@@ -11,6 +11,7 @@ import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
@@ -94,6 +95,7 @@ public class Field {
         Box goal1 = new Box(Main.in(1)/2, Main.in(6*12+10.75f)/2, width/2 +Main.in(20));
         Geometry goal1Geometry = new Geometry("Goal", goal1);
         goal1Geometry.setMaterial(Main.cage);
+        goal1Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         goal1Geometry.setLocalTranslation(length/2, Main.in(6*12+10.75f)/2, 0);
         goal1Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal1Geometry);
