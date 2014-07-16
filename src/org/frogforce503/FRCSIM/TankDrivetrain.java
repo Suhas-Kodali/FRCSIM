@@ -119,11 +119,41 @@ public class TankDrivetrain extends AbstractDrivetrain{
     }
     
     private float lastTurn = 0;
-    protected void update(float cup, float cdown, float cleft, float cright){
+    protected void updateArcade(float cup, float cdown, float cleft, float cright){
         float left = 0;
         float right = 0;
         float curTurn = cleft-cright;
         float curPow = cup-cdown, accelerationFactor;
+        
+        float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
+        if(curPow*curSpeed > 0){
+            accelerationFactor = (maxSpeed-Math.abs(curSpeed))/maxSpeed * accelerationForce;
+        } else {
+            accelerationFactor = accelerationForce;
+        }
+        left  += accelerationFactor * (curPow) + turningForce * curTurn;
+        right += accelerationFactor * (curPow) - turningForce * curTurn;
+        
+        if(Math.abs(lastTurn)>.1 && Math.abs(curTurn)<.1){
+            vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
+        }
+        lastTurn = curTurn;
+        
+        for(int i = 0; i < 4; i++){
+            vehicle.accelerate(i, left);
+        }
+        for(int i = 4; i < 8; i++){
+            vehicle.accelerate(i, right);
+        }
+        
+        vehicle.brake(frictionForce * 1f / (1-Math.abs(curPow)));
+    }
+    
+    protected void updateTank(float cleft, float cright){
+        float left = 0;
+        float right = 0;
+        float curTurn = cleft-cright;
+        float curPow = cleft+cright, accelerationFactor;
         
         float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
         if(curPow*curSpeed > 0){
@@ -186,6 +216,6 @@ public class TankDrivetrain extends AbstractDrivetrain{
             pow *= 1.5;
         }
         turn *= angle * vectorToPoint.length() / 10; 
-        update(pow, 0, turn, 0);
+        updateArcade(pow, 0, turn, 0);
     }
 }
