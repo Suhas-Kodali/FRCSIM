@@ -156,7 +156,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
     protected void updateTank(float cleft, float cright){
         float left = 0;
         float right = 0;
-        float curTurn = cleft-cright;
+        float curTurn = cright-cleft;
         float curPow = cleft+cright, accelerationFactor;
         
         float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
