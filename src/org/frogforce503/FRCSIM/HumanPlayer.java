@@ -4,6 +4,7 @@ import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.Map.Entry;
 import java.util.Random;
 import org.frogforce503.FRCSIM.Robot.RobotPosition;
 
@@ -62,18 +63,19 @@ public class HumanPlayer {
     private static float holdRange = .05f;
     private static float pullForce = 10;
     private boolean isBallHeld = false;
+    private long lastThrow = System.nanoTime();
     public void update(){
-        if(isAutoThrowing && currentBall != null && isBallHeld){
+        if(isAutoThrowing && currentBall != null && isBallHeld && System.nanoTime() - lastThrow > 1 * 1000 * 1000){
             Robot goodRobot = Robot.getClosestRobot(currentBall.getPosition(), alliance);
             if(goodRobot.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius 
-                    && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3){
+                    && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3 && !goodRobot.hasBall()){
                 Robot badRobot = Robot.getClosestRobot(goodRobot.getPosition(), alliance == Alliance.RED? Alliance.BLUE : Alliance.RED);
                 if(badRobot == null){
                     doThrow(goodRobot.getPosition());
                 } else if(badRobot.isTall){
                     Plane goodRobotBallPlane = new Plane();
                     goodRobotBallPlane.setPlanePoints(goodRobot.getPosition(), currentBall.getPosition(), goodRobot.getPosition().add(currentBall.getPosition()).scaleAdd(.5f, Vector3f.UNIT_Y));
-                    if(Math.abs(goodRobotBallPlane.pseudoDistance(badRobot.getPosition()))< 1){
+                    if(Math.abs(goodRobotBallPlane.pseudoDistance(badRobot.getPosition()))< .5f){
                         Plane goodRobotOrthoPlane = new Plane();
                         goodRobotOrthoPlane.setOriginNormal(goodRobot.getPosition(), goodRobot.getPosition().subtract(currentBall.getPosition()));
                         if(goodRobotOrthoPlane.pseudoDistance(badRobot.getPosition()) > 0){
@@ -126,6 +128,7 @@ public class HumanPlayer {
             if(ballQueue.isEmpty() == false){
                 currentBall = ballQueue.remove(0);
             }
+            lastThrow = System.nanoTime();
         }
     }
     
@@ -147,6 +150,31 @@ public class HumanPlayer {
         }
     }
     
+    public static void requestThrowAt(Vector3f pos, Alliance alliance){
+        float minDistance = Float.MAX_VALUE;
+        HumanPlayer closest = null;
+        for(HumanPlayer hp : humanPlayers.get(alliance).values()){
+            if(hp.currentBall != null && hp.holdingPosition.distanceSquared(pos) < minDistance){
+                minDistance = hp.holdingPosition.distanceSquared(pos);
+                closest = hp;
+            }
+        }
+        if(closest != null){
+            closest.doThrow(pos);
+        }
+    }
+    
+    public static class ManualInboundRunnable implements Runnable{
+        private Robot robot;
+        public ManualInboundRunnable(Robot robot){
+            this.robot = robot;
+        }
+        
+        public void run() {
+            requestThrowAt(robot.getPosition(), robot.alliance);
+        }
+        
+    }
     
     public static enum HumanPlayerPosition{
         Close(Alliance.RED.farHumanPlayer), FarPosZ(Alliance.RED.closeHumanPlayer), FarNegZ(Alliance.RED.closeHumanPlayer.mult(new Vector3f(1,1,-1)));

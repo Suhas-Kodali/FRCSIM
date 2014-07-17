@@ -93,6 +93,14 @@ public class Robot implements Position{
         
         return positions;
     }
+
+    public boolean hasBall() {
+        try {
+            return ((AbstractIntake) subsystems.get(SubsystemType.Intake)).hasBall();
+        } catch (NullPointerException e){
+            return false;
+        }
+    }
     
     public static class RobotPosition{
         private final Vector3f pos;

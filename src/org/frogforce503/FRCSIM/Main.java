@@ -100,6 +100,19 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public void startGame(){
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
+//        AbstractSubsystem shooter = new BasicShooter(), 
+//                intake = new BasicIntake(),
+//                control = new TankPlayer(keyMapping, TankType.arcade);
+//        ArrayList<AbstractSubsystem> subsystems = new ArrayList<AbstractSubsystem>(4);
+//        subsystems.add(shooter);
+//        subsystems.add(intake);
+//        subsystems.add(control);
+//        AbstractDrivetrain drivetrain = new TankDrivetrain(subsystems, bulletAppState.getPhysicsSpace());
+//        subsystems.add(drivetrain);
+//        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        //new Ball(rootN
+        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
         AbstractSubsystem shooter = new BasicShooter(), 
                 intake = new BasicIntake(),
                 control = new TankPlayer(keyMapping, TankType.arcade);
@@ -107,22 +120,15 @@ public class Main extends SimpleApplication implements ActionListener {
         subsystems.add(shooter);
         subsystems.add(intake);
         subsystems.add(control);
-        AbstractDrivetrain drivetrain = new TankDrivetrain(subsystems, bulletAppState.getPhysicsSpace());
-        subsystems.add(drivetrain);
+        subsystems.add(new TankDrivetrain(subsystems, bulletAppState.getPhysicsSpace()));
         Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        //new Ball(rootN
-        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-//        AbstractSubsystem drivetrain = new TankDrivetrain(), 
-//                shooter = new BasicShooter(), 
-//                intake = new BasicIntake(),
-//                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
-//        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
-//        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-//        AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
-//                aicontrol = new TestAI(player);
-//        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
-//        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
+        AbstractSubsystem box = new BoxSubsystem(in(25), in(25), in(55)), 
+                aicontrol = new TestAI();
+        ArrayList<AbstractSubsystem> aisubsystems = new ArrayList<AbstractSubsystem>(3);
+        aisubsystems.add(box);
+        aisubsystems.add(aicontrol);
+        aisubsystems.add(new TankDrivetrain(aisubsystems, bulletAppState.getPhysicsSpace()));
+        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
 
         
        

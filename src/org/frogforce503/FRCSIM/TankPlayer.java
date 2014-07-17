@@ -28,8 +28,8 @@ public class TankPlayer extends AbstractControl{
         } else {
             throw new IllegalArgumentException("TankPlayer only controls TankDrivetrains");
         }
-        setKeyMapping(tempMapping);
         this.robot = robot;
+        setKeyMapping(tempMapping);
     }
     
     public enum TankType{
@@ -76,55 +76,47 @@ public class TankPlayer extends AbstractControl{
     }
     
     public static class TankKeyMapping{
-        public final String up, down, left, right, leftForward, rightForward, load, shoot, inbound;
+        public final String up, down, left, right, leftForward, rightForward, toggleIntake, shoot, spit, inbound;
         public final int joystick, extraJoystick;
-        public TankKeyMapping(String up, String down, String left, String right, String leftForward, String rightForward, String load, String shoot, String inbound, int joystick, int extraJoystick){
+        public TankKeyMapping(String up, String down, String left, String right, String leftForward, String rightForward, String toggleIntake, String shoot, String spit, String inbound, int joystick, int extraJoystick){
             this.up = up;
             this.down = down;
             this.left = left;
             this.right = right;
             this.leftForward = leftForward;
             this.rightForward = rightForward;
-            this.load = load;
+            this.toggleIntake = toggleIntake;
             this.shoot = shoot;
+            this.spit = spit;
             this.inbound = inbound;
             this.joystick = joystick;
             this.extraJoystick = extraJoystick;
         }
        
-        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgup", "pgdwn", "shift", "enter", "p", -1, -1);
-        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "q", "e", "r", "space", "i", -1, -1);
-        public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "", "", "Button 1", "Button 0", "Button 5", 0, 1);
-        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "","", "", "", "", "", -1, -1);
+        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgup", "pgdwn", "shift", "enter", "shift", "p", -1, -1);
+        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "q", "e", "r", "space", "c", "i", -1, -1);
+        public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "", "", "Button 1", "Button 0", "Button 2", "Button 5", 0, 1);
+        public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "","", "", "", "", "", "", -1, -1);
     }
     
     public void setKeyMapping(TankKeyMapping src){
         if(keyMapping != TankKeyMapping.NULL){
             if(intake != null){
-                Main.InputManager.removeListener(keyMapping.load);
-                Main.InputManager.removeListener(keyMapping.rightForward);
+                Main.InputManager.removeListener(keyMapping.toggleIntake);
             }
             if(shooter != null){
                 Main.InputManager.removeListener(keyMapping.shoot);
+                Main.InputManager.removeListener(keyMapping.spit);
             }
             Main.InputManager.removeListener(keyMapping.inbound);
         }
         keyMapping = src;
         if(keyMapping != TankKeyMapping.NULL){
-            switch(type){
-                case tank:
-                    if(intake != null){
-                        Main.InputManager.addListener(keyMapping.load, intake.toggle);
-                    }
-                    break;
-                case arcade:
-                    if(intake != null){
-                        Main.InputManager.addListener(keyMapping.rightForward, intake.toggle);
-                    }
-            }
-            
+            Main.InputManager.addListener(keyMapping.toggleIntake, intake.toggle);
+            Main.InputManager.addListener(keyMapping.inbound, new HumanPlayer.ManualInboundRunnable(robot));
             if(shooter != null){
                 Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
+                Main.InputManager.addListener(keyMapping.spit, shooter.spit);
             }
         }
     }
