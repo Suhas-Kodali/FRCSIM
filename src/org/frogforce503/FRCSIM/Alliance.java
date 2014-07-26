@@ -8,7 +8,7 @@ import com.jme3.math.Vector3f;
  * @author Bryce Paputa
  */
 public enum Alliance {
-    BLUE(Main.blue, new Vector3f(Field.length/2 - Main.in(81), Main.in(42), Field.width/2 + Main.in(28)), new Vector3f(-Field.length/2 + Main.in(216), Main.in(42), Field.width/2 + Main.in(28))), RED(Main.red, new Vector3f(-Field.length/2 + Main.in(81), Main.in(42), Field.width/2 + Main.in(28)), new Vector3f(Field.length/2 - Main.in(216), Main.in(42), Field.width/2 + Main.in(28)));
+    BLUE(Main.blue, new Vector3f(Field.length/2 - Main.in(81), Main.in(60), Field.width/2 + Main.in(28)), new Vector3f(-Field.length/2 + Main.in(216), Main.in(60), Field.width/2 + Main.in(28))), RED(Main.red, new Vector3f(-Field.length/2 + Main.in(81), Main.in(42), Field.width/2 + Main.in(28)), new Vector3f(Field.length/2 - Main.in(216), Main.in(42), Field.width/2 + Main.in(28)));
     public final Vector3f farHumanPlayer;
     public final Vector3f closeHumanPlayer;
     public final Material material;

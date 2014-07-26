@@ -16,6 +16,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import static org.frogforce503.FRCSIM.Main.in;
 
@@ -35,7 +36,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     private float maxSpeed=5;
     private float speedForce=1000;
     private Bumpers bumpers;
-    public SwerveDrivetrain(){
+    public SwerveDrivetrain(ArrayList<AbstractSubsystem> subsystems, PhysicsSpace space){
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
@@ -44,6 +45,9 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         chassisNode.attachChild(chassisGeometry);
         
         bumpers = new Bumpers(chassisNode, Main.in(28), Main.in(28), Main.in(2));
+        for(AbstractSubsystem subsystem : subsystems){
+            subsystem.registerPhysics(chassisNode, space, alliance);
+        }
         
         collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
         
@@ -118,6 +122,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     protected void updateRC(float FWR, float STR, float omega){
         FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
         STR = (STR>1? 1 : (STR<-1? -1 : STR));
+        omega = (omega>1? 1 : (omega<-1? -1 : omega));
         Vector2f V = new Vector2f(STR, FWR);
         float l2 = Main.in(11.25f), speedFactor = speedForce, turnFactor = turnForce;
         
@@ -154,10 +159,8 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     }
 
     void updateFC(float FWR, float STR, float omega) {
-        System.out.print(FWR + "=>");
         FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
         STR = (STR>1? 1 : (STR<-1? -1 : STR));
-        System.out.println(FWR);
         
         Vector2f forwardDirectionProjection = new Vector2f(vehicle.getForwardVector(null).x, vehicle.getForwardVector(null).z);
         float angleFromX = forwardDirectionProjection.getAngle();
@@ -182,9 +185,21 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     @Override
     public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {}
     
-    public void driveTowardsPoint(Vector3f point){
-        Vector3f curPos = vehicle.getPhysicsLocation();
+    @Override
+    public void driveToPoint(Vector3f point, DriveDirection direction){
+        Vector3f curPos = vehicle.getPhysicsLocation(); 
         float z = (curPos.z-point.z), x = (point.x - curPos.x);
-        updateFC(z, x, 0);
+        Vector3f vectorToPoint = point.subtract(curPos), vehicleVector = vehicle.getForwardVector(null);
+        float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c) * FastMath.sign(vectorToPoint.cross(vehicleVector).dot(Vector3f.UNIT_Y));
+        updateFC(z, x, angle/3 * (direction == DriveDirection.Away? -1 : (direction == DriveDirection.DontCare? 0 : (direction == DriveDirection.Towards? 1 : Float.NaN))));
+        
+    }
+    
+    public void turnTowardsPoint(Vector3f point){
+        Vector3f curPos = vehicle.getPhysicsLocation(); 
+        Vector3f vectorToPoint = point.subtract(curPos), vehicleVector = vehicle.getForwardVector(null);
+        float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c) * FastMath.sign(vectorToPoint.cross(vehicleVector).dot(Vector3f.UNIT_Y));
+        updateFC(0, 0, angle/3);//-angle / 10);
+        
     }
 }

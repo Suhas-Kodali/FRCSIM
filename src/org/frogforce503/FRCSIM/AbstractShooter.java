@@ -49,7 +49,7 @@ public abstract class AbstractShooter extends AbstractSubsystem {
     
     public Runnable spit = new Runnable(){
         public void run(){
-            shoot(3);
+            shoot(6);
         }
     };
     

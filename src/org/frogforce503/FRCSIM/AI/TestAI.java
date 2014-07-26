@@ -1,8 +1,6 @@
 package org.frogforce503.FRCSIM.AI;
 
-import org.frogforce503.FRCSIM.Ball;
-import org.frogforce503.FRCSIM.Robot;
-import org.frogforce503.FRCSIM.Zone;
+import org.frogforce503.FRCSIM.AI.GoToProgram.Check;
 
 /**
  *
@@ -13,6 +11,13 @@ public class TestAI extends AIControl{
     
     
     public AbstractProgram chooseNextProgram() {
-        return new GoToProgram(new InterferencePosition(robot), -1);
+        return new GoToProgram(new InterferencePosition(robot), -1, new Check(){
+
+            @Override
+            public boolean shouldExit() {
+                return false;
+            }
+            
+        });
     }
 }

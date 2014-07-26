@@ -19,7 +19,7 @@ import static org.frogforce503.FRCSIM.Robot.robots;
  *
  * @author Bryce Paputa
  */
-public class Ball implements Position{
+public class Ball extends Position{
     
     public final Alliance alliance;
     public Geometry sphereGeometry;
@@ -31,10 +31,10 @@ public class Ball implements Position{
     private boolean scored = false;
     private boolean trussed = false;
     private PhysicsSpace space;
-    private boolean owned = false;
     private static int redCount = 0, blueCount = 0;
+    private boolean noAssistsLeft = false;
     
-    private final EnumMap<Zone, ArrayList<Robot>> owners = new EnumMap<Zone, ArrayList<Robot>>(Zone.class);
+    private final ArrayList<Robot> owners = new ArrayList<Robot>(3);
     
     public Ball(Node rootNode, PhysicsSpace space, Alliance alliance){
         this.space = space;
@@ -58,9 +58,6 @@ public class Ball implements Position{
         }        
         balls.add(this);
         number = count++;
-        for(Zone zone : Zone.values()){
-            owners.put(zone, new ArrayList<Robot>(1));
-        }
     }
     
     private Vector3f lastPos;
@@ -68,7 +65,6 @@ public class Ball implements Position{
         Vector3f curPos = sphereControl.getPhysicsLocation();
         sphereControl.applyCentralForce(sphereControl.getLinearVelocity().normalize().mult(sphereControl.getLinearVelocity().distanceSquared(Vector3f.ZERO)).mult(-drag));
         if(Main.field.isBallOutOfBounds(this) && !isOwned()){
-            System.out.println("out of bounds: " + this);
             HumanPlayer.ballExitField(this, getPosition());
         }
         if(!trussed && (lastPos.x * curPos.x <= 0) && (lastPos.x * alliance.side > curPos.x * alliance.side) && (lastPos.y-Main.in(12.5f) > Main.in(74))){
@@ -78,9 +74,14 @@ public class Ball implements Position{
         lastPos = curPos;
         
         if(owner instanceof Robot && ((Robot) owner).alliance == alliance){
-            if(!owners.get(Zone.getZone(curPos)).contains((Robot) owner)){
-                owners.get(Zone.getZone(curPos)).add((Robot) owner);
+            if(!owners.contains((Robot) owner)){
+                owners.add((Robot) owner);
             }
+        }
+        if(owners.size() == Robot.robots.get(alliance).size()){
+            noAssistsLeft = true;
+        } else {
+            noAssistsLeft = false;
         }
     }
     
@@ -94,8 +95,8 @@ public class Ball implements Position{
             //ball.setPosition(new Vector3f(((new Random()).nextFloat()-.5f)*Main.in(54*24), ((new Random()).nextFloat()-.5f)*5, ((new Random()).nextFloat()-.5f)*Main.in(25*24)));
         }
         if(blueCount<=0){
-            //Ball ball = new Ball(Main.getRoot(), Main.bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-            //ball.setPosition(Vector3f.UNIT_X.mult(Main.in(32*12)));
+            Ball ball = new Ball(Main.getRoot(), Main.bulletAppState.getPhysicsSpace(), Alliance.BLUE);
+            ball.setPosition(Vector3f.UNIT_X.mult(Main.in(32*12)));
         }
     }
     
@@ -119,6 +120,10 @@ public class Ball implements Position{
     
     public Geometry getGeometry(){
         return this.sphereGeometry;
+    }
+    
+    public boolean anyAssistsLeft(){
+        return !noAssistsLeft;
     }
     
     @Override
@@ -193,31 +198,11 @@ public class Ball implements Position{
     }
     
     public int getAssistScore(){
-        HashMap<Robot, ArrayList<Zone>> occurrences = new HashMap<Robot, ArrayList<Zone>>(3);
-        ArrayList<Zone> assists = new ArrayList<Zone>(3);
-        for(Zone zone : Zone.values()){
-            for(Robot robot : owners.get(zone)){
-                if(occurrences.get(robot) == null){
-                    occurrences.put(robot, new ArrayList<Zone>(3));
-                    occurrences.get(robot).add(zone);
-                } else {
-                    occurrences.get(robot).add(zone);
-                }
-            }
-        }
-        for(int i = 1; i <= 3; i++){
-            for(ArrayList<Zone> list : occurrences.values()){
-                if(list.size() == i){
-                    for(int j = 0; j < i; j++){
-                        if(!assists.contains(list.get(j))){
-                            assists.add(list.get(j));
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        int assistsNum = assists.size();
+        int assistsNum = owners.size();
         return 5 * (assistsNum * (assistsNum - 1));
+    }
+    
+    public boolean hasBeenOwnedBy(Robot obj){
+        return owners.contains(obj);
     }
 }

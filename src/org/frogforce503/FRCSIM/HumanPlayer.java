@@ -34,19 +34,15 @@ public class HumanPlayer {
     
     protected void giveBall(Ball ball){
         ball.capture(this);
-        System.out.println("3");
-        System.out.println(currentBall);
         if(currentBall == null){
             currentBall = ball;
-            System.out.println("2");
         } else {
-        System.out.println("4");
             ballQueue.add(ball);
         }
     }
     
-    private final Alliance alliance;
-    private Ball currentBall = null;
+    protected final Alliance alliance;
+    protected Ball currentBall = null;
     private ArrayList<Ball> ballQueue = new ArrayList<Ball>(3);
     protected Vector3f holdingPosition;
     
@@ -62,13 +58,13 @@ public class HumanPlayer {
     private static float throwForce = 10;
     private static float holdRange = .05f;
     private static float pullForce = 10;
-    private boolean isBallHeld = false;
+    protected boolean isBallHeld = false;
     private long lastThrow = System.nanoTime();
     public void update(){
-        if(isAutoThrowing && currentBall != null && isBallHeld && System.nanoTime() - lastThrow > 1 * 1000 * 1000){
+        if(isAutoThrowing && currentBall != null && isBallHeld && System.nanoTime() - lastThrow > 1 * 1000 * 1000 * 1000l){
             Robot goodRobot = Robot.getClosestRobot(currentBall.getPosition(), alliance);
             if(goodRobot.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius 
-                    && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3 && !goodRobot.hasBall()){
+                    && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3 && !goodRobot.hasBall() && goodRobot.wantsBall()){
                 Robot badRobot = Robot.getClosestRobot(goodRobot.getPosition(), alliance == Alliance.RED? Alliance.BLUE : Alliance.RED);
                 if(badRobot == null){
                     doThrow(goodRobot.getPosition());
@@ -146,6 +142,9 @@ public class HumanPlayer {
             }
         } else {
             ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).giveBall(ball);
+            if(humanPlayers.get(alliance).get(HumanPlayerPosition.Close).holdingPosition.z * ball.getPosition().z < 0){
+                ((CloseHumanPlayer)humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).switchPosition();
+            }
             System.out.println("Close");
         }
     }
@@ -174,6 +173,19 @@ public class HumanPlayer {
             requestThrowAt(robot.getPosition(), robot.alliance);
         }
         
+    }
+    
+    public static class SwitchSidesRunnable implements Runnable{
+        private final Alliance alliance;
+        public SwitchSidesRunnable(Alliance alliance){
+            this.alliance = alliance;
+        }
+        
+        public void run(){
+            if(((CloseHumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).currentBall != null){
+                ((CloseHumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).moveBallToOtherSide();
+            }
+        }
     }
     
     public static enum HumanPlayerPosition{

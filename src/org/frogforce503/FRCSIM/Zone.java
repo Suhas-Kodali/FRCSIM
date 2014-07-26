@@ -2,12 +2,13 @@ package org.frogforce503.FRCSIM;
 
 import org.frogforce503.FRCSIM.AI.Position;
 import com.jme3.math.Vector3f;
+import org.frogforce503.FRCSIM.AI.PositionBase;
 
 /**
  *
  * @author Bryce
  */
-public enum Zone implements Position{
+public enum Zone implements PositionBase{
     Red, White, Blue;
 
     public static Zone getZone(Vector3f point) {

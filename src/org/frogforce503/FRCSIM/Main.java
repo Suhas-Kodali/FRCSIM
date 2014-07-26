@@ -23,7 +23,10 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.frogforce503.FRCSIM.AI.OffensiveAITest;
 import org.frogforce503.FRCSIM.AI.TestAI;
+import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
+import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 import org.frogforce503.FRCSIM.TankPlayer.TankType;
 
@@ -52,6 +55,7 @@ public class Main extends SimpleApplication implements ActionListener {
         app.setSettings(appSettings);
         app.start();
     }
+    private Robot player;
 
     @Override
     public void simpleInitApp() {
@@ -100,40 +104,34 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public void startGame(){
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-//        AbstractSubsystem shooter = new BasicShooter(), 
-//                intake = new BasicIntake(),
-//                control = new TankPlayer(keyMapping, TankType.arcade);
-//        ArrayList<AbstractSubsystem> subsystems = new ArrayList<AbstractSubsystem>(4);
-//        subsystems.add(shooter);
-//        subsystems.add(intake);
-//        subsystems.add(control);
-//        AbstractDrivetrain drivetrain = new TankDrivetrain(subsystems, bulletAppState.getPhysicsSpace());
-//        subsystems.add(drivetrain);
-//        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        //new Ball(rootN
-        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-        AbstractSubsystem shooter = new BasicShooter(), 
-                intake = new BasicIntake(),
-                control = new TankPlayer(keyMapping, TankType.arcade);
-        ArrayList<AbstractSubsystem> subsystems = new ArrayList<AbstractSubsystem>(4);
-        subsystems.add(shooter);
-        subsystems.add(intake);
-        subsystems.add(control);
-        subsystems.add(new TankDrivetrain(subsystems, bulletAppState.getPhysicsSpace()));
-        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-        AbstractSubsystem box = new BoxSubsystem(in(25), in(25), in(55)), 
-                aicontrol = new TestAI();
-        ArrayList<AbstractSubsystem> aisubsystems = new ArrayList<AbstractSubsystem>(3);
-        aisubsystems.add(box);
-        aisubsystems.add(aicontrol);
-        aisubsystems.add(new TankDrivetrain(aisubsystems, bulletAppState.getPhysicsSpace()));
-        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
-
         
-       
-        
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
+        ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
+        for(int i = 0; i < 4; i++){
+            subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
+            subsystems.get(i).add(new BasicIntake());
+            subsystems.get(i).add(new BasicShooter());
+        }
+        subsystems.get(0).add(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric));
+        //subsystems.get(0).add(new OffensiveAITest());        
+        subsystems.get(0).add(new SwerveDrivetrain(subsystems.get(0), bulletAppState.getPhysicsSpace()));
+        player = new Robot(subsystems.get(0), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3,0,3));
+        subsystems.get(1).add(new OffensiveAITest());
+        subsystems.get(1).add(new SwerveDrivetrain(subsystems.get(1), bulletAppState.getPhysicsSpace()));
+        new Robot(subsystems.get(1), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,3));
+        subsystems.get(2).add(new OffensiveAITest());
+        subsystems.get(2).add(new TankDrivetrain(subsystems.get(2), bulletAppState.getPhysicsSpace()));
+        new Robot(subsystems.get(2), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(-3,0,3));
+        //subsystems.get(3).add(new OffensiveAITest());
+       // subsystems.get(3).add(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric));
+        //subsystems.get(3).add(new BoxSubsystem(Main.in(28), Main.in(28), Main.in(60)));
+        //subsystems.get(3).add(new SwerveDrivetrain(subsystems.get(3), bulletAppState.getPhysicsSpace()));
+        //new Robot(subsystems.get(3), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,-3));
+//        subsystems.get(4).add(new OffensiveAITest());
+//        subsystems.get(4).add(new SwerveDrivetrain(subsystems.get(4), bulletAppState.getPhysicsSpace()));
+//        new Robot(subsystems.get(4), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(0,0,-3));
+//        subsystems.get(5).add(new OffensiveAITest());
+//        subsystems.get(5).add(new TankDrivetrain(subsystems.get(5), bulletAppState.getPhysicsSpace()));
+//        new Robot(subsystems.get(5), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3,0,-3));
         
         cam.setLocation(new Vector3f(0, 12, 12));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
