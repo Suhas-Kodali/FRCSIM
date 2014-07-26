@@ -21,7 +21,7 @@ import static org.frogforce503.FRCSIM.Main.in;
  */
 public class TankDrivetrain extends AbstractDrivetrain{
     protected VehicleControl vehicle;
-    private final float mass = 30000;
+    private final float mass = 30;
     private final float accelerationForce = 175f * mass/30f;
     private final float turningForce = 100f * mass/30f;
     private final float frictionForce = 2f * mass/30f;
@@ -201,18 +201,29 @@ public class TankDrivetrain extends AbstractDrivetrain{
 
     
     @Override
-    public void driveTowardsPoint(Vector3f point) {
-        float turn = 1, pow = 1;
+    public void driveToPoint(Vector3f point, DriveDirection direction){
+        driveToPoint(point, direction, true);
+    }
+    
+    @Override
+    public void turnTowardsPoint(Vector3f point){
+        driveToPoint(point, DriveDirection.Towards, false);
+    }
+    
+    public void driveToPoint(Vector3f point, DriveDirection direction, boolean canDrive) {
+        float turn = 1, pow = (canDrive? 1 : 0);
         Vector3f vehicleVector = vehicle.getForwardVector(null), vectorToPoint = point.subtract(vehicle.getPhysicsLocation());
-        float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c);
-        if(FastMath.abs(angle)>FastMath.HALF_PI){
-            vehicleVector = vehicle.getForwardVector(null).negate();
-            angle = FastMath.PI-angle;   
-            pow = -1;
-            if(FastMath.abs(angle)>FastMath.PI/6){
-                angle = 3;//should be
-                pow = 0;                        
-            }
+        float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c) * -FastMath.sign(vectorToPoint.cross(vehicleVector).dot(Vector3f.UNIT_Y));
+        
+        if(direction == DriveDirection.Away || (direction == DriveDirection.DontCare && FastMath.abs(angle)>FastMath.HALF_PI)){
+            vehicleVector = vehicleVector.negate();
+            angle = -(FastMath.sign(angle) * FastMath.PI-angle);
+            pow *= -1;
+        }
+        
+        if(FastMath.abs(angle)>FastMath.QUARTER_PI){
+            turn = 3;
+            pow = 0;                        
         }
         
         pow *= vectorToPoint.dot(vehicleVector);
@@ -220,7 +231,6 @@ public class TankDrivetrain extends AbstractDrivetrain{
             pow *= 1.5;
         }
         turn *= angle * vectorToPoint.length() / 10; 
-        //noo, it should be called updatearcade right?k
         updateArcade(pow, turn);
     }
 }

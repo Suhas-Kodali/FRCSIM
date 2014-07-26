@@ -43,14 +43,13 @@ public abstract class AbstractShooter extends AbstractSubsystem {
     private boolean isShooting = false;
     public Runnable shoot = new Runnable(){
         public void run(){
-            System.out.println("shoot");
             shoot(12);
         }
     };
     
     public Runnable spit = new Runnable(){
         public void run(){
-            shoot(3);
+            shoot(6);
         }
     };
     

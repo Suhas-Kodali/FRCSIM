@@ -8,6 +8,8 @@ import java.util.EnumMap;
 import java.util.Queue;
 import org.frogforce503.FRCSIM.AbstractControl;
 import org.frogforce503.FRCSIM.AbstractDrivetrain;
+import org.frogforce503.FRCSIM.AbstractIntake;
+import org.frogforce503.FRCSIM.AbstractShooter;
 import org.frogforce503.FRCSIM.AbstractSubsystem;
 import org.frogforce503.FRCSIM.Robot;
 
@@ -29,8 +31,15 @@ public abstract class AIControl extends AbstractProgram{
         if(curProgram.isFinished()){
             programList.pop();
         }
+        checkForEnemyBall();
     }
 
+    public void checkForEnemyBall(){
+        if(robot.hasBall() && ((AbstractIntake) subsystems.get(SubsystemType.Intake)).getHeldBall().alliance != robot.alliance){
+            ((AbstractShooter) subsystems.get(SubsystemType.Shooter)).shoot.run();
+        }
+    }
+    
     public abstract AbstractProgram chooseNextProgram();
     
     @Override

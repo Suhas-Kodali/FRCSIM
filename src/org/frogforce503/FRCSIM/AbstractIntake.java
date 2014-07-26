@@ -36,9 +36,9 @@ public abstract class AbstractIntake extends AbstractSubsystem{
     }
     
     public abstract void update();
-    protected abstract void retract();
-    protected abstract void extend();
-    protected abstract boolean isExtended();
+    public abstract void retract();
+    public abstract void extend();
+    public abstract boolean isExtended();
     
     protected Runnable toggle = new Runnable(){
         public void run() {

@@ -60,10 +60,12 @@ public class BasicIntake extends AbstractIntake{
 
     @Override
     public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance) {
+        space.add(intakeNode);
         rootNode.attachChild(intakeNode);
         space.add(pullGhost);
         space.add(holdGhost);
         rootNode.attachChild(holdGhostNode);
+        
     }
 
     @Override
@@ -94,17 +96,16 @@ public class BasicIntake extends AbstractIntake{
     }
 
     @Override
-    public void update() {if(heldBall == null && !isShooting()){
+    public void update() {
+        if(heldBall == null && !isShooting()){
             for(int j = pullGhost.getOverlappingObjects().size()-1; j >=0; j--){
                 if(pullGhost.getOverlapping(j).getUserObject() instanceof Ball){
                     Ball ball = ((Ball) pullGhost.getOverlapping(j).getUserObject());
-                    if(!pulledBalls.contains(ball)){
-                        pulledBalls.add(ball);
-                    }
+                    pulledBalls.add(ball);
                 }
             }
             for(int j = holdGhost.getOverlappingObjects().size()-1; j>=0; j--){
-                if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball){
+                if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball && !((Ball) holdGhost.getOverlapping(j).getUserObject()).isOwned()){
                     heldBall = (Ball) holdGhost.getOverlapping(j).getUserObject();
                     heldBall.capture(robot);
                     if(pulledBalls.contains(heldBall)){
@@ -117,7 +118,7 @@ public class BasicIntake extends AbstractIntake{
         for(Ball ball : pulledBalls){
             ball.getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(ball.getRigidBodyControl().getPhysicsLocation()).normalize().add(new Vector3f(0,.5f,0)).mult(45));
         }
-        
+        pulledBalls.clear();
         if(heldBall!= null && !isShooting()){
             heldBall.getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
         }
@@ -126,7 +127,7 @@ public class BasicIntake extends AbstractIntake{
     private boolean isIntakeExtended = false;
     
     @Override
-    protected void extend(){
+    public void extend(){
         if(!isIntakeExtended){
             intakeNode.rotate(FastMath.HALF_PI, 0, 0);
             intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(6)/2, in(2.5f)));
@@ -135,7 +136,7 @@ public class BasicIntake extends AbstractIntake{
     }
     
     @Override
-    protected void retract(){
+    public void retract(){
         if(isIntakeExtended){
             intakeNode.rotate(-FastMath.HALF_PI, 0, 0);
             intakeNode.setLocalTranslation(intakeGeometry.getLocalTranslation().add(-in(16), -in(18), in(-6f)));
@@ -144,7 +145,7 @@ public class BasicIntake extends AbstractIntake{
     }    
     
     @Override
-    protected boolean isExtended(){
+    public boolean isExtended(){
         return isIntakeExtended;
     }
 }

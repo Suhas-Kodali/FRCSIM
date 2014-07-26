@@ -13,4 +13,12 @@ public class CloseHumanPlayer extends HumanPlayer{
     public void switchPosition(){
         holdingPosition = holdingPosition.mult(new Vector3f(1,1,-1));
     }
+    public void sendBallToPedestal(){
+        currentBall.setVelocity(currentBall.getVelocity().add(new Vector3f(15,0,0).mult(alliance.side)));
+    }
+    public void moveBallToOtherSide(){
+        isBallHeld = false;
+        switchPosition();
+        sendBallToPedestal();
+    }
 }

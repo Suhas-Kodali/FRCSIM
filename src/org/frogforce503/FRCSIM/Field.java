@@ -92,11 +92,11 @@ public class Field {
             space.add(northWall_geo);
         }
         
-        Box goal1 = new Box(Main.in(1)/2, Main.in(6*12+10.75f)/2, width/2 +Main.in(20));
+        Box goal1 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal1Geometry = new Geometry("Goal", goal1);
         goal1Geometry.setMaterial(Main.cage);
         goal1Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
-        goal1Geometry.setLocalTranslation(length/2, Main.in(6*12+10.75f)/2, 0);
+        goal1Geometry.setLocalTranslation(length/2+Main.in(5)/2, Main.in(6*12+10.75f)/2, 0);
         goal1Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal1Geometry);
         space.add(goal1Geometry);
@@ -125,11 +125,11 @@ public class Field {
         rootNode.attachChild(goal1TopGeometry);
         space.add(goal1TopGeometry);
         
-        Box goal2 = new Box(Main.in(2)/2, Main.in(6*12+10.75f)/2, width/2 + Main.in(20));
+        Box goal2 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal2Geometry = new Geometry("Goal", goal2);
         goal2Geometry.setMaterial(Main.cage);
         goal2Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
-        goal2Geometry.setLocalTranslation(-length/2, Main.in(6*12+10.75f)/2, 0);
+        goal2Geometry.setLocalTranslation(-length/2 - Main.in(5)/2, Main.in(6*12+10.75f)/2, 0);
         goal2Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2Geometry);
         space.add(goal2Geometry);
@@ -293,6 +293,15 @@ public class Field {
                 Ball ball = (Ball) redGoalGhost.getOverlapping(j).getUserObject();
                 if(!ball.isScored() && ball.alliance == Alliance.RED && Math.abs(ball.getPosition().x) > Main.in(54*12/2)){
                     Alliance.RED.incrementScore(10 + ball.getAssistScore());
+                    ball.score();
+                }
+            }
+        }           
+        for(int j = blueGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
+            if(blueGoalGhost.getOverlapping(j).getUserObject() instanceof Ball){
+                Ball ball = (Ball) blueGoalGhost.getOverlapping(j).getUserObject();
+                if(!ball.isScored() && ball.alliance == Alliance.BLUE && Math.abs(ball.getPosition().x) > Main.in(54*12/2)){
+                    Alliance.BLUE.incrementScore(10 + ball.getAssistScore());
                     ball.score();
                 }
             }

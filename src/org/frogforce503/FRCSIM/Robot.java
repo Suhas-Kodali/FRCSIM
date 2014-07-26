@@ -3,6 +3,7 @@ package org.frogforce503.FRCSIM;
 import org.frogforce503.FRCSIM.AI.Position;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
@@ -13,16 +14,24 @@ import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
  *
  * @author Bryce
  */
-public class Robot implements Position{
+public class Robot extends Position{
     protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
-    protected static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
+//    protected static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
+    public static final EnumMap<Alliance, ArrayList<Robot>> robots = new EnumMap(Alliance.class);
+    static {
+        robots.put(Alliance.RED, new ArrayList(3));
+        robots.put(Alliance.BLUE, new ArrayList(3));
+    }
     public Alliance alliance;
     public final boolean isTall;
     public static void updateAll(){
-        for(Robot robot : robots){
-            robot.update();
+        for(ArrayList<Robot> alliance : robots.values()){
+            for(Robot robot : alliance){
+                robot.update();
+            }
         }
     }
+    private boolean wantsBall;
     
     public Robot(ArrayList<AbstractSubsystem> subsystems, Node rootNode, PhysicsSpace space, Alliance alliance, Vector3f pos){
         this.subsystems = new EnumMap<SubsystemType, AbstractSubsystem>(SubsystemType.class);
@@ -37,15 +46,16 @@ public class Robot implements Position{
             throw new IllegalArgumentException("Robot must have a drivetrain!");
         }
         
+        this.alliance = alliance;
+        
         for(AbstractSubsystem subsystem : subsystems){
             subsystem.registerOtherSubsystems(this.subsystems, this);
         }
         this.subsystems.get(SubsystemType.Drivetrain).registerPhysics(rootNode, space, alliance);
         setPhysicsLocation(pos);
-        this.alliance = alliance;
         isTall = this.subsystems.containsKey(SubsystemType.Box);
         
-        robots.add(this);
+        robots.get(alliance).add(this);
     }
 
     public void update() {
@@ -73,13 +83,11 @@ public class Robot implements Position{
     public static Robot getClosestRobot(Vector3f point, Alliance alliance){
         float minDistance = Float.MAX_VALUE;
         Robot robot = null;
-        for(Robot curRobot : robots){
-            if(curRobot.alliance == alliance){
-                float curDistance = curRobot.getPosition().subtract(point).length();
-                if(curDistance < minDistance){
-                    minDistance = curDistance;
-                    robot = curRobot;
-                }
+        for(Robot curRobot : robots.get(alliance)){
+            float curDistance = curRobot.getPosition().subtract(point).length();
+            if(curDistance < minDistance){
+                minDistance = curDistance;
+                robot = curRobot;
             }
         }
         return robot;
@@ -87,11 +95,42 @@ public class Robot implements Position{
     
     public static ArrayList<RobotPosition> getRobotPositions(){
         ArrayList<RobotPosition> positions = new ArrayList<RobotPosition>();
-        for(Robot robot : robots){
-            positions.add(new RobotPosition(robot));
+        for(ArrayList<Robot> alliance : robots.values()){
+            for(Robot robot : alliance){
+                positions.add(new RobotPosition(robot));
+            }
         }
         
         return positions;
+    }
+
+    public boolean hasBall() {
+        try {
+            return ((AbstractIntake) subsystems.get(SubsystemType.Intake)).hasBall();
+        } catch (NullPointerException e){
+            return false;
+        }
+    }
+    
+    public Ball getCurrentBall(){
+        try{
+            return ((AbstractIntake) subsystems.get(SubsystemType.Intake)).getHeldBall();
+        } catch (NullPointerException e){
+            return null;
+        }
+    }
+    
+    public boolean isTouchingWall(){
+        Vector3f curPos = getPosition();
+        return FastMath.abs(curPos.x)>=Main.in(27*12-25) || FastMath.abs(curPos.z)>=Main.in(12*12+4-25);
+    }
+    
+    public boolean wantsBall(){
+        return wantsBall;
+    }
+    
+    public void setWantsBall(boolean value){
+        wantsBall = value;
     }
     
     public static class RobotPosition{
