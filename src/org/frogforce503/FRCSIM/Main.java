@@ -16,6 +16,7 @@ import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
+import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -23,7 +24,6 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.frogforce503.FRCSIM.AI.TestAI;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 import org.frogforce503.FRCSIM.TankPlayer.TankType;
 
@@ -86,6 +86,7 @@ public class Main extends SimpleApplication implements ActionListener {
         TextureKey key = new TextureKey("Textures/goalTest.png");
         Texture tex = assetManager.loadTexture(key);
         cage.setTexture("ColorMap", tex);
+        cage.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         blue.getAdditionalRenderState().setWireframe(false);
         blue.setColor("Color", ColorRGBA.Blue);
@@ -102,7 +103,7 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         AbstractSubsystem shooter = new BasicShooter(), 
                 intake = new BasicIntake(),
-                control = new TankPlayer(keyMapping, TankType.arcade);
+                control = new TankPlayer(keyMapping, TankType.tank);
         ArrayList<AbstractSubsystem> subsystems = new ArrayList<AbstractSubsystem>(4);
         subsystems.add(shooter);
         subsystems.add(intake);
@@ -268,7 +269,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         public static float getAxisValue(int id, int axis, float sensitivity){
             if(id < axisMaps.size()){
-                if(axisMaps.get(id).get(axis) > 0.05 || axisMaps.get(id).get(axis) < -0.05){
+                if(axisMaps.get(id).get(axis) > 0.1 || axisMaps.get(id).get(axis) < -0.1){
                 System.out.println(scale(axisMaps.get(id).get(axis), sensitivity));
                 return scale(axisMaps.get(id).get(axis), sensitivity);
                 }else{
