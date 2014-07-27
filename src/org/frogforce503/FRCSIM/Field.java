@@ -74,7 +74,8 @@ public class Field {
         
         Box truss = new Box(new Vector3f(-Main.in(6), Main.in(62), Main.in(-170.2f)), new Vector3f(Main.in(6), Main.in(74), Main.in(170.2f)));
         Geometry trussGeometry = new Geometry("truss", truss);
-        trussGeometry.setMaterial(Main.green);
+        trussGeometry.setMaterial(Main.sides);
+        trussGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         trussGeometry.setLocalTranslation(Vector3f.ZERO);
         RigidBodyControl trussControl = new RigidBodyControl(0);
         trussGeometry.addControl(trussControl);
@@ -84,17 +85,18 @@ public class Field {
         for(int i = -1; i <= 1; i+=2){
             Box northWall = new Box(length/2, Main.in(20f)/2, Main.in(20f)/2);
             Geometry northWall_geo = new Geometry("side_wall", northWall);
-            northWall_geo.setMaterial(Main.cage);
+            northWall_geo.setQueueBucket(RenderQueue.Bucket.Transparent);
+            northWall_geo.setMaterial(Main.sides);
             rootNode.attachChild(northWall_geo);
-            northWall_geo.setLocalTranslation(0, Main.in(20)/2, i*width/2 + i*Main.in(20)/2);
+            northWall_geo.setLocalTranslation(0, Main.in(20), i*width/2 + i*Main.in(20)/2);
             RigidBodyControl north_phy = new RigidBodyControl(0f);
             northWall_geo.addControl(north_phy);
             space.add(northWall_geo);
         }
         
-        Box goal1 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
+        Box goal1 = new Box(Main.in(1), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal1Geometry = new Geometry("Goal", goal1);
-        goal1Geometry.setMaterial(Main.cage);
+        goal1Geometry.setMaterial(Main.allianceWalls);
         goal1Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         goal1Geometry.setLocalTranslation(length/2+Main.in(5)/2, Main.in(6*12+10.75f)/2, 0);
         goal1Geometry.addControl(new RigidBodyControl(0));
@@ -125,9 +127,9 @@ public class Field {
         rootNode.attachChild(goal1TopGeometry);
         space.add(goal1TopGeometry);
         
-        Box goal2 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
+        Box goal2 = new Box(Main.in(1), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal2Geometry = new Geometry("Goal", goal2);
-        goal2Geometry.setMaterial(Main.cage);
+        goal2Geometry.setMaterial(Main.allianceWalls);
         goal2Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         goal2Geometry.setLocalTranslation(-length/2 - Main.in(5)/2, Main.in(6*12+10.75f)/2, 0);
         goal2Geometry.addControl(new RigidBodyControl(0));

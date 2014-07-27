@@ -35,7 +35,7 @@ public class BoxSubsystem extends AbstractSubsystem{
     public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance) {
         Box box = new Box(new Vector3f(length/2, Main.in(3), width/2), new Vector3f(-length/2, height+Main.in(3), -width/2));
         Geometry boxGeometry = new Geometry("Bumper Front", box);
-        boxGeometry.setMaterial(Main.cage);
+        boxGeometry.setMaterial(Main.allianceWalls);
         boxGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         rootNode.attachChild(boxGeometry);
     }

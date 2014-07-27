@@ -40,7 +40,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
-        chassisGeometry.setMaterial(Main.cage);
+        chassisGeometry.setMaterial(Main.chassis);
         chassisGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
         

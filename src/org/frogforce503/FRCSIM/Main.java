@@ -36,7 +36,7 @@ import org.frogforce503.FRCSIM.TankPlayer.TankType;
  */
 public class Main extends SimpleApplication implements ActionListener {
 
-    public static Material red, black, blue, green, darkGray, cage;
+    public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis;
     public static Field field;
     public static Main app;
     public static BulletAppState bulletAppState;
@@ -84,13 +84,27 @@ public class Main extends SimpleApplication implements ActionListener {
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
         black.setColor("Color", ColorRGBA.Black); 
-        cage = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        cage.getAdditionalRenderState().setWireframe(false);
-        cage.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        allianceWalls = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        allianceWalls.getAdditionalRenderState().setWireframe(false);
+        allianceWalls.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         TextureKey key = new TextureKey("Textures/goalTest.png");
         Texture tex = assetManager.loadTexture(key);
-        cage.setTexture("ColorMap", tex);
-        cage.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+        allianceWalls.setTexture("ColorMap", tex);
+        
+        chassis = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        chassis.getAdditionalRenderState().setWireframe(false);
+        chassis.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        TextureKey keyChassis = new TextureKey("Textures/cage.png");
+        Texture texChassis = assetManager.loadTexture(keyChassis);
+        chassis.setTexture("ColorMap", texChassis);
+        
+        sides = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        sides.getAdditionalRenderState().setWireframe(false);
+        sides.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        TextureKey key1 = new TextureKey("Textures/fieldSides.png");
+        Texture tex1 = assetManager.loadTexture(key1);
+        sides.setTexture("ColorMap", tex1);
+        sides.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         blue.getAdditionalRenderState().setWireframe(false);
         blue.setColor("Color", ColorRGBA.Blue);
@@ -114,7 +128,7 @@ public class Main extends SimpleApplication implements ActionListener {
         subsystems1.add(control);
         AbstractDrivetrain drivetrain = new TankDrivetrain(subsystems1, bulletAppState.getPhysicsSpace());
         subsystems1.add(drivetrain);
-        Robot player = new Robot(subsystems1, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
+        player = new Robot(subsystems1, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
         new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
         //new Ball(rootN
         //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
@@ -129,7 +143,7 @@ public class Main extends SimpleApplication implements ActionListener {
 //        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
 //        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
 
-        
+    
        
         
         ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
@@ -138,16 +152,16 @@ public class Main extends SimpleApplication implements ActionListener {
             subsystems.get(i).add(new BasicIntake());
             subsystems.get(i).add(new BasicShooter());
         }
-        subsystems.get(0).add(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric));
+        subsystems.get(0).add(new TankPlayer(keyMapping, TankType.arcade));
         //subsystems.get(0).add(new OffensiveAITest());        
-        subsystems.get(0).add(new SwerveDrivetrain(subsystems.get(0), bulletAppState.getPhysicsSpace()));
+        subsystems.get(0).add(new TankDrivetrain(subsystems.get(0), bulletAppState.getPhysicsSpace()));
         player = new Robot(subsystems.get(0), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3,0,3));
-        subsystems.get(1).add(new OffensiveAITest());
-        subsystems.get(1).add(new SwerveDrivetrain(subsystems.get(1), bulletAppState.getPhysicsSpace()));
-        new Robot(subsystems.get(1), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,3));
-        subsystems.get(2).add(new OffensiveAITest());
-        subsystems.get(2).add(new TankDrivetrain(subsystems.get(2), bulletAppState.getPhysicsSpace()));
-        new Robot(subsystems.get(2), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(-3,0,3));
+//        subsystems.get(1).add(new OffensiveAITest());
+//        subsystems.get(1).add(new SwerveDrivetrain(subsystems.get(1), bulletAppState.getPhysicsSpace()));
+//        new Robot(subsystems.get(1), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,3));
+//        subsystems.get(2).add(new OffensiveAITest());
+//        subsystems.get(2).add(new TankDrivetrain(subsystems.get(2), bulletAppState.getPhysicsSpace()));
+//        new Robot(subsystems.get(2), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(-3,0,3));
         //subsystems.get(3).add(new OffensiveAITest());
        // subsystems.get(3).add(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric));
         //subsystems.get(3).add(new BoxSubsystem(Main.in(28), Main.in(28), Main.in(60)));
@@ -160,8 +174,8 @@ public class Main extends SimpleApplication implements ActionListener {
 //        subsystems.get(5).add(new TankDrivetrain(subsystems.get(5), bulletAppState.getPhysicsSpace()));
 //        new Robot(subsystems.get(5), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3,0,-3));
         
-        cam.setLocation(new Vector3f(0, 12, 12));
-        cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
+        cam.setLocation(new Vector3f(Field.length/2 + Main.in(30), Main.in(60), -Field.width/4));
+        cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
         
         isStarted = true;
@@ -216,6 +230,7 @@ public class Main extends SimpleApplication implements ActionListener {
             HumanPlayer.updateAll();
             field.update();
             scene.update();
+            cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
         }
     }
     
