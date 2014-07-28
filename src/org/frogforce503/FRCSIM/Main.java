@@ -31,6 +31,7 @@ import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
 
+
 /**
  *
  * @author Bryce Paputa
@@ -120,9 +121,9 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public void startGame(){
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-        
         ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
         AISuperCoach coach = new AISuperCoach(Alliance.RED);
+        
         for(int i = 0; i < 3; i++){
             subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
             subsystems.get(i).add(new BasicIntake());
@@ -134,6 +135,7 @@ public class Main extends SimpleApplication implements ActionListener {
             subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace()));
             new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3, 0, (i-1)*3));
         }
+        
         ArrayList<ArrayList<AbstractSubsystem>> subsystems2 = new ArrayList<ArrayList<AbstractSubsystem>>(6);
         AISuperCoach coach2 = new AISuperCoach(Alliance.BLUE);
         for(int i = 0; i < 2; i++){

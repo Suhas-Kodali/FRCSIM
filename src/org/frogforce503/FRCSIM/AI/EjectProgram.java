@@ -21,7 +21,7 @@ public class EjectProgram extends AbstractProgram{
 
     @Override
     public void update() {
-        shooter.shoot.run();
+        shooter.spit.run();
     }
 
     @Override
