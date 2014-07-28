@@ -8,6 +8,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
 import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
 
 /**
@@ -16,6 +17,8 @@ import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
  */
 public class Robot extends Position{
     protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
+    private static int count = 0;
+    public final int number = count++;
 //    protected static final ArrayList<Robot> robots = new ArrayList<Robot>(6);
     public static final EnumMap<Alliance, ArrayList<Robot>> robots = new EnumMap(Alliance.class);
     static {
@@ -32,6 +35,7 @@ public class Robot extends Position{
         }
     }
     private boolean wantsBall;
+    private AIFollowerProgram ai = null;
     
     public Robot(ArrayList<AbstractSubsystem> subsystems, Node rootNode, PhysicsSpace space, Alliance alliance, Vector3f pos){
         this.subsystems = new EnumMap<SubsystemType, AbstractSubsystem>(SubsystemType.class);
@@ -52,6 +56,10 @@ public class Robot extends Position{
             subsystem.registerOtherSubsystems(this.subsystems, this);
         }
         this.subsystems.get(SubsystemType.Drivetrain).registerPhysics(rootNode, space, alliance);
+        if(this.subsystems.get(SubsystemType.Controller) instanceof AIFollowerProgram){
+            ai = (AIFollowerProgram) this.subsystems.get(SubsystemType.Controller);
+        }
+        
         setPhysicsLocation(pos);
         isTall = this.subsystems.containsKey(SubsystemType.Box);
         
@@ -131,6 +139,27 @@ public class Robot extends Position{
     
     public void setWantsBall(boolean value){
         wantsBall = value;
+    }
+    
+    @Override
+    public int hashCode(){
+        return number;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Robot other = (Robot) obj;
+        return other.number == this.number;
+    }
+    
+    public AIFollowerProgram getAIFollower(){
+        return ai;
     }
     
     public static class RobotPosition{

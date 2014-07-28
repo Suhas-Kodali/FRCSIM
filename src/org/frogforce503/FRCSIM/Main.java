@@ -23,12 +23,12 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.frogforce503.FRCSIM.AI.OffensiveAITest;
-import org.frogforce503.FRCSIM.AI.TestAI;
+import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
+import org.frogforce503.FRCSIM.AI.AISuperCoach;
+import org.frogforce503.FRCSIM.AI.PlayerFollowerProgram;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
-import org.frogforce503.FRCSIM.TankPlayer.TankType;
 
 /**
  *
@@ -106,32 +106,38 @@ public class Main extends SimpleApplication implements ActionListener {
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
         
         ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
-        for(int i = 0; i < 4; i++){
+        AISuperCoach coach = new AISuperCoach(Alliance.RED);
+        for(int i = 0; i < 3; i++){
             subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
             subsystems.get(i).add(new BasicIntake());
             subsystems.get(i).add(new BasicShooter());
+            subsystems.get(i).add(new AIFollowerProgram());
+            if(i == 0){
+                ((AIFollowerProgram) subsystems.get(i).get(2)).registerCoach(coach);
+            }
+            subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace()));
+            new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3, 0, (i-1)*3));
         }
-        subsystems.get(0).add(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric));
-        //subsystems.get(0).add(new OffensiveAITest());        
-        subsystems.get(0).add(new SwerveDrivetrain(subsystems.get(0), bulletAppState.getPhysicsSpace()));
-        player = new Robot(subsystems.get(0), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3,0,3));
-        subsystems.get(1).add(new OffensiveAITest());
-        subsystems.get(1).add(new SwerveDrivetrain(subsystems.get(1), bulletAppState.getPhysicsSpace()));
-        new Robot(subsystems.get(1), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,3));
-        subsystems.get(2).add(new OffensiveAITest());
-        subsystems.get(2).add(new TankDrivetrain(subsystems.get(2), bulletAppState.getPhysicsSpace()));
-        new Robot(subsystems.get(2), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(-3,0,3));
-        //subsystems.get(3).add(new OffensiveAITest());
-       // subsystems.get(3).add(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric));
-        //subsystems.get(3).add(new BoxSubsystem(Main.in(28), Main.in(28), Main.in(60)));
-        //subsystems.get(3).add(new SwerveDrivetrain(subsystems.get(3), bulletAppState.getPhysicsSpace()));
-        //new Robot(subsystems.get(3), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,-3));
-//        subsystems.get(4).add(new OffensiveAITest());
-//        subsystems.get(4).add(new SwerveDrivetrain(subsystems.get(4), bulletAppState.getPhysicsSpace()));
-//        new Robot(subsystems.get(4), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(0,0,-3));
-//        subsystems.get(5).add(new OffensiveAITest());
-//        subsystems.get(5).add(new TankDrivetrain(subsystems.get(5), bulletAppState.getPhysicsSpace()));
-//        new Robot(subsystems.get(5), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3,0,-3));
+        ArrayList<ArrayList<AbstractSubsystem>> subsystems2 = new ArrayList<ArrayList<AbstractSubsystem>>(6);
+        AISuperCoach coach2 = new AISuperCoach(Alliance.BLUE);
+        for(int i = 0; i < 2; i++){
+            subsystems2.add(i, new ArrayList<AbstractSubsystem>(4));
+            subsystems2.get(i).add(new BasicIntake());
+            subsystems2.get(i).add(new BasicShooter());
+            subsystems2.get(i).add(new AIFollowerProgram());
+            if(i == 0){
+                ((AIFollowerProgram) subsystems2.get(i).get(2)).registerCoach(coach2);
+            }
+            subsystems2.get(i).add(new TankDrivetrain(subsystems2.get(i), bulletAppState.getPhysicsSpace()));
+            new Robot(subsystems2.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, (i-1)*3));
+        }
+        
+        ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>();
+        playersubsystems.add(new BasicIntake());
+        playersubsystems.add(new BasicShooter());
+        playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric)));
+        playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace()));
+        new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, 3));
         
         cam.setLocation(new Vector3f(0, 12, 12));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
@@ -243,8 +249,6 @@ public class Main extends SimpleApplication implements ActionListener {
         }
         
         public static void addListener(String key, Runnable function){
-            System.out.println(key);
-            System.out.println(function);
             listeners.put(key, function);
         }
         

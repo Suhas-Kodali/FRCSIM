@@ -39,5 +39,10 @@ class ScoreBallProgram extends AbstractProgram {
         this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
         this.robot = robot;
     }
+
+    @Override
+    public String getName() {
+        return "Score Ball Program";
+    }
     
 }

@@ -105,7 +105,7 @@ public class BasicIntake extends AbstractIntake{
                 }
             }
             for(int j = holdGhost.getOverlappingObjects().size()-1; j>=0; j--){
-                if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball && !((Ball) holdGhost.getOverlapping(j).getUserObject()).isOwned()){
+                if(holdGhost.getOverlapping(j).getUserObject() instanceof Ball && !((Ball) holdGhost.getOverlapping(j).getUserObject()).isOwned() && ((Ball) holdGhost.getOverlapping(j).getUserObject()).getVelocity().length()<7){
                     heldBall = (Ball) holdGhost.getOverlapping(j).getUserObject();
                     heldBall.capture(robot);
                     if(pulledBalls.contains(heldBall)){
