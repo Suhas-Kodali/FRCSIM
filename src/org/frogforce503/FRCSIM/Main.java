@@ -16,6 +16,7 @@ import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
+import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -36,7 +37,7 @@ import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
  */
 public class Main extends SimpleApplication implements ActionListener {
 
-    public static Material red, black, blue, green, darkGray, cage;
+    public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis;
     public static Field field;
     public static Main app;
     public static BulletAppState bulletAppState;
@@ -84,12 +85,27 @@ public class Main extends SimpleApplication implements ActionListener {
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
         black.setColor("Color", ColorRGBA.Black); 
-        cage = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        cage.getAdditionalRenderState().setWireframe(false);
-        cage.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        allianceWalls = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        allianceWalls.getAdditionalRenderState().setWireframe(false);
+        allianceWalls.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         TextureKey key = new TextureKey("Textures/goalTest.png");
         Texture tex = assetManager.loadTexture(key);
-        cage.setTexture("ColorMap", tex);
+        allianceWalls.setTexture("ColorMap", tex);
+        
+        chassis = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        chassis.getAdditionalRenderState().setWireframe(false);
+        chassis.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        TextureKey keyChassis = new TextureKey("Textures/cage.png");
+        Texture texChassis = assetManager.loadTexture(keyChassis);
+        chassis.setTexture("ColorMap", texChassis);
+        
+        sides = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        sides.getAdditionalRenderState().setWireframe(false);
+        sides.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        TextureKey key1 = new TextureKey("Textures/fieldSides.png");
+        Texture tex1 = assetManager.loadTexture(key1);
+        sides.setTexture("ColorMap", tex1);
+        sides.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         blue.getAdditionalRenderState().setWireframe(false);
         blue.setColor("Color", ColorRGBA.Blue);
@@ -135,12 +151,12 @@ public class Main extends SimpleApplication implements ActionListener {
         ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>();
         playersubsystems.add(new BasicIntake());
         playersubsystems.add(new BasicShooter());
-        playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric)));
+        playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentricDriverCam)));
         playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace()));
-        new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, 3));
+        player = new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, 3));
         
-        cam.setLocation(new Vector3f(0, 12, 12));
-        cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
+        cam.setLocation(new Vector3f(Field.length/2 + Main.in(70), Main.in(68), -Field.width/4));
+        cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
         flyCam.setEnabled(false);
         
         isStarted = true;
@@ -195,6 +211,7 @@ public class Main extends SimpleApplication implements ActionListener {
             HumanPlayer.updateAll();
             field.update();
             scene.update();
+            cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
         }
     }
     
@@ -276,7 +293,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         public static float getAxisValue(int id, int axis, float sensitivity){
             if(id < axisMaps.size()){
-                if(axisMaps.get(id).get(axis) > 0.05 || axisMaps.get(id).get(axis) < -0.05){
+                if(axisMaps.get(id).get(axis) > 0.1 || axisMaps.get(id).get(axis) < -0.1){
                 System.out.println(scale(axisMaps.get(id).get(axis), sensitivity));
                 return scale(axisMaps.get(id).get(axis), sensitivity);
                 }else{

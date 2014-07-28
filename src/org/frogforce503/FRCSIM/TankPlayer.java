@@ -93,6 +93,7 @@ public class TankPlayer extends AbstractControl{
         public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "q", "e", "r", "space", "c", "i", "o", -1, -1);
         public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "", "", "Button 1", "Button 0", "Button 2", "Button 5", "", 0, 1);
         public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "","", "", "", "", "", "", "", -1, -1);
+
     }
     
     public void setKeyMapping(TankKeyMapping src){

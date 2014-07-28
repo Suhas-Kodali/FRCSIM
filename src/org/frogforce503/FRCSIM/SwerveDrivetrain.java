@@ -40,7 +40,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         chassisNode = new Node("chassis Node");
         Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
         Geometry chassisGeometry = new Geometry("Chassis", chassis);
-        chassisGeometry.setMaterial(Main.cage);
+        chassisGeometry.setMaterial(Main.chassis);
         chassisGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
         
@@ -158,7 +158,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         vehicle.brake(frictionForce * 2f / (Math.abs(FWR)+Math.abs(STR)));
     }
 
-    void updateFC(float FWR, float STR, float omega) {
+    void updateFCSC(float FWR, float STR, float omega) {
         FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
         STR = (STR>1? 1 : (STR<-1? -1 : STR));
         
@@ -166,6 +166,17 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         float angleFromX = forwardDirectionProjection.getAngle();
         Vector2f command = new Vector2f(FWR, STR);
         command.rotateAroundOrigin(angleFromX+FastMath.HALF_PI, true);
+        updateRC(command.x, command.y, omega);
+    }
+    
+    void updateFCDC(float FWR, float STR, float omega) {
+        FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
+        STR = (STR>1? 1 : (STR<-1? -1 : STR));
+        
+        Vector2f forwardDirectionProjection = new Vector2f(vehicle.getForwardVector(null).x, vehicle.getForwardVector(null).z);
+        float angleFromX = forwardDirectionProjection.getAngle();
+        Vector2f command = new Vector2f(FWR, STR);
+        command.rotateAroundOrigin(angleFromX-FastMath.PI, true);
         updateRC(command.x, command.y, omega);
     }
 
@@ -191,7 +202,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         float z = (curPos.z-point.z), x = (point.x - curPos.x);
         Vector3f vectorToPoint = point.subtract(curPos), vehicleVector = vehicle.getForwardVector(null);
         float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c) * FastMath.sign(vectorToPoint.cross(vehicleVector).dot(Vector3f.UNIT_Y));
-        updateFC(z, x, angle/3 * (direction == DriveDirection.Away? -1 : (direction == DriveDirection.DontCare? 0 : (direction == DriveDirection.Towards? 1 : Float.NaN))));
+        updateFCSC(z, x, angle/3 * (direction == DriveDirection.Away? -1 : (direction == DriveDirection.DontCare? 0 : (direction == DriveDirection.Towards? 1 : Float.NaN))));
         
     }
     
@@ -199,7 +210,7 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         Vector3f curPos = vehicle.getPhysicsLocation(); 
         Vector3f vectorToPoint = point.subtract(curPos), vehicleVector = vehicle.getForwardVector(null);
         float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c) * FastMath.sign(vectorToPoint.cross(vehicleVector).dot(Vector3f.UNIT_Y));
-        updateFC(0, 0, angle/3);//-angle / 10);
+        updateFCSC(0, 0, angle/3);//-angle / 10);
         
     }
 }

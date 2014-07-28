@@ -35,7 +35,7 @@ public class SwervePlayer extends AbstractControl{
     }
     
     public static enum SwerveType{
-        FieldCentric(), RobotCentric();
+        FieldCentricSpectatorCam(), FieldCentricDriverCam(), RobotCentric();
     }
     
     private SwerveType type;
@@ -54,8 +54,11 @@ public class SwervePlayer extends AbstractControl{
                     STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left),
                     omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
             switch(type){
-                case FieldCentric:
-                    drivetrain.updateFC(FWR, STR, omega);
+                case FieldCentricSpectatorCam:
+                    drivetrain.updateFCSC(FWR, STR, omega);
+                    break;
+                case FieldCentricDriverCam:
+                    drivetrain.updateFCDC(FWR, STR, omega);
                     break;
                 case RobotCentric:
                     drivetrain.updateRC(FWR, STR, omega);
