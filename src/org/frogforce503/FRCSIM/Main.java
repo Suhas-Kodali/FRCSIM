@@ -84,12 +84,14 @@ public class Main extends SimpleApplication implements ActionListener {
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
         black.setColor("Color", ColorRGBA.Black); 
+        
         allianceWalls = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         allianceWalls.getAdditionalRenderState().setWireframe(false);
         allianceWalls.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         TextureKey key = new TextureKey("Textures/goalTest.png");
         Texture tex = assetManager.loadTexture(key);
         allianceWalls.setTexture("ColorMap", tex);
+        allianceWalls.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         
         chassis = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         chassis.getAdditionalRenderState().setWireframe(false);
@@ -97,14 +99,15 @@ public class Main extends SimpleApplication implements ActionListener {
         TextureKey keyChassis = new TextureKey("Textures/cage.png");
         Texture texChassis = assetManager.loadTexture(keyChassis);
         chassis.setTexture("ColorMap", texChassis);
+        chassis.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         
         sides = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        sides.getAdditionalRenderState().setWireframe(false);
         sides.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         TextureKey key1 = new TextureKey("Textures/fieldSides.png");
         Texture tex1 = assetManager.loadTexture(key1);
         sides.setTexture("ColorMap", tex1);
         sides.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+        
         blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         blue.getAdditionalRenderState().setWireframe(false);
         blue.setColor("Color", ColorRGBA.Blue);
@@ -174,10 +177,10 @@ public class Main extends SimpleApplication implements ActionListener {
 //        subsystems.get(5).add(new TankDrivetrain(subsystems.get(5), bulletAppState.getPhysicsSpace()));
 //        new Robot(subsystems.get(5), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3,0,-3));
         
-        cam.setLocation(new Vector3f(Field.length/2 + Main.in(30), Main.in(60), -Field.width/4));
+        cam.setLocation(new Vector3f(0, 5, 12));
         cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
-        flyCam.setEnabled(false);
-        
+        flyCam.setEnabled(true);
+        flyCam.setMoveSpeed(20);
         isStarted = true;
     }
 

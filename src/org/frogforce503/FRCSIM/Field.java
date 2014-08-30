@@ -61,12 +61,12 @@ public class Field {
             exitPlanePosition = exitPlanePosition.negate();
         }
         
-        Box floorBox = new Box(140, 0.25f, 140);
+        Box floorBox = new Box(140, 0f, 140);
         Geometry floorGeometry = new Geometry("Floor Box", floorBox);
         floorGeometry.setMaterial(Main.darkGray);
         floorGeometry.setLocalTranslation(0, -0, 0);
         Plane floorPlane = new Plane();
-        floorPlane.setOriginNormal(new Vector3f(0, 0.25f, 0), Vector3f.UNIT_Y);
+        floorPlane.setOriginNormal(new Vector3f(0, 0f, 0), Vector3f.UNIT_Y);
         RigidBodyControl floorControl = new RigidBodyControl(new PlaneCollisionShape(floorPlane), 0);
         floorGeometry.addControl(floorControl);
         rootNode.attachChild(floorGeometry);
@@ -88,7 +88,7 @@ public class Field {
             northWall_geo.setQueueBucket(RenderQueue.Bucket.Transparent);
             northWall_geo.setMaterial(Main.sides);
             rootNode.attachChild(northWall_geo);
-            northWall_geo.setLocalTranslation(0, Main.in(20), i*width/2 + i*Main.in(20)/2);
+            northWall_geo.setLocalTranslation(0, Main.in(10), i*width/2 + i*Main.in(20)/2);
             RigidBodyControl north_phy = new RigidBodyControl(0f);
             northWall_geo.addControl(north_phy);
             space.add(northWall_geo);
@@ -159,6 +159,70 @@ public class Field {
         goal2TopGeometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2TopGeometry);
         space.add(goal2TopGeometry);
+        
+        Box lowGoalTop2 = new Box(Main.in(1.5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
+        Geometry lowGoalTopGeometry = new Geometry("Goal", lowGoalTop2);
+        lowGoalTopGeometry.setMaterial(Main.blue);
+        lowGoalTopGeometry.setLocalTranslation(length/2 - Main.in(32.5f), Main.in(35), width/2 - Main.in(29)/2);
+        lowGoalTopGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalTopGeometry);
+        space.add(lowGoalTopGeometry);
+        
+        Box lowGoalBottom = new Box(Main.in(1.5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
+        Geometry lowGoalBottomGeometry = new Geometry("Goal", lowGoalBottom);
+        lowGoalBottomGeometry.setMaterial(Main.blue);
+        lowGoalBottomGeometry.setLocalTranslation(length/2 - Main.in(32.5f), Main.in(7), width/2 - Main.in(29)/2);
+        lowGoalBottomGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalBottomGeometry);
+        space.add(lowGoalBottomGeometry);
+        
+        Box lowGoalBottomNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+        Geometry lowGoalBottomNorthGeometry = new Geometry("Goal", lowGoalBottomNorth);
+        lowGoalBottomNorthGeometry.setMaterial(Main.blue);
+        lowGoalBottomNorthGeometry.setLocalTranslation(length/2 - Main.in(32.5f)/2, Main.in(7), width/2 - Main.in(29));
+        lowGoalBottomNorthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalBottomNorthGeometry);
+        space.add(lowGoalBottomNorthGeometry);
+        
+        Box lowGoalBottomSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+        Geometry lowGoalBottomSouthGeometry = new Geometry("Goal", lowGoalBottomSouth);
+        lowGoalBottomSouthGeometry.setMaterial(Main.blue);
+        lowGoalBottomSouthGeometry.setLocalTranslation(length/2 - Main.in(32.5f)/2, Main.in(7), width/2);
+        lowGoalBottomSouthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalBottomSouthGeometry);
+        space.add(lowGoalBottomSouthGeometry);
+        
+        Box lowGoalTopNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+        Geometry lowGoalTopNorthGeometry = new Geometry("Goal", lowGoalTopNorth);
+        lowGoalTopNorthGeometry.setMaterial(Main.blue);
+        lowGoalTopNorthGeometry.setLocalTranslation(length/2 - Main.in(32.5f)/2, Main.in(35), width/2 - Main.in(29));
+        lowGoalTopNorthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalTopNorthGeometry);
+        space.add(lowGoalTopNorthGeometry);
+        
+        Box lowGoalTopSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+        Geometry lowGoalTopSouthGeometry = new Geometry("Goal", lowGoalTopSouth);
+        lowGoalTopSouthGeometry.setMaterial(Main.blue);
+        lowGoalTopSouthGeometry.setLocalTranslation(length/2 - Main.in(32.5f)/2, Main.in(35), width/2);
+        lowGoalTopSouthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalTopSouthGeometry);
+        space.add(lowGoalTopSouthGeometry);
+        
+        Box lowGoalMiddleNorth = new Box(Main.in(1.5f)/2, Main.in(35f)/2, Main.in(1.5f)/2);
+        Geometry lowGoalMiddleNorthGeometry = new Geometry("Goal", lowGoalMiddleNorth);
+        lowGoalMiddleNorthGeometry.setMaterial(Main.blue);
+        lowGoalMiddleNorthGeometry.setLocalTranslation(length/2 - Main.in(32.5f), Main.in(35)/2, width/2 - Main.in(29));
+        lowGoalMiddleNorthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalMiddleNorthGeometry);
+        space.add(lowGoalMiddleNorthGeometry);
+        
+        Box lowGoalMiddleSouth = new Box(Main.in(1.5f)/2, Main.in(35f)/2, Main.in(1.5f)/2);
+        Geometry lowGoalMiddleSouthGeometry = new Geometry("Goal", lowGoalMiddleSouth);
+        lowGoalMiddleSouthGeometry.setMaterial(Main.blue);
+        lowGoalMiddleSouthGeometry.setLocalTranslation(length/2 - Main.in(32.5f), Main.in(35)/2, width/2);
+        lowGoalMiddleSouthGeometry.addControl(new RigidBodyControl(0));
+        rootNode.attachChild(lowGoalMiddleSouthGeometry);
+        space.add(lowGoalMiddleSouthGeometry);
       
         redGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
         
@@ -286,7 +350,13 @@ public class Field {
             sphereGeometry.addControl(sphereControl);
             rootNode.attachChild(sphereGeometry);
             space.add(sphereGeometry);
+            
+            
         }
+        
+        
+        
+        
     }
     
     public void update(){                
