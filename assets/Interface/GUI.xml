@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
+    <useStyles filename="nifty-default-styles.xml" />
+    <useControls filename="nifty-default-controls.xml" />
+    <!-- +++++++++++++++++++++++++++++++++++++++ -->
+    <!-- start screen -->
+    <!-- +++++++++++++++++++++++++++++++++++++++ -->
+    <screen id="start" controller="org.frogforce503.FRCSIM.Scene">
+        <layer height="100%" width="100%" childLayout="vertical">
+            <panel height="50%" width="100%" backgroundColor="#000" valign="center" align="left" childLayout="center">
+                <control name="button" label="Start" id="Setup1Button" align="center" valign="center" height="50%" width="50%" visibleToMouse="true">
+                    <interact onClick="setup1Screen())"/>
+                </control>
+            </panel>
+            <panel height="50%" width="100%" backgroundColor="#000" valign="center" align="left" childLayout="center">
+                <control name="button" label="Quit" id="QuitButton" align="center" valign="center" height="50%" width="50%" visibleToMouse="true">
+                    <interact onClick="quitGame())"/>
+                </control>
+            </panel>
+        </layer>        
+    </screen>
+    <screen id="setup1" controller="org.frogforce503.FRCSIM.Scene">
+        <layer height="100%" width="100%" childLayout="absolute" backgroundColor="#FFF" padding="10px">
+            <panel height="100%" width="50%" x="0%" y="0%" childLayout="vertical">
+                <control name="radioButtonGroup" id="alliance"/>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="red" group="alliance"/>
+                    <text text="Red Alliance" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="blue" group="alliance"/>
+                    <text text="Blue Alliance" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="watch" group="alliance"/>
+                    <text text="Just Watch" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="horizontalSlider" id="yourAllianceSlider" height="23px" width="100px" min="0" max="3" initial="2" stepSize="1"/>
+                    <control name="label" text="2" id="yourAllianceLabel" height="23px" width="23px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                    <text text="How many AI robots on your alliance?" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="horizontalSlider" id="otherAllianceSlider" height="23px" width="100px" min="0" max="3" initial="3" stepSize="1"/>
+                    <control name="label" text="3" id="otherAllianceLabel" height="23px" width="23px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                    <text text="How many robots on the other alliance?" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <control name="radioButtonGroup" id="view"/>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="driver" group="view"/>
+                    <text text="Driver station camera" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="spectator" group="view"/>
+                    <text text="Spectator camera" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <control name="radioButtonGroup" id="dt"/>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="tank" group="dt"/>
+                    <text text="Tank drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="swerve" group="dt"/>
+                    <text text="Swerve drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                
+            </panel>
+            <panel id="tankPanel" height="80%" width="50%" x="50%" y="0%" childLayout="vertical">
+                <control name="radioButtonGroup" id="tankType"/>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="arcadeDrive" group="tankType"/>
+                    <text text="Arcade drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="tankDrive" group="tankType"/>
+                    <text text="Tank drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+            </panel>           
+            <panel id="swervePanel" height="80%" width="50%" x="50%" y="0%" childLayout="vertical" visible="false">
+                <control name="radioButtonGroup" id="swerveType"/>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="FCDrive" group="swerveType"/>
+                    <text text="Field centric drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="RCDrive" group="swerveType"/>
+                    <text text="Robot centric drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+            </panel>       
+            <panel height="20%" width="50%" x="50%" y="80%" childLayout="vertical">
+                <control name="button" label="Start" id="StartButton" align="center" valign="center" height="50%" width="50%" visibleToMouse="true">
+                    <interact onClick="startGame())"/>
+                </control>
+            </panel>    
+        </layer>
+    </screen>
+    <screen id="hud" controller="org.frogforce503.FRCSIM.Scene">
+        <layer height="100%" width="100%" childLayout="vertical">
+            <panel height="5%" width="10%" backgroundColor="#FFF" align="left" valign="top" childLayout="center">
+                <control name="button" label="Options" id="OptionButton" height="100%" width="100%" align="center" valign="center">
+                    
+                </control>
+            </panel>
+        </layer>
+        <layer childLayout="vertical" height="100%" width="100%">
+            <panel height="5%" width="10%" valign="top" align="right" backgroundColor="#FFF" childLayout="center">
+                <text text="" id="score" height="5%" width="5%" font="Interface/Fonts/Consolas.fnt" color="#000" />
+            </panel>
+            <panel height="5%" width="20%" childLayout="center" valign="bottom" align="right" backgroundColor="#FFF">
+                <text text="" id="direction" height="5%" width="5%" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+            </panel>
+        </layer>
+    </screen>
+</nifty>
