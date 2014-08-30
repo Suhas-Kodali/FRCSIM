@@ -25,10 +25,10 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     private final Node vehicleNode;
     private final VehicleControl vehicle;
     private final float frictionForce = 300f;
-    private float maxTurn=5;
-    private float turnForce=500;
-    private float maxSpeed=5;
-    private float speedForce=1000;
+    private float maxTurn = 5;
+    private float turnForce = 500;
+    private float maxSpeed = 5;
+    private float speedForce = 1000;
     private final Bumpers bumpers;
     private Robot robot;
     private final boolean isPlayer;

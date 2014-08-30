@@ -20,7 +20,6 @@ import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
-import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
@@ -99,20 +98,20 @@ public class Main extends SimpleApplication implements ActionListener {
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
         black.setColor("Color", ColorRGBA.Black); 
+        
         allianceWalls = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         allianceWalls.getAdditionalRenderState().setWireframe(false);
         allianceWalls.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         allianceWalls.setTexture("ColorMap", assetManager.loadTexture(new TextureKey("Textures/goalTest.png")));
+        allianceWalls.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         
         chassis = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         chassis.getAdditionalRenderState().setWireframe(false);
         chassis.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        TextureKey keyChassis = new TextureKey("Textures/cage.png");
-        Texture texChassis = assetManager.loadTexture(keyChassis);
-        chassis.setTexture("ColorMap", texChassis);
+        chassis.setTexture("ColorMap", assetManager.loadTexture(new TextureKey("Textures/cage.png")));
+        chassis.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         
         sides = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        sides.getAdditionalRenderState().setWireframe(false);
         sides.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         sides.setTexture("ColorMap", assetManager.loadTexture(new TextureKey("Textures/fieldSides.png")));
         sides.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
@@ -191,7 +190,6 @@ public class Main extends SimpleApplication implements ActionListener {
             cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         }
         flyCam.setEnabled(false);
-        
         isStarted = true;
     }
 
