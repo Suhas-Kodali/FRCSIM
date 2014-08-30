@@ -18,17 +18,16 @@ public class GetBallProgram extends AbstractProgram{
     private Robot robot;
     private AbstractIntake intake;
     private Position defense;
-    private Ball target;
-    private String name;
+    private final Ball target;
+    private static int baseID = AbstractProgram.getProgramNum();
+    private int uid = -baseID;
     
     public GetBallProgram(){
         target = null;
-        name = "Get Nearest Ball Program";
     }
     
     public GetBallProgram(Ball target){
         this.target = target;
-        name = "Get Ball Program, Ball #" + target.number;
     }
     
     @Override
@@ -39,21 +38,21 @@ public class GetBallProgram extends AbstractProgram{
         }
         intake.extend();
         robot.setWantsBall(true);
-        Ball localTarget = null;
+        Ball localTarget = target;
         boolean owned = false;
-        if(target==null){
+        if(localTarget==null){
             float minDist = Float.MAX_VALUE;
-            for(Ball ball : Ball.balls){
-                float distance = ball.quickDistanceTo(robot);
-                if(ball.alliance == robot.alliance && !(ball.owner instanceof Robot) && distance < minDist){
+            for(final Ball ball : Ball.balls){
+                float distance = ball.getPosition().distanceSquared(robot.getPosition());
+                if(ball.alliance == robot.alliance && !(ball.getOwner() instanceof Robot) && distance < minDist){
                     localTarget = ball;
                     minDist = distance;
                     owned = false;
                 }
             }
             if(localTarget == null || localTarget.getPosition() == null){
-                for(Ball ball : Ball.balls){
-                    float distance = ball.quickDistanceTo(robot);
+                for(final Ball ball : Ball.balls){
+                    float distance = ball.getPosition().distanceSquared(robot.getPosition());
                     if(ball.alliance == robot.alliance && !ball.hasBeenOwnedBy(robot) && distance < minDist){
                         localTarget = ball;
                         owned = true;
@@ -62,14 +61,13 @@ public class GetBallProgram extends AbstractProgram{
                 }      
             }
         } else {
-            localTarget = target;
-            owned = target.isOwned() && target.owner instanceof Robot;
+            owned = localTarget.isOwned() && localTarget.getOwner() instanceof Robot;
         }
         if(localTarget != null && localTarget.getPosition() != null){
             if(!owned){
                 drivetrain.driveToPoint(localTarget.getPosition(), DriveDirection.Towards);
             } else {
-                if(((Robot) localTarget.owner).isTouchingWall()){
+                if(((Robot) localTarget.getOwner()).isTouchingWall()){
                     drivetrain.driveToPoint(Vector3f.ZERO, DriveDirection.DontCare);
                 } else {
                     drivetrain.driveToPoint(localTarget.getPosition().interpolate(robot.getPosition(), robot.getPosition().subtract(localTarget.getPosition()).length() > 2? 0.6f : 1.5f), DriveDirection.Towards);
@@ -81,21 +79,23 @@ public class GetBallProgram extends AbstractProgram{
     }
 
     @Override
-    public boolean isFinished() {
-        return robot.hasBall();
-    }
-
-    @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         this.drivetrain = (AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain);
         this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
         this.robot = robot; 
         defense = new InterferencePosition(robot);
+        uid = baseID + robot.number * AbstractProgram.getMaxProgramNum() + (target==null? 0 : target.number) * AbstractProgram.getMaxProgramNum() * Robot.getMaxRobotNum();
+        drivetrain.setOnDefense(false);
     }
-
+    
     @Override
-    public String getName() {
-        return name;
+    public int getUID(){
+        return uid;
+    }
+    
+    @Override
+    public String getHRName() {
+        return "Get The Ball!";
     }
     
 }

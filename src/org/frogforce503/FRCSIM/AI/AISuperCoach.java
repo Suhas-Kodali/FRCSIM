@@ -12,26 +12,26 @@ import org.frogforce503.FRCSIM.Robot;
  * @author Bryce
  */
 public class AISuperCoach {
-    Alliance alliance;
+    private final Alliance alliance;
     
-    public AISuperCoach(Alliance alliance){
+    public AISuperCoach(final Alliance alliance){
         this.alliance = alliance;
     }
 
-    public void update() {  
-        ArrayList<Robot> rolelessRobots = new ArrayList<Robot>(Robot.robots.get(alliance));
-        ArrayList<Robot> ourRobots = Robot.robots.get(alliance);
-        ArrayList<Robot> otherRobots = Robot.robots.get(alliance == Alliance.RED? Alliance.BLUE : Alliance.RED);
-        ArrayList<Ball> balls = Ball.balls;
-        HashMap<Robot, RobotRole> roles = new HashMap<Robot, RobotRole>(3);
-        HashMap<Robot, Position> targets = new HashMap<Robot, Position>(3);
+    public void update() {
+        final ArrayList<Robot> rolelessRobots = new ArrayList<Robot>(Robot.robots.get(alliance));
+        final ArrayList<Robot> ourRobots = Robot.robots.get(alliance);
+        final ArrayList<Ball> balls = Ball.balls;
+        final HashMap<Robot, RobotRole> roles = new HashMap<Robot, RobotRole>(3);
+        final HashMap<Robot, Position> targets = new HashMap<Robot, Position>(3);
         for(Ball ball : balls){
+            final Robot owner = (ball.getOwner() instanceof Robot) ? ((Robot) ball.getOwner()) : null;
             if(ball.alliance == alliance){
-                if(!ball.isOwnedByRobot()){
+                if(owner == null){
                     Robot pickuper = null;
                     float minDist = Float.MAX_VALUE;
                     for(Robot robot : rolelessRobots){
-                        float distance = robot.distanceTo(ball) + (ball.hasBeenOwnedBy(robot)? 5 : 0);
+                        float distance = robot.getPosition().distance(ball.getPosition()) + (ball.hasBeenOwnedBy(robot)? 5 : 0);
                         if(!robot.hasBall() && distance < minDist){
                             minDist = distance;
                             pickuper = robot;
@@ -44,13 +44,12 @@ public class AISuperCoach {
                     targets.put(pickuper, ball);
                     rolelessRobots.remove(pickuper);
                 } else {
-                    Robot owner = (Robot) ball.owner;
                     if(owner.alliance == alliance){
                         if(ball.anyAssistsLeft()){
                             Robot assistGetter = null;
                             float minScore = Float.MAX_VALUE;
                             for(Robot robot : ourRobots){
-                                float score = robot.distanceTo(owner) + (robot.hasBall()? 10 : 0) + (ball.hasBeenOwnedBy(robot)? 1000 : 0) + (rolelessRobots.contains(robot)? 0 : (roles.get(robot) == RobotRole.AssistGiver? (targets.get(robot) == owner? -20 : 5) : 10));
+                                float score = robot.getPosition().distance(owner.getPosition()) + (robot.hasBall()? 10 : 0) + (ball.hasBeenOwnedBy(robot)? 1000 : 0) + (rolelessRobots.contains(robot)? 0 : (roles.get(robot) == RobotRole.AssistGiver? (targets.get(robot) == owner? -20 : 5) : 10));
                                 if(score < minScore){
                                     assistGetter = robot;
                                     minScore = score;
@@ -83,10 +82,10 @@ public class AISuperCoach {
                         }
                     }
                 }
-            } else if(ball.isOwnedByRobot() && ((Robot) ball.owner).alliance==alliance){
-                roles.remove((Robot) ball.owner);
-                roles.put((Robot) ball.owner, RobotRole.Eject);
-                rolelessRobots.remove((Robot) ball.owner);
+            } else if(owner != null && owner.alliance==alliance){
+                roles.remove(owner);
+                roles.put(owner, RobotRole.Eject);
+                rolelessRobots.remove(owner);
             }
         }
         for(Robot robot : rolelessRobots){
@@ -115,12 +114,11 @@ public class AISuperCoach {
                         break;
                     case Eject:
                         robot.getAIFollower().setProgram(new EjectProgram());
-                        System.out.println("EJECT");
             }
         }
     }
 
-    void registerFollower(AIFollowerProgram aThis) {
+    void registerFollower(final AIFollowerProgram aThis) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

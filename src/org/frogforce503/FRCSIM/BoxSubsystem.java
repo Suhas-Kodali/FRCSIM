@@ -13,8 +13,8 @@ import java.util.EnumMap;
  * @author Bryce
  */
 public class BoxSubsystem extends AbstractSubsystem{
-    float width, length, height;
-    public BoxSubsystem(float width, float length, float height){
+    final float width, length, height;
+    public BoxSubsystem(final float width, final float length, final float height){
         this.width = width;
         this.length = length;
         this.height = height;
@@ -29,12 +29,12 @@ public class BoxSubsystem extends AbstractSubsystem{
     }
 
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {}
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {}
 
     @Override
-    public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance) {
-        Box box = new Box(new Vector3f(length/2, Main.in(3), width/2), new Vector3f(-length/2, height+Main.in(3), -width/2));
-        Geometry boxGeometry = new Geometry("Bumper Front", box);
+    public void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance) {
+        final Box box = new Box(new Vector3f(length/2, Main.in(3), width/2), new Vector3f(-length/2, height+Main.in(3), -width/2));
+        final Geometry boxGeometry = new Geometry("Box", box);
         boxGeometry.setMaterial(Main.allianceWalls);
         boxGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         rootNode.attachChild(boxGeometry);

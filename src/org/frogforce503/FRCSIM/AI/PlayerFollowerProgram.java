@@ -3,6 +3,7 @@ package org.frogforce503.FRCSIM.AI;
 import java.util.EnumMap;
 import org.frogforce503.FRCSIM.AbstractControl;
 import org.frogforce503.FRCSIM.AbstractSubsystem;
+import org.frogforce503.FRCSIM.Main;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
@@ -10,9 +11,12 @@ import org.frogforce503.FRCSIM.Robot;
  * @author Bryce
  */
 public class PlayerFollowerProgram extends AIFollowerProgram{
-    private AbstractControl playerControl;
-    private String name = "Player Follower Program";
-    public PlayerFollowerProgram(AbstractControl playerControl){
+    private final AbstractControl playerControl;
+    private static int baseID = AbstractProgram.getProgramNum();
+    private int uid = -baseID;
+    
+    
+    public PlayerFollowerProgram(final AbstractControl playerControl){
         this.playerControl = playerControl;
     }
     
@@ -22,24 +26,28 @@ public class PlayerFollowerProgram extends AIFollowerProgram{
         if(coach!=null){
             coach.update();
         }
-    }
-    
-    @Override
-    public void setProgram(AbstractProgram program){
-        if(this.program == null || (this.program.getName() == null ? true : !this.program.getName().equals(program.getName()))){
-            this.program = program;
-            System.out.println(program.getName());
+        if(this.program != null && this.program instanceof EjectProgram){
+            program.update();
         }
     }
     
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) { 
-        super.registerOtherSubsystems(subsystems, robot);
-        playerControl.registerOtherSubsystems(subsystems, robot);
+    public void setProgram(final AbstractProgram program){
+        program.registerOtherSubsystems(subsystems, robot);
+        if(this.program == null || this.program.getUID() != program.getUID()){
+            this.program = program;
+            Main.scene.updateDirection();
+        }
     }
     
     @Override
-    public String getName() {
-        return name;
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) { 
+        super.registerOtherSubsystems(subsystems, robot);
+        playerControl.registerOtherSubsystems(subsystems, robot);
+        uid = baseID + robot.number * AbstractProgram.getMaxProgramNum();
+    }
+    
+    public int getUID(){
+        return uid;
     }
 }

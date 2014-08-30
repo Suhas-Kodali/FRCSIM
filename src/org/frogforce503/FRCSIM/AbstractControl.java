@@ -13,5 +13,5 @@ public abstract class AbstractControl extends AbstractSubsystem{
         return SubsystemType.Controller;
     }
     
-    public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance){}
+    public void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance){}
 }

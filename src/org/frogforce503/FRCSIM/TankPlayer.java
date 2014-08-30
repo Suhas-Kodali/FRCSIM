@@ -1,6 +1,5 @@
 package org.frogforce503.FRCSIM;
 
-import com.jme3.math.Vector3f;
 import java.util.EnumMap;
 
 /**
@@ -8,20 +7,22 @@ import java.util.EnumMap;
  * @author Bryce Paputa
  */
 public class TankPlayer extends AbstractControl{
-    TankDrivetrain drivetrain;
+    private TankDrivetrain drivetrain;
     private AbstractIntake intake;
     private AbstractShooter shooter;
     private TankKeyMapping tempMapping;
     private Robot robot;
     private Alliance alliance;
+    private final TankType type;
+    private TankKeyMapping keyMapping = TankKeyMapping.NULL;
     
-    public TankPlayer(TankKeyMapping keyMapping, TankType type){
+    public TankPlayer(final TankKeyMapping keyMapping, final TankType type){
         tempMapping = keyMapping;
         this.type = type;
     }
     
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot){
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot){
         if(subsystems.get(SubsystemType.Drivetrain) instanceof TankDrivetrain){
             this.drivetrain = (TankDrivetrain) subsystems.get(SubsystemType.Drivetrain);
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
@@ -38,10 +39,6 @@ public class TankPlayer extends AbstractControl{
     public enum TankType{
         arcade(), tank();
     }
-    
-    private TankType type;
-    
-    private TankKeyMapping keyMapping = TankKeyMapping.NULL;
     
     @Override
     public void update() {
@@ -73,7 +70,10 @@ public class TankPlayer extends AbstractControl{
     public static class TankKeyMapping{
         public final String up, down, left, right, leftForward, rightForward, toggleIntake, shoot, spit, inbound, switchSides;
         public final int joystick, extraJoystick;
-        public TankKeyMapping(String up, String down, String left, String right, String leftForward, String rightForward, String toggleIntake, String shoot, String spit, String inbound, String switchSides, int joystick, int extraJoystick){
+        public TankKeyMapping(final String up, final String down, final String left, final String right, 
+                final String leftForward, final String rightForward, final String toggleIntake, 
+                final String shoot, final String spit, final String inbound, final String switchSides, 
+                final int joystick, final int extraJoystick){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -96,7 +96,7 @@ public class TankPlayer extends AbstractControl{
 
     }
     
-    public void setKeyMapping(TankKeyMapping src){
+    public void setKeyMapping(final TankKeyMapping src){
         if(keyMapping != TankKeyMapping.NULL){
             if(intake != null){
                 Main.InputManager.removeListener(keyMapping.toggleIntake);

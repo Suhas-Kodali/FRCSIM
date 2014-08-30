@@ -1,12 +1,10 @@
 package org.frogforce503.FRCSIM;
 
-import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.input.Joystick;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.Plane;
@@ -16,7 +14,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
-import java.util.ArrayList;
 
 /**
  *
@@ -32,20 +29,15 @@ public class Field {
      */
     
     public final static float width = Main.in(24*12+8);
-    public static float length = Main.in(54*12);
-    public final GhostControl redGoalGhost, blueGoalGhost; 
-    public static Integer score = 0;
-    private final Vector3f humanPlayer = new Vector3f(0, 0, 0);
-    private boolean isScoring = false;
-    private boolean isWaiting = false;
-    public boolean isInbounding = false;
-    public ArrayList<Ball> scoredBalls = new ArrayList<Ball>();
+    public static final float length = Main.in(54*12);
+    public static final GhostControl redGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2))), 
+            blueGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2))); 
     private Plane[] exitPlane = new Plane[4];
     
     
-    public Field(Node rootNode, AssetManager assetManager, PhysicsSpace space) {
+    public Field(final Node rootNode, final PhysicsSpace space) {
         
-        PointLight lamp = new PointLight();
+        final PointLight lamp = new PointLight();
         lamp.setPosition(new Vector3f(0f, 40f, 0f));
         lamp.setRadius(100);
         rootNode.addLight(lamp); 
@@ -61,7 +53,7 @@ public class Field {
             exitPlanePosition = exitPlanePosition.negate();
         }
         
-        Box floorBox = new Box(140, 0.25f, 140);
+        final Box floorBox = new Box(140, 0.25f, 140);
         Geometry floorGeometry = new Geometry("Floor Box", floorBox);
         floorGeometry.setMaterial(Main.darkGray);
         floorGeometry.setLocalTranslation(0, -0, 0);
@@ -94,7 +86,7 @@ public class Field {
             space.add(northWall_geo);
         }
         
-        Box goal1 = new Box(Main.in(1), Main.in(6*12+10.75f)/2, width/2);
+        Box goal1 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal1Geometry = new Geometry("Goal", goal1);
         goal1Geometry.setMaterial(Main.allianceWalls);
         goal1Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
@@ -127,7 +119,7 @@ public class Field {
         rootNode.attachChild(goal1TopGeometry);
         space.add(goal1TopGeometry);
         
-        Box goal2 = new Box(Main.in(1), Main.in(6*12+10.75f)/2, width/2);
+        Box goal2 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal2Geometry = new Geometry("Goal", goal2);
         goal2Geometry.setMaterial(Main.allianceWalls);
         goal2Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
@@ -159,87 +151,77 @@ public class Field {
         goal2TopGeometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2TopGeometry);
         space.add(goal2TopGeometry);
-      
-        redGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
         
         Node redGoalGhostNode = new Node("a thing");
         redGoalGhostNode.addControl(redGoalGhost);
         redGoalGhostNode.setLocalTranslation(new Vector3f(length/2 + Main.in(18)/2, Main.in(37)/2  + Main.in(6*12+10.75f), 0));
         rootNode.attachChild(redGoalGhostNode);
         space.add(redGoalGhostNode);
-        
-        blueGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2)));
        
         Node blueGoalGhostNode = new Node("a thing");
         blueGoalGhostNode.addControl(blueGoalGhost);
         blueGoalGhostNode.setLocalTranslation(new Vector3f(-length/2 - Main.in(18)/2, Main.in(37)/2  + Main.in(6*12+10.75f), 0));
         rootNode.attachChild(blueGoalGhostNode);
         space.add(blueGoalGhostNode);
-        
-        int number; 
                 
-        float radius = Main.in(12+6.5f), ballRadius = .04f;
-        
-        double num = ((Math.PI*radius*2)/4)/ballRadius;
-        
-        number = (int)num;
+        final float radius = Main.in(12+6.5f), ballRadius = .04f;        
         
         Material material = Main.red;
         
+        float z = length/2;
+        
         for(int j = 0; j < 2; j++){
-        for(int i = 0; i < 20; i++){
-            
-        float y = (float)Math.sqrt(Math.pow(radius, 2) - Math.pow(Main.in(i), 2));
-        float x = (float)Math.sqrt(Math.pow(radius, 2) - Math.pow(y, 2));
-            Sphere sphere = new Sphere(32, 32, ballRadius);
-        Geometry sphereGeometry = new Geometry("Sphere", sphere);
-        sphereGeometry.setMaterial(material);
-        RigidBodyControl sphereControl = new RigidBodyControl(0f);
-        sphereGeometry.setLocalTranslation(length/2, 
-                y + Main.in(6*12+10.75f) + Main.in(30)/2,
-                -x - width/2 + Main.in(20 + 3));
-        sphereGeometry.addControl(sphereControl);
-        rootNode.attachChild(sphereGeometry);
-        space.add(sphereGeometry);
-        
-        sphere = new Sphere(32, 32, ballRadius);
-        sphereGeometry = new Geometry("Sphere", sphere);
-        sphereGeometry.setMaterial(material);
-        sphereControl = new RigidBodyControl(0f);
-        sphereGeometry.setLocalTranslation(length/2, 
-                -y + Main.in(6*12+10.75f) + Main.in(42)/2,
-                -x - width/2 + Main.in(20 + 3));
-        sphereGeometry.addControl(sphereControl);
-        rootNode.attachChild(sphereGeometry);
-        space.add(sphereGeometry);
-        
-        sphere = new Sphere(32, 32, ballRadius);
-        sphereGeometry = new Geometry("Sphere", sphere);
-        sphereGeometry.setMaterial(material);
-        sphereControl = new RigidBodyControl(0f);
-        sphereGeometry.setLocalTranslation(length/2, 
-                y + Main.in(6*12+10.75f) + Main.in(30)/2,
-                x + width/2 - Main.in(20 + 3));
-        sphereGeometry.addControl(sphereControl);
-        rootNode.attachChild(sphereGeometry);
-        space.add(sphereGeometry);
-        
-        sphere = new Sphere(32, 32, ballRadius);
-        sphereGeometry = new Geometry("Sphere", sphere);
-        sphereGeometry.setMaterial(material);
-        sphereControl = new RigidBodyControl(0f);
-        sphereGeometry.setLocalTranslation(length/2, 
-                -y + Main.in(6*12+10.75f) + Main.in(42)/2,
-                x + width/2 - Main.in(20 + 3));
-        sphereGeometry.addControl(sphereControl);
-        rootNode.attachChild(sphereGeometry);
-        space.add(sphereGeometry);
-        
+            for(int i = 0; i < 20; i++){
+                float y = (float)Math.sqrt(Math.pow(radius, 2) - Math.pow(Main.in(i), 2));
+                float x = (float)Math.sqrt(Math.pow(radius, 2) - Math.pow(y, 2));
+                    Sphere sphere = new Sphere(4, 4, ballRadius);
+                Geometry sphereGeometry = new Geometry("Sphere", sphere);
+                sphereGeometry.setMaterial(material);
+                RigidBodyControl sphereControl = new RigidBodyControl(0f);
+                sphereGeometry.setLocalTranslation(z, 
+                        y + Main.in(6*12+10.75f) + Main.in(30)/2,
+                        -x - width/2 + Main.in(20 + 3));
+                sphereGeometry.addControl(sphereControl);
+                rootNode.attachChild(sphereGeometry);
+                space.add(sphereGeometry);
+
+                sphere = new Sphere(4, 4, ballRadius);
+                sphereGeometry = new Geometry("Sphere", sphere);
+                sphereGeometry.setMaterial(material);
+                sphereControl = new RigidBodyControl(0f);
+                sphereGeometry.setLocalTranslation(z, 
+                        -y + Main.in(6*12+10.75f) + Main.in(42)/2,
+                        -x - width/2 + Main.in(20 + 3));
+                sphereGeometry.addControl(sphereControl);
+                rootNode.attachChild(sphereGeometry);
+                space.add(sphereGeometry);
+
+                sphere = new Sphere(4, 4, ballRadius);
+                sphereGeometry = new Geometry("Sphere", sphere);
+                sphereGeometry.setMaterial(material);
+                sphereControl = new RigidBodyControl(0f);
+                sphereGeometry.setLocalTranslation(z, 
+                        y + Main.in(6*12+10.75f) + Main.in(30)/2,
+                        x + width/2 - Main.in(20 + 3));
+                sphereGeometry.addControl(sphereControl);
+                rootNode.attachChild(sphereGeometry);
+                space.add(sphereGeometry);
+
+                sphere = new Sphere(4, 4, ballRadius);
+                sphereGeometry = new Geometry("Sphere", sphere);
+                sphereGeometry.setMaterial(material);
+                sphereControl = new RigidBodyControl(0f);
+                sphereGeometry.setLocalTranslation(z, 
+                        -y + Main.in(6*12+10.75f) + Main.in(42)/2,
+                        x + width/2 - Main.in(20 + 3));
+                sphereGeometry.addControl(sphereControl);
+                rootNode.attachChild(sphereGeometry);
+                space.add(sphereGeometry);
+            }
+            material = Main.blue;
+            z = -z;
         }
-        material = Main.blue;
-        length = -length;
-        }
-        length = Math.abs(length);
+        
         for(int i = 0; i < 19; i++){
             float y = (float)Math.sqrt(Math.pow(radius, 2) - Math.pow(Main.in(i), 2));
             float x = (float)Math.sqrt(Math.pow(radius, 2) - Math.pow(y, 2));
@@ -289,29 +271,8 @@ public class Field {
         }
     }
     
-    public void update(){                
-        for(int j = redGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
-            if(redGoalGhost.getOverlapping(j).getUserObject() instanceof Ball){
-                Ball ball = (Ball) redGoalGhost.getOverlapping(j).getUserObject();
-                if(!ball.isScored() && ball.alliance == Alliance.RED && Math.abs(ball.getPosition().x) > Main.in(54*12/2)){
-                    Alliance.RED.incrementScore(10 + ball.getAssistScore());
-                    ball.score();
-                }
-            }
-        }           
-        for(int j = blueGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
-            if(blueGoalGhost.getOverlapping(j).getUserObject() instanceof Ball){
-                Ball ball = (Ball) blueGoalGhost.getOverlapping(j).getUserObject();
-                if(!ball.isScored() && ball.alliance == Alliance.BLUE && Math.abs(ball.getPosition().x) > Main.in(54*12/2)){
-                    Alliance.BLUE.incrementScore(10 + ball.getAssistScore());
-                    ball.score();
-                }
-            }
-        }
-    }
-    
-    public boolean isBallOutOfBounds(Ball ball){
-        for(Plane plane : exitPlane){
+    public boolean isBallOutOfBounds(final Ball ball){
+        for(final Plane plane : exitPlane){
             if(plane.pseudoDistance(ball.getPosition()) < Main.in(0) && (ball.getPosition().y) < Main.in(14f)+.25f){
                 return true;
             }

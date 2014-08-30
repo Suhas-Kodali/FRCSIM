@@ -2,7 +2,6 @@ package org.frogforce503.FRCSIM;
 
 import com.jme3.bullet.control.VehicleControl;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
@@ -18,7 +17,7 @@ public abstract class AbstractShooter extends AbstractSubsystem {
     protected Robot robot;
     
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot){
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot){
         if(subsystems.containsKey(SubsystemType.Intake)){
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
         } else {
@@ -30,7 +29,7 @@ public abstract class AbstractShooter extends AbstractSubsystem {
     
     public abstract void update();
     
-    protected void preShot(float force){
+    protected void preShot(final float force){
         isShooting = true;
         (new Timer()).schedule(new TimerTask(){public void run(){intake.postShot(); postShot(); }}, shootLength);        
     }
@@ -39,21 +38,21 @@ public abstract class AbstractShooter extends AbstractSubsystem {
         isShooting = false;
     }
     
-    public static int shootLength = 1000;
+    public static final int shootLength = 1000;
     private boolean isShooting = false;
-    public Runnable shoot = new Runnable(){
+    public final Runnable shoot = new Runnable(){
         public void run(){
             shoot(12);
         }
     };
     
-    public Runnable spit = new Runnable(){
+    public final Runnable spit = new Runnable(){
         public void run(){
             shoot(6);
         }
     };
     
-    public void shoot(float force){
+    public void shoot(final float force){
         if(intake.hasBall() && ! isShooting){
             intake.preShot();
             if(intake.readyToShoot()){

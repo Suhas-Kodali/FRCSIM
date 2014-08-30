@@ -15,9 +15,10 @@ import org.frogforce503.FRCSIM.Robot;
  */
 class TrussProgram extends AbstractProgram {
     private AbstractShooter shooter;
-    private AbstractIntake intake;
     private AbstractDrivetrain drivetrain;
     private Robot robot;
+    private static int baseID = AbstractProgram.getProgramNum();
+    private int uid = -baseID;
 
     @Override
     public void update() {
@@ -27,22 +28,22 @@ class TrussProgram extends AbstractProgram {
     }
 
     @Override
-    public boolean isFinished() {
-        return !robot.hasBall();
-    }
-
-
-    @Override
-    public void registerOtherSubsystems(EnumMap<AbstractSubsystem.SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
+    public void registerOtherSubsystems(final EnumMap<AbstractSubsystem.SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         this.drivetrain = (AbstractDrivetrain) subsystems.get(AbstractSubsystem.SubsystemType.Drivetrain);
-        this.intake = (AbstractIntake) subsystems.get(AbstractSubsystem.SubsystemType.Intake);
         this.shooter = (AbstractShooter) subsystems.get(AbstractSubsystem.SubsystemType.Shooter);
         this.robot = robot;
+        this.uid = baseID + robot.number * AbstractProgram.getMaxProgramNum();
+        drivetrain.setOnDefense(false);
     }
 
     @Override
-    public String getName() {
-        return "Score Ball Program";
+    public int getUID() {
+        return uid;
+    }
+
+    @Override
+    public String getHRName() {
+        return "Truss The Ball!";
     }
     
 }

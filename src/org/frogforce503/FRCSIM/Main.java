@@ -19,7 +19,6 @@ import com.jme3.material.RenderState.BlendMode;
 import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
@@ -30,15 +29,16 @@ import org.frogforce503.FRCSIM.AI.PlayerFollowerProgram;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
+import org.frogforce503.FRCSIM.TankPlayer.TankType;
 
 
-/**
+/**`
  *
  * @author Bryce Paputa
  */
 public class Main extends SimpleApplication implements ActionListener {
 
-    public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis;
+    public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis, orange, cyan;
     public static Field field;
     public static Main app;
     public static BulletAppState bulletAppState;
@@ -46,6 +46,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static Scene scene;
     public static TankKeyMapping keyMapping;
     public static Joystick[] joysticks;
+    public static Robot player;
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
@@ -57,7 +58,6 @@ public class Main extends SimpleApplication implements ActionListener {
         app.setSettings(appSettings);
         app.start();
     }
-    private Robot player;
 
     @Override
     public void simpleInitApp() {
@@ -67,15 +67,13 @@ public class Main extends SimpleApplication implements ActionListener {
         
         
         scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
-        
-        scene.initScreens();
         scene.startScreen();
+        
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
     }
 
-    
-    public static float in(float in){
+    public static float in(final float in){
         return in/39.3701f;
     }
     
@@ -83,15 +81,28 @@ public class Main extends SimpleApplication implements ActionListener {
         red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         red.getAdditionalRenderState().setWireframe(false);
         red.setColor("Color", ColorRGBA.Red); 
+        blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        blue.getAdditionalRenderState().setWireframe(false);
+        blue.setColor("Color", ColorRGBA.Blue);
+        cyan = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        cyan.getAdditionalRenderState().setWireframe(false);
+        cyan.setColor("Color", ColorRGBA.Cyan);
+        orange = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        orange.getAdditionalRenderState().setWireframe(false);
+        orange.setColor("Color", ColorRGBA.Orange);
+        green = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        green.getAdditionalRenderState().setWireframe(false);
+        green.setColor("Color", ColorRGBA.Green); 
+        darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        darkGray.getAdditionalRenderState().setWireframe(false);
+        darkGray.setColor("Color", ColorRGBA.DarkGray); 
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
         black.setColor("Color", ColorRGBA.Black); 
         allianceWalls = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         allianceWalls.getAdditionalRenderState().setWireframe(false);
         allianceWalls.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        TextureKey key = new TextureKey("Textures/goalTest.png");
-        Texture tex = assetManager.loadTexture(key);
-        allianceWalls.setTexture("ColorMap", tex);
+        allianceWalls.setTexture("ColorMap", assetManager.loadTexture(new TextureKey("Textures/goalTest.png")));
         
         chassis = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         chassis.getAdditionalRenderState().setWireframe(false);
@@ -103,62 +114,82 @@ public class Main extends SimpleApplication implements ActionListener {
         sides = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         sides.getAdditionalRenderState().setWireframe(false);
         sides.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        TextureKey key1 = new TextureKey("Textures/fieldSides.png");
-        Texture tex1 = assetManager.loadTexture(key1);
-        sides.setTexture("ColorMap", tex1);
+        sides.setTexture("ColorMap", assetManager.loadTexture(new TextureKey("Textures/fieldSides.png")));
         sides.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-        blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        blue.getAdditionalRenderState().setWireframe(false);
-        blue.setColor("Color", ColorRGBA.Blue);
-        green = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        green.getAdditionalRenderState().setWireframe(false);
-        green.setColor("Color", ColorRGBA.Green); 
-        darkGray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        darkGray.getAdditionalRenderState().setWireframe(false);
-        darkGray.setColor("Color", ColorRGBA.DarkGray); 
        
+        playerAlliance = Alliance.RED;
     }
     
-    public void startGame(){
-        field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-        ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
-        AISuperCoach coach = new AISuperCoach(Alliance.RED);
+    public static int nblue, nred, numOnAlliance = 2, numOnOtherAlliance = 3; 
+    public static Alliance playerAlliance = null;//Alliance.RED; 
+    public static boolean isTank = true, isInStation = true;
+    public static SwerveType swerveType = SwerveType.FieldCentricRedDriverCam;
+    public static TankType tankType = TankType.arcade;
+    
+    public void startGame(){       
+        field = new Field(rootNode, bulletAppState.getPhysicsSpace());
         
-        for(int i = 0; i < 3; i++){
+        if(playerAlliance == Alliance.BLUE){
+            nblue = numOnAlliance;
+            nred = numOnOtherAlliance;
+        } else {
+            nblue = numOnOtherAlliance;
+            nred = numOnAlliance;
+        }
+        
+        final ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
+        final AISuperCoach redCoach = new AISuperCoach(Alliance.RED);
+        
+        for(int i = 0; i < nred; i++){
             subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
             subsystems.get(i).add(new BasicIntake());
             subsystems.get(i).add(new BasicShooter());
             subsystems.get(i).add(new AIFollowerProgram());
             if(i == 0){
-                ((AIFollowerProgram) subsystems.get(i).get(2)).registerCoach(coach);
+                ((AIFollowerProgram) subsystems.get(i).get(2)).registerCoach(redCoach);
             }
-            subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace()));
+            subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace(), false));
             new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3, 0, (i-1)*3));
         }
         
-        ArrayList<ArrayList<AbstractSubsystem>> subsystems2 = new ArrayList<ArrayList<AbstractSubsystem>>(6);
-        AISuperCoach coach2 = new AISuperCoach(Alliance.BLUE);
-        for(int i = 0; i < 2; i++){
-            subsystems2.add(i, new ArrayList<AbstractSubsystem>(4));
-            subsystems2.get(i).add(new BasicIntake());
-            subsystems2.get(i).add(new BasicShooter());
-            subsystems2.get(i).add(new AIFollowerProgram());
-            if(i == 0){
-                ((AIFollowerProgram) subsystems2.get(i).get(2)).registerCoach(coach2);
+        final AISuperCoach blueCoach = new AISuperCoach(Alliance.BLUE);
+        for(int i = nred; i < nred + nblue; i++){
+            subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
+            subsystems.get(i).add(new BasicIntake());
+            subsystems.get(i).add(new BasicShooter());
+            subsystems.get(i).add(new AIFollowerProgram());
+            if(i == nred){
+                ((AIFollowerProgram) subsystems.get(i).get(2)).registerCoach(blueCoach);
             }
-            subsystems2.get(i).add(new TankDrivetrain(subsystems2.get(i), bulletAppState.getPhysicsSpace()));
-            new Robot(subsystems2.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, (i-1)*3));
+            subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace(), false));
+            new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, (i-1-nred)*3));
         }
         
-        ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>();
-        playersubsystems.add(new BasicIntake());
-        playersubsystems.add(new BasicShooter());
-        playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentricDriverCam)));
-        playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace()));
-        player = new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, 3));
+        if(playerAlliance != null){
+            ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>();
+            playersubsystems.add(new BasicIntake());
+            playersubsystems.add(new BasicShooter());
+            if(isTank){
+                playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
+                playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
+            } else {
+                playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, swerveType)));           
+                playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
+            }
+            player = new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), playerAlliance, new Vector3f(-3 * playerAlliance.side, 0, 3));
+        }
         
-        cam.setLocation(new Vector3f(Field.length/2 + Main.in(70), Main.in(68), -Field.width/4));
-        cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
+        if(isInStation){
+            cam.setLocation(new Vector3f((Field.length/2 + Main.in(70))*(playerAlliance == Alliance.RED? -1 : 1), Main.in(68), -Field.width/3*(System.nanoTime()%3-1)));
+            if(player != null){
+                cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
+            } else {
+                cam.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+            }
+        } else {
+            cam.setLocation(new Vector3f(0, 12, 12));
+            cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
+        }
         flyCam.setEnabled(false);
         
         isStarted = true;
@@ -174,8 +205,8 @@ public class Main extends SimpleApplication implements ActionListener {
                 KeyInput.KEY_T,KeyInput.KEY_U,KeyInput.KEY_V,KeyInput.KEY_W,
                 KeyInput.KEY_X,KeyInput.KEY_Y,KeyInput.KEY_Z};
         for(char i = 0; i+'a' <= 'z'; i++){
-            inputManager.addMapping(new String(new char[]{(char)(i+'a')}), new KeyTrigger(keys[i]));
-            inputManager.addListener(this, new String(new char[]{(char)(i+'a')}));
+            inputManager.addMapping(String.valueOf((char)( i+'a')), new KeyTrigger(keys[i]));
+            inputManager.addListener(this, String.valueOf((char)( i+'a')));
         }
         inputManager.addMapping("left", new KeyTrigger(KeyInput.KEY_LEFT));
         inputManager.addMapping("right", new KeyTrigger(KeyInput.KEY_RIGHT));
@@ -211,9 +242,9 @@ public class Main extends SimpleApplication implements ActionListener {
             Robot.updateAll();
             Ball.updateAll();
             HumanPlayer.updateAll();
-            field.update();
-            scene.update();
-            cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
+            if(player != null && isInStation){
+                cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
+            }
         }
     }
     
@@ -223,14 +254,14 @@ public class Main extends SimpleApplication implements ActionListener {
 
         public void endInput() {}
 
-        public void onJoyAxisEvent(JoyAxisEvent evt) {
+        public void onJoyAxisEvent(final JoyAxisEvent evt) {
             InputManager.joystickAxisEvent(evt.getJoyIndex(), evt.getAxisIndex(), evt.getValue());
         }
 
-        public void onJoyButtonEvent(JoyButtonEvent evt) {
+        public void onJoyButtonEvent(final JoyButtonEvent evt) {
             if(evt.isPressed()){
                 InputManager.press(evt.getButton().getName());
-            }else{
+            } else {
                 InputManager.release(evt.getButton().getName());
             }
         }
@@ -247,35 +278,35 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public static final class InputManager{
         private InputManager() {}
-        private static ArrayList<HashMap<Integer, Float>> axisMaps = new ArrayList<HashMap<Integer, Float>>();
-        private static ArrayList<Joystick> joysticks = new ArrayList<Joystick>();
-        private static ArrayList<String> pressed = new ArrayList<String>();
-        private static HashMap<String, Runnable> listeners = new HashMap<String, Runnable>();
+        private static final ArrayList<HashMap<Integer, Float>> axisMaps = new ArrayList<HashMap<Integer, Float>>();
+        private static final ArrayList<Joystick> joysticks = new ArrayList<Joystick>();
+        private static final ArrayList<String> pressed = new ArrayList<String>();
+        private static final HashMap<String, Runnable> listeners = new HashMap<String, Runnable>();
         
-        public static void press(String key){
+        public static void press(final String key){
             pressed.add(key);
             if(listeners.containsKey(key)){
                 listeners.get(key).run();
             }
         }
         
-        public static void release(String key){
+        public static void release(final String key){
             pressed.remove(key);
         }
         
-        public static boolean isPressed(String key){
+        public static boolean isPressed(final String key){
             return pressed.contains(key);
         }
         
-        public static void addListener(String key, Runnable function){
+        public static void addListener(final String key, final Runnable function){
             listeners.put(key, function);
         }
         
-        public static void removeListener(String key){
+        public static void removeListener(final String key){
             listeners.remove(key);
         }
         
-        public static void addJoystick(Joystick joystick, int upDownAxis, int leftRightAxis){
+        public static void addJoystick(final Joystick joystick, final int upDownAxis, final int leftRightAxis){
             HashMap<Integer, Float> axes = new HashMap();
             axes.put(upDownAxis, 0f);
             axes.put(leftRightAxis, 0f);
@@ -283,21 +314,21 @@ public class Main extends SimpleApplication implements ActionListener {
             axisMaps.add(joystick.getJoyId(), axes);
         }
         
-        public static void joystickAxisEvent(int id, int axis, float value){
+        public static void joystickAxisEvent(final int id, final int axis, final float value){
             if(axisMaps.get(id).get(axis) != null){
                 axisMaps.get(id).put(axis, value);
             }
         }
         
-        private static float scale(float input, float sensitivity){
+        private static float scale(final float input, final float sensitivity){
             return sensitivity * (input*input*input) + (1-sensitivity) * input;
         }
         
-        public static float getAxisValue(int id, int axis, float sensitivity){
+        public static float getAxisValue(final int id, final int axis, final float sensitivity){
             if(id < axisMaps.size()){
-                if(axisMaps.get(id).get(axis) > 0.1 || axisMaps.get(id).get(axis) < -0.1){
-                System.out.println(scale(axisMaps.get(id).get(axis), sensitivity));
-                return scale(axisMaps.get(id).get(axis), sensitivity);
+                final float raw = axisMaps.get(id).get(axis);
+                if(raw > 0.05 || raw < -0.05){
+                    return scale(raw, sensitivity);
                 }else{
                     return 0;
                 }
@@ -306,11 +337,11 @@ public class Main extends SimpleApplication implements ActionListener {
             }
         }
         
-        public static int isPressedi(String key){
+        public static int isPressedi(final String key){
             return (pressed.contains(key)?1:0);
         }
         
-        public static int isPressedButtonsi(String keyPos, String keyNeg){
+        public static int isPressedButtonsi(final String keyPos, final String keyNeg){
             if(pressed.contains(keyPos)){
                 return 1;
             }else if(pressed.contains(keyNeg)){
@@ -322,15 +353,11 @@ public class Main extends SimpleApplication implements ActionListener {
     }
     
     @Override
-    public void onAction(String binding, boolean value, float tpf) {
+    public void onAction(final String binding, final boolean value, final float tpf) {
         if(value == true){
             InputManager.press(binding);
         } else {
             InputManager.release(binding);
         }
-    }
-    
-    public static Node getRoot(){
-        return app.rootNode;
     }
 }

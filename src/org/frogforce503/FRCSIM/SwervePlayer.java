@@ -1,10 +1,7 @@
 package org.frogforce503.FRCSIM;
 
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import java.util.EnumMap;
-import org.frogforce503.FRCSIM.AbstractDrivetrain.DriveDirection;
 
 /**
  *
@@ -17,10 +14,10 @@ public class SwervePlayer extends AbstractControl{
     private Robot robot;
     
     
-    Alliance alliance;
+    private Alliance alliance;
     
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         if(subsystems.get(SubsystemType.Drivetrain) instanceof SwerveDrivetrain){
             this.drivetrain = (SwerveDrivetrain) subsystems.get(SubsystemType.Drivetrain);
             this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
@@ -35,12 +32,12 @@ public class SwervePlayer extends AbstractControl{
     }
     
     public static enum SwerveType{
-        FieldCentricSpectatorCam(), FieldCentricDriverCam(), RobotCentric();
+        FieldCentricSpectatorCam(), FieldCentricBlueDriverCam(), FieldCentricRedDriverCam(), RobotCentric();
     }
     
     private SwerveType type;
     
-    public SwervePlayer(SwerveKeyMapping keyMapping, SwerveType type){
+    public SwervePlayer(final SwerveKeyMapping keyMapping, final SwerveType type){
         tempMapping = keyMapping;
         this.type = type;
     }
@@ -57,8 +54,11 @@ public class SwervePlayer extends AbstractControl{
                 case FieldCentricSpectatorCam:
                     drivetrain.updateFCSC(FWR, STR, omega);
                     break;
-                case FieldCentricDriverCam:
-                    drivetrain.updateFCDC(FWR, STR, omega);
+                case FieldCentricBlueDriverCam:
+                    drivetrain.updateFCBDC(FWR, STR, omega);
+                    break;
+                case FieldCentricRedDriverCam:
+                    drivetrain.updateFCRDC(FWR, STR, omega);
                     break;
                 case RobotCentric:
                     drivetrain.updateRC(FWR, STR, omega);
@@ -70,7 +70,9 @@ public class SwervePlayer extends AbstractControl{
     
     public static class SwerveKeyMapping{
         public final String up, down, left, right, rotateCCW, rotateCW, toggleIntake, shoot, spit, inbound, switchSides;
-        public SwerveKeyMapping(String up, String down, String left, String right, String rotateCCW, String rotateCW, String load, String shoot, String spit, String inbound, String switchSides){
+        public SwerveKeyMapping(final String up, final String down, final String left, final String right, 
+                final String rotateCCW, final String rotateCW, final String load, final String shoot, 
+                final String spit, final String inbound, final String switchSides){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -88,7 +90,7 @@ public class SwervePlayer extends AbstractControl{
         public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "", "", "");
     }
     
-    public void setKeyMapping(SwerveKeyMapping src){
+    public void setKeyMapping(final SwerveKeyMapping src){
         if(keyMapping != SwerveKeyMapping.NULL){
             if(intake != null){
                 Main.InputManager.removeListener(keyMapping.toggleIntake);
@@ -111,5 +113,4 @@ public class SwervePlayer extends AbstractControl{
             }
         }
     }
-    
 }

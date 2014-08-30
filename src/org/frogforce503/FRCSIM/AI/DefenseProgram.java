@@ -12,11 +12,8 @@ import org.frogforce503.FRCSIM.Robot;
 public class DefenseProgram extends AbstractProgram{
     AbstractDrivetrain drivetrain;
     private Position target;
-    private String name;
-    
-    public DefenseProgram(){
-        name = "Defense Program";
-    }
+    private static int baseID = AbstractProgram.getProgramNum();
+    private int uid = -baseID;
     
     @Override
     public void update() {
@@ -26,19 +23,21 @@ public class DefenseProgram extends AbstractProgram{
     }
 
     @Override
-    public boolean isFinished() {
-        return target.getPosition() == null;
-    }
-
-    @Override
-    public void registerOtherSubsystems(EnumMap<AbstractSubsystem.SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
+    public void registerOtherSubsystems(final EnumMap<AbstractSubsystem.SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         this.drivetrain = (AbstractDrivetrain) subsystems.get(AbstractSubsystem.SubsystemType.Drivetrain);
+        drivetrain.setOnDefense(true);
         target = new InterferencePosition(robot);
+        uid = baseID + robot.number * AbstractProgram.getMaxProgramNum();
     }
 
     @Override
-    public String getName() {
-        return name;
+    public int getUID(){
+        return uid;
+    }
+    
+    @Override
+    public String getHRName() {
+        return "Play Defense!";
     }
     
     

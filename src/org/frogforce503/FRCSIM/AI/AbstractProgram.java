@@ -8,8 +8,19 @@ import org.frogforce503.FRCSIM.AbstractControl;
  */
 public abstract class AbstractProgram extends AbstractControl{
     
-    public abstract String getName();
-    public abstract void update();
+    public abstract int getUID();
     
-    public abstract boolean isFinished();
+    public abstract void update();
+
+    public abstract String getHRName();
+    
+    private static int progCount = 0;
+    public static int getProgramNum(){
+        System.out.print(progCount);
+        return progCount++;
+    }
+    
+    public static int getMaxProgramNum(){
+        return 10;//8
+    }
 }

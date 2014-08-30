@@ -20,61 +20,57 @@ import static org.frogforce503.FRCSIM.Main.in;
  * @author Bryce Paputa
  */
 public class TankDrivetrain extends AbstractDrivetrain{
-    protected VehicleControl vehicle;
+    private final VehicleControl vehicle;
     private final float mass = 30;
     private final float accelerationForce = 175f * mass/30f;
     private final float turningForce = 100f * mass/30f;
     private final float frictionForce = 2f * mass/30f;
     private final float maxSpeed = 17;
-    protected Alliance alliance;
-    private Node chassisNode, vehicleNode;
-    private CollisionShape collisionShape;
-    protected AbstractIntake intake;
-    protected AbstractShooter shooter;
-    private Bumpers bumpers;
+    private Alliance alliance;
+    private final Node chassisNode, vehicleNode;
+    private final Bumpers bumpers;
+    private Robot robot;
+    private final boolean isPlayer;
     
-    public TankDrivetrain(ArrayList<AbstractSubsystem> subsystems, PhysicsSpace space) {
+    public TankDrivetrain(final ArrayList<AbstractSubsystem> subsystems, final  PhysicsSpace space, final boolean isPlayer) {
+        this.isPlayer = isPlayer;
         chassisNode = new Node("chassis Node");
-        Box chassis = new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14));
-        Geometry chassisGeometry = new Geometry("Chassis", chassis);
+        Geometry chassisGeometry = new Geometry("Chassis", new Box(new Vector3f(0, in(3), 0), in(14), in(2.5f), in(14)));
         chassisGeometry.setMaterial(Main.chassis);
         chassisGeometry.setQueueBucket(Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
         
         
         bumpers = new Bumpers(chassisNode, Main.in(28), Main.in(28), Main.in(2));
-        for(AbstractSubsystem subsystem : subsystems){
+        for(final AbstractSubsystem subsystem : subsystems){
             subsystem.registerPhysics(chassisNode, space, alliance);
         }
         
-        
-        collisionShape = CollisionShapeFactory.createDynamicMeshShape(chassisNode);
-        //create vehicle node
         vehicleNode=new Node("vehicleNode");
         vehicleNode.attachChild(chassisNode);
-        vehicle = new VehicleControl(collisionShape, 400);
+        vehicle = new VehicleControl(CollisionShapeFactory.createDynamicMeshShape(chassisNode), 400);
         vehicleNode.addControl(vehicle);
         
         //setting suspension values for wheels, this can be a bit tricky
         //see also https://docs.google.com/Doc?docid=0AXVUZ5xw6XpKZGNuZG56a3FfMzU0Z2NyZnF4Zmo&hl=en
-        float stiffness = 60;//200=f1 car
-        float compValue = .3f; //(should be lower than damp)
-        float dampValue = .4f;
+        final float stiffness = 60;//200=f1 car
+        final float compValue = .3f; //(should be lower than damp)
+        final float dampValue = .4f;
         vehicle.setSuspensionCompression(compValue * 2.0f * FastMath.sqrt(stiffness));
         vehicle.setSuspensionDamping(dampValue * 2.0f * FastMath.sqrt(stiffness));
         vehicle.setSuspensionStiffness(stiffness);
         vehicle.setFrictionSlip(1.5f);
         vehicle.setMass(mass);
         //Create four wheels and add them at their locations
-        Vector3f wheelDirection = new Vector3f(0, -1, 0);
-        Vector3f wheelAxle = new Vector3f(-1, 0, 0);
-        float radius = in(2);
-        float width = in(1);
-        float restLength = in(2);
-        float yOff = in(3);
-        float xOff = in(14);
-        float zOff = in(11.25f);
-        float rocker = in(.5f);
+        final Vector3f wheelDirection = new Vector3f(0, -1, 0);
+        final Vector3f wheelAxle = new Vector3f(-1, 0, 0);
+        final float radius = in(2);
+        final float width = in(1);
+        final float restLength = in(2);
+        final float yOff = in(3);
+        final float xOff = in(14);
+        final float zOff = in(11.25f);
+        final float rocker = in(.5f);
 
         Cylinder wheelMesh = new Cylinder(16, 16, radius, width, true);
 
@@ -86,23 +82,25 @@ public class TankDrivetrain extends AbstractDrivetrain{
             } else {
                 pos[i][0]=xOff-width/2-Main.in(1);
             }
-            if(i%4 == 0){
-                pos[i][1]=zOff;
-            } else if (i%4 == 1){
-                pos[i][1]=zOff/3;
-            } else if (i%4 == 2){
-                pos[i][1]=-zOff/3;
-            } else {
-                pos[i][1]=-zOff;
+            switch(i%4){
+                case 0:
+                    pos[i][1]=zOff;
+                    break;
+                case 1:
+                    pos[i][1]=zOff/3;
+                    break;
+                case 2:
+                    pos[i][1]=-zOff/3;
+                    break;
+                case 3:
+                    pos[i][1]=-zOff;                    
             }
             if(i%4 % 3 ==0){
                 pos[i][2]=yOff;
             } else {
                 pos[i][2]=yOff-rocker;
             }
-        }
-        
-        for(int i = 0; i < 8; i++){
+            
             Node node = new Node("wheel node");
             Geometry wheel = new Geometry("wheel", wheelMesh);
             node.attachChild(wheel);
@@ -117,28 +115,30 @@ public class TankDrivetrain extends AbstractDrivetrain{
     }
     
     @Override
-    public void registerPhysics(Node rootNode, PhysicsSpace space, Alliance alliance){
+    public void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance){
         rootNode.attachChild(vehicleNode);
         space.add(vehicle);
         this.alliance = alliance;
-        bumpers.registerAlliance(alliance);
+        bumpers.registerAlliance(alliance, isPlayer);
     }
     
     private float lastTurn = 0;
     protected void updateArcade(float pow, float turn){
-        float accelerationFactor, left, right = left = 0;
+        pow = (pow>1? 1 : (pow<-1? -1 : pow));
+        turn = (turn>1? 1 : (turn<-1? -1 : turn));
+        float accelerationFactor, left, right;
         
-        float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
+        final float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
         if(pow*curSpeed > 0){
             accelerationFactor = (maxSpeed-Math.abs(curSpeed))/maxSpeed * accelerationForce;
         } else {
             accelerationFactor = accelerationForce;
         }
         
-        left  += accelerationFactor * (pow) + turningForce * turn;
-        right += accelerationFactor * (pow) - turningForce * turn;
+        left  = accelerationFactor * (pow) + turningForce * turn;
+        right = accelerationFactor * (pow) - turningForce * turn;
         
-        if(Math.abs(lastTurn)>.1 && Math.abs(turn)<.1){
+        if(Math.abs(lastTurn)>.05 && Math.abs(turn)<.05){
             vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
         }
         lastTurn = turn;
@@ -151,36 +151,11 @@ public class TankDrivetrain extends AbstractDrivetrain{
         }
         
         vehicle.brake(frictionForce * 1f / (1-Math.abs(pow)));
+        applyDownforce();
     }
     
-    protected void updateTank(float cleft, float cright){
-        float left = 0;
-        float right = 0;
-        float curTurn = cright-cleft;
-        float curPow = cleft+cright, accelerationFactor;
-        
-        float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
-        if(curPow*curSpeed > 0){
-            accelerationFactor = (maxSpeed-Math.abs(curSpeed))/maxSpeed * accelerationForce;
-        } else {
-            accelerationFactor =  accelerationForce;
-        }
-        left  += accelerationFactor * (curPow) + turningForce * curTurn;
-        right += accelerationFactor * (curPow) - turningForce * curTurn;
-        
-        if(Math.abs(lastTurn)>.1 && Math.abs(curTurn)<.1){
-            vehicle.setAngularVelocity(vehicle.getAngularVelocity().divide(4));
-        }
-        lastTurn = curTurn;
-        
-        for(int i = 0; i < 4; i++){
-            vehicle.accelerate(i, left);
-        }
-        for(int i = 4; i < 8; i++){
-            vehicle.accelerate(i, right);
-        }
-        
-        vehicle.brake(frictionForce * 1f / (1-Math.abs(curPow)));
+    protected void updateTank(final float cleft, final float cright){
+        updateArcade(cright+cleft, cright-cleft);
     }
 
     @Override
@@ -197,23 +172,39 @@ public class TankDrivetrain extends AbstractDrivetrain{
     public void update() {}
 
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {}
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
+        this.robot = robot;
+    }
 
     
     @Override
-    public void driveToPoint(Vector3f point, DriveDirection direction){
+    public void driveToPoint(final Vector3f point, final DriveDirection direction){
         driveToPoint(point, direction, true);
     }
     
     @Override
-    public void turnTowardsPoint(Vector3f point){
+    public void turnTowardsPoint(final Vector3f point){
         driveToPoint(point, DriveDirection.Towards, false);
     }
     
-    public void driveToPoint(Vector3f point, DriveDirection direction, boolean canDrive) {
+    public void driveToPoint(Vector3f point, DriveDirection direction, final boolean canDrive) {
+        final Vector3f curPos = vehicle.getPhysicsLocation();
+        final Vector3f redObstruction = Robot.getClosestRobot(curPos, Alliance.RED).getPosition(), blueObstruction = Robot.getClosestRobot(curPos, Alliance.BLUE).getPosition();
+        point = avoidObstructions(curPos, point, (redObstruction.distanceSquared(curPos)>blueObstruction.distanceSquared(curPos)? blueObstruction : redObstruction));
+        
         float turn = 1, pow = (canDrive? 1 : 0);
-        Vector3f vehicleVector = vehicle.getForwardVector(null), vectorToPoint = point.subtract(vehicle.getPhysicsLocation());
-        float s = vehicleVector.cross(vectorToPoint).length(), c = vehicleVector.dot(vectorToPoint), angle = FastMath.atan2(s, c) * -FastMath.sign(vectorToPoint.cross(vehicleVector).dot(Vector3f.UNIT_Y));
+        Vector3f vehicleVector = vehicle.getForwardVector(null), vectorToPoint = point.subtract(curPos);
+        if(FastMath.abs(curPos.z) > Main.in(12*9) && FastMath.abs(curPos.x) > Main.in(12*24) && vectorToPoint.normalize().angleBetween(vehicleVector)<15){
+            direction = DriveDirection.DontCare;
+            if(Math.abs(vehicleVector.dot(Vector3f.UNIT_X)) > Math.abs(vehicleVector.dot(Vector3f.UNIT_Z))){
+                point = new Vector3f(FastMath.sign(curPos.x)*Main.in(12*15), 0, 0);
+            } else {
+                point = new Vector3f(FastMath.sign(curPos.x)*Main.in(12*22), 0, 0);
+            }
+            vectorToPoint = point.subtract(curPos);
+            pow = 1;
+        }        
+        float angle = FastMath.atan2(vehicleVector.cross(vectorToPoint).length(), vehicleVector.dot(vectorToPoint)) * -FastMath.sign(vectorToPoint.cross(vehicleVector).dot(Vector3f.UNIT_Y));
         
         if(direction == DriveDirection.Away || (direction == DriveDirection.DontCare && FastMath.abs(angle)>FastMath.HALF_PI)){
             vehicleVector = vehicleVector.negate();
@@ -230,7 +221,13 @@ public class TankDrivetrain extends AbstractDrivetrain{
         if(vectorToPoint.dot(vehicleVector) < 0){
             pow *= 1.5;
         }
-        turn *= angle * vectorToPoint.length() / 10; 
+        turn *= angle * Math.min(3, vectorToPoint.length()) / 5; 
+        
+        if(FastMath.abs(pow) < FastMath.abs(turn) && robot.isTouchingWall()){
+            turn = FastMath.sign(turn);
+            pow = FastMath.sign(pow);
+        }
+        
         updateArcade(pow, turn);
     }
 }

@@ -12,8 +12,9 @@ public class AIFollowerProgram extends AbstractProgram{
     protected AISuperCoach coach;
     protected Robot robot;
     protected AbstractProgram program = null;
-    private String name = "AIFollower ("+this.toString()+")";
-    private EnumMap<SubsystemType, AbstractSubsystem> subsystems;
+    private static int baseID = AbstractProgram.getProgramNum();
+    private int uid = -baseID; 
+    protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
     
     public void registerCoach(AISuperCoach coach){
         this.coach = coach;
@@ -29,26 +30,31 @@ public class AIFollowerProgram extends AbstractProgram{
         }
     }
 
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
-
-    public void setProgram(AbstractProgram program){
-        if(this.program == null || (this.program.getName() == null ? true : !this.program.getName().equals(program.getName()))){
+    public void setProgram(final AbstractProgram program){
+        program.registerOtherSubsystems(subsystems, robot);
+        if(this.program == null || this.program.getUID() != program.getUID()){
             this.program = program;
-            program.registerOtherSubsystems(subsystems, robot);
         }
     }
     
+    public String getHRProgramName(){
+        return program.getHRName();
+    }
+    
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) { 
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) { 
         this.robot = robot;
+        uid = baseID + robot.number * AbstractProgram.getMaxProgramNum();
         this.subsystems = subsystems;
+    }
+    
+    @Override
+    public int getUID(){
+        return uid;
     }
 
     @Override
-    public String getName() {
-        return name;
+    public String getHRName() {
+        return "AIFollowerProgram for robot #"+robot.number;
     }
 }

@@ -13,26 +13,31 @@ import org.frogforce503.FRCSIM.Robot;
 public class EjectProgram extends AbstractProgram{
     private AbstractShooter shooter;
     private AbstractIntake intake;
-
+    private static int baseID = AbstractProgram.getProgramNum();
+    private int uid = -baseID;
+    
     @Override
-    public String getName() {
-        return "Eject Ball Program";
+    public int getUID() {
+        return uid;
+    }
+    
+    @Override
+    public String getHRName() {
+        return "Eject The Ball";
     }
 
     @Override
     public void update() {
-        shooter.spit.run();
+        if(intake.hasBall()){
+            shooter.spit.run();
+        }
     }
 
     @Override
-    public boolean isFinished() {
-        return !intake.hasBall();
-    }
-
-    @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
+    public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
         intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
+        uid = baseID + AbstractProgram.getMaxProgramNum() * robot.number;
     }
     
 }
