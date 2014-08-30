@@ -137,9 +137,7 @@ public class Ball extends Position{
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 59 * hash + this.number;
-        return hash;
+        return this.number;
     }
     
     public void score(){
@@ -161,6 +159,10 @@ public class Ball extends Position{
     
     public boolean isOwned(){
         return owner != null;
+    }
+    
+    public boolean isOwnedByRobot(){
+        return owner != null && owner instanceof Robot;
     }
     
     boolean doesExist = true;
@@ -204,5 +206,9 @@ public class Ball extends Position{
     
     public boolean hasBeenOwnedBy(Robot obj){
         return owners.contains(obj);
+    }
+
+    public boolean hasBeenTrussed() {
+        return trussed;
     }
 }

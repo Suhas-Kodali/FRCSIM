@@ -15,39 +15,43 @@ import org.frogforce503.FRCSIM.Robot.RobotPosition;
  *
  * @author Bryce
  */
-public class GetNearestAssistProgram extends AbstractProgram{
+public class GetAssistProgram extends AbstractProgram{
     private AbstractDrivetrain drivetrain;
     private Robot robot;
     private AbstractIntake intake;
     private AbstractShooter shooter;
+    private Robot target;
+    private String name;
+    
+    public GetAssistProgram(){
+        target = null;
+        name = "Get Nearest Assist Program";
+    }
+    
+    public GetAssistProgram(Robot target){
+        this.target = target;
+        name = "Get Assist With Robot #" + target.number +" Program";
+    }
+    
     @Override
     public void update() {
         if(robot.hasBall()){
-            Robot target = null;
+            Robot localTarget = null;
             float minDist = Float.MAX_VALUE;
-            for(Robot other : Robot.robots.get(robot.alliance)){
-                float distance = other.quickDistanceTo(robot);
-                if(!intake.getHeldBall().hasBeenOwnedBy(other) && distance < minDist && !other.hasBall()){
-                    minDist = distance;
-                    target = other;
-                }
-            }
-            if(target != null){
-                if(drivetrain.driveToPointAndDirection(target.getPosition(), target.getPosition(), Vector3f.UNIT_XYZ.mult(2), 15) && !target.hasBall()){
-                    shooter.spit.run();
-                }
-            } else {
+            if(target == null){
                 for(Robot other : Robot.robots.get(robot.alliance)){
                     float distance = other.quickDistanceTo(robot);
-                    if(!intake.getHeldBall().hasBeenOwnedBy(other) && distance < minDist){
+                    if(!intake.getHeldBall().hasBeenOwnedBy(other) && distance < minDist && !other.hasBall()){
                         minDist = distance;
-                        target = other;
+                        localTarget = other;
                     }
-                }
-                if(target != null){
-                    if(drivetrain.driveToPointAndDirection(target.getPosition(), target.getPosition(), Vector3f.UNIT_XYZ.mult(2), 15) && !target.hasBall()){
-                        shooter.spit.run();
-                    }
+                }        
+            } else {
+                localTarget = target;
+            }
+            if(localTarget != null){
+                if(drivetrain.driveToPointAndDirection(localTarget.getPosition(), localTarget.getPosition(), Vector3f.UNIT_XYZ.mult(2), 15) && !localTarget.hasBall()){
+                    shooter.spit.run();
                 }
             }
         }
@@ -64,6 +68,10 @@ public class GetNearestAssistProgram extends AbstractProgram{
         this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
         this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
         this.robot = robot;
+    }
+    
+    public String getName(){
+        return name;
     }
     
 }

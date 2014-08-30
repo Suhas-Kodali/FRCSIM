@@ -13,7 +13,7 @@ import org.frogforce503.FRCSIM.Robot;
  *
  * @author Bryce
  */
-class ScoreBallProgram extends AbstractProgram {
+class TrussProgram extends AbstractProgram {
     private AbstractShooter shooter;
     private AbstractIntake intake;
     private AbstractDrivetrain drivetrain;
@@ -21,7 +21,7 @@ class ScoreBallProgram extends AbstractProgram {
 
     @Override
     public void update() {
-        if(drivetrain.driveToPointAndDirection(Vector3f.UNIT_X.mult(-robot.alliance.side * Main.in(9*12)), Vector3f.UNIT_X.mult(-robot.alliance.side * Main.in(27*12)), new Vector3f(1.75f, 200, 200), 25)){
+        if(drivetrain.driveToPointAndDirection(Vector3f.UNIT_X.mult(robot.alliance.side * Main.in(9*12)), Vector3f.UNIT_X.mult(-robot.alliance.side * Main.in(27*12)), new Vector3f(1.75f, 200, 200), 25)){
             shooter.shoot.run();
         }
     }
@@ -33,10 +33,10 @@ class ScoreBallProgram extends AbstractProgram {
 
 
     @Override
-    public void registerOtherSubsystems(EnumMap<SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
-        this.drivetrain = (AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain);
-        this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
-        this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
+    public void registerOtherSubsystems(EnumMap<AbstractSubsystem.SubsystemType, AbstractSubsystem> subsystems, Robot robot) {
+        this.drivetrain = (AbstractDrivetrain) subsystems.get(AbstractSubsystem.SubsystemType.Drivetrain);
+        this.intake = (AbstractIntake) subsystems.get(AbstractSubsystem.SubsystemType.Intake);
+        this.shooter = (AbstractShooter) subsystems.get(AbstractSubsystem.SubsystemType.Shooter);
         this.robot = robot;
     }
 

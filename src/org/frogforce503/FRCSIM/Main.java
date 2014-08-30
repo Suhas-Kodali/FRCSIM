@@ -24,11 +24,13 @@ import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.frogforce503.FRCSIM.AI.OffensiveAITest;
+import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
+import org.frogforce503.FRCSIM.AI.AISuperCoach;
+import org.frogforce503.FRCSIM.AI.PlayerFollowerProgram;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
-import org.frogforce503.FRCSIM.TankPlayer.TankType;
+
 
 /**
  *
@@ -122,62 +124,31 @@ public class Main extends SimpleApplication implements ActionListener {
     
     public void startGame(){
         field = new Field(rootNode, assetManager, bulletAppState.getPhysicsSpace());
-        AbstractSubsystem shooter = new BasicShooter(), 
-                intake = new BasicIntake(),
-                control = new TankPlayer(keyMapping, TankType.tank);
-        ArrayList<AbstractSubsystem> subsystems1 = new ArrayList<AbstractSubsystem>(4);
-        subsystems1.add(shooter);
-        subsystems1.add(intake);
-        subsystems1.add(control);
-        AbstractDrivetrain drivetrain = new TankDrivetrain(subsystems1, bulletAppState.getPhysicsSpace());
-        subsystems1.add(drivetrain);
-        player = new Robot(subsystems1, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-        new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED);
-        //new Ball(rootN
-        //new Ball(rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE);
-//        AbstractSubsystem drivetrain = new TankDrivetrain(), 
-//                shooter = new BasicShooter(), 
-//                intake = new BasicIntake(),
-//                control = new TankPlayer(TankPlayer.TankKeyMapping.wasd);
-//        AbstractSubsystem[] subsystems = new AbstractSubsystem[]{drivetrain, intake, control, shooter};
-//        Robot player = new Robot(subsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,0));
-//        AbstractSubsystem aidrivetrain = new TankDrivetrain(), 
-//                aicontrol = new TestAI(player);
-//        AbstractSubsystem[] aisubsystems = new AbstractSubsystem[]{aidrivetrain, aicontrol};
-//        new Robot(aisubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,3));
-
-    
-       
-        
         ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
-        for(int i = 0; i < 4; i++){
+        AISuperCoach coach = new AISuperCoach(Alliance.RED);
+        
+        for(int i = 0; i < 3; i++){
             subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
             subsystems.get(i).add(new BasicIntake());
             subsystems.get(i).add(new BasicShooter());
+            subsystems.get(i).add(new AIFollowerProgram());
+            if(i == 0){
+                ((AIFollowerProgram) subsystems.get(i).get(2)).registerCoach(coach);
+            }
+            subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace()));
+            new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3, 0, (i-1)*3));
         }
-        subsystems.get(0).add(new TankPlayer(keyMapping, TankType.arcade));
-        //subsystems.get(0).add(new OffensiveAITest());        
-        subsystems.get(0).add(new TankDrivetrain(subsystems.get(0), bulletAppState.getPhysicsSpace()));
-        player = new Robot(subsystems.get(0), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3,0,3));
-//        subsystems.get(1).add(new OffensiveAITest());
-//        subsystems.get(1).add(new SwerveDrivetrain(subsystems.get(1), bulletAppState.getPhysicsSpace()));
-//        new Robot(subsystems.get(1), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(0,0,3));
-//        subsystems.get(2).add(new OffensiveAITest());
-//        subsystems.get(2).add(new TankDrivetrain(subsystems.get(2), bulletAppState.getPhysicsSpace()));
-//        new Robot(subsystems.get(2), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(-3,0,3));
-        //subsystems.get(3).add(new OffensiveAITest());
-       // subsystems.get(3).add(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentric));
-        //subsystems.get(3).add(new BoxSubsystem(Main.in(28), Main.in(28), Main.in(60)));
-        //subsystems.get(3).add(new SwerveDrivetrain(subsystems.get(3), bulletAppState.getPhysicsSpace()));
-        //new Robot(subsystems.get(3), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(3,0,-3));
-//        subsystems.get(4).add(new OffensiveAITest());
-//        subsystems.get(4).add(new SwerveDrivetrain(subsystems.get(4), bulletAppState.getPhysicsSpace()));
-//        new Robot(subsystems.get(4), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(0,0,-3));
-//        subsystems.get(5).add(new OffensiveAITest());
-//        subsystems.get(5).add(new TankDrivetrain(subsystems.get(5), bulletAppState.getPhysicsSpace()));
-//        new Robot(subsystems.get(5), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3,0,-3));
         
-        cam.setLocation(new Vector3f(0, 5, 12));
+
+        
+        ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>();
+        playersubsystems.add(new BasicIntake());
+        playersubsystems.add(new BasicShooter());
+        playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, SwerveType.FieldCentricDriverCam)));
+        playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace()));
+        player = new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, 3));
+        
+        cam.setLocation(new Vector3f(Field.length/2 + Main.in(70), Main.in(68), -Field.width/4));
         cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
         flyCam.setEnabled(true);
         flyCam.setMoveSpeed(20);
@@ -288,8 +259,6 @@ public class Main extends SimpleApplication implements ActionListener {
         }
         
         public static void addListener(String key, Runnable function){
-            System.out.println(key);
-            System.out.println(function);
             listeners.put(key, function);
         }
         

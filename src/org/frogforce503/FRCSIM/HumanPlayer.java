@@ -19,17 +19,16 @@ public class HumanPlayer {
         humanPlayers = new EnumMap<Alliance, EnumMap<HumanPlayerPosition, HumanPlayer>>(Alliance.class);
         humanPlayers.put(Alliance.RED, new EnumMap<HumanPlayerPosition, HumanPlayer>(HumanPlayerPosition.class));
         humanPlayers.put(Alliance.BLUE, new EnumMap<HumanPlayerPosition, HumanPlayer>(HumanPlayerPosition.class));
-        for(Alliance alliance : Alliance.values()){
-            for(HumanPlayerPosition pos : HumanPlayerPosition.values()){
-                humanPlayers.get(alliance).put(pos, (pos == HumanPlayerPosition.Close? new CloseHumanPlayer(alliance, pos): new HumanPlayer(alliance, pos)));
-            }
+        for(HumanPlayerPosition pos : HumanPlayerPosition.values()){
+            humanPlayers.get(Alliance.RED).put(pos, (pos == HumanPlayerPosition.Close? new CloseHumanPlayer(Alliance.RED, pos): new HumanPlayer(Alliance.RED, pos)));
+            humanPlayers.get(Alliance.BLUE).put(pos, (pos == HumanPlayerPosition.Close? new CloseHumanPlayer(Alliance.BLUE, pos): new HumanPlayer(Alliance.BLUE, pos)));
         }
     }        
     
     public HumanPlayer(Alliance alliance, HumanPlayerPosition pos){
-        humanPlayers.get(alliance).put(pos, this);
         this.alliance = alliance;
-        this.holdingPosition = pos.holdingPosition.mult(alliance.side);
+        this.holdingPosition = pos.holdingPosition.mult(new Vector3f(alliance.side, -1, -1));
+        humanPlayers.get(alliance).put(pos, this);
     }
     
     protected void giveBall(Ball ball){
@@ -55,7 +54,7 @@ public class HumanPlayer {
     
     private boolean isAutoThrowing = true;
     private static float autoThrowRadius = 4;
-    private static float throwForce = 10;
+    private static float throwForce = 15;
     private static float holdRange = .05f;
     private static float pullForce = 10;
     protected boolean isBallHeld = false;
@@ -117,7 +116,7 @@ public class HumanPlayer {
     public void doThrow(Vector3f target){
         target = target.add((rand.nextFloat()-.5f), (rand.nextFloat()-.5f), (rand.nextFloat()-.5f));
         if(currentBall != null){
-            currentBall.setVelocity(target.subtract(currentBall.getPosition()).normalize().mult(throwForce));
+            currentBall.setVelocity(target.subtract(currentBall.getPosition().add(Vector3f.UNIT_Y.mult(1f))).normalize().mult(throwForce));
             currentBall.release();
             currentBall = null;
             isBallHeld = false;
