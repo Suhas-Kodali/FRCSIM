@@ -128,7 +128,7 @@ public class HumanPlayer {
     public static void ballExitField(final Ball ball, final Vector3f exitPos){
         final Alliance alliance = ball.alliance;
         if(ball.isScored()){
-            ball.destroy();
+            ball.reset();
         } else if(exitPos.x * alliance.side < 0){
             if(exitPos.z > 0){
                 ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.FarPosZ)).giveBall(ball);

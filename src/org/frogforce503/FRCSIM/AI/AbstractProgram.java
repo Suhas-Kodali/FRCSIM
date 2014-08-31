@@ -16,7 +16,6 @@ public abstract class AbstractProgram extends AbstractControl{
     
     private static int progCount = 0;
     public static int getProgramNum(){
-        System.out.print(progCount);
         return progCount++;
     }
     

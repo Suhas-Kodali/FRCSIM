@@ -45,6 +45,11 @@
                     <control name="label" text="3" id="otherAllianceLabel" height="23px" width="23px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                     <text text="How many robots on the other alliance?" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="horizontalSlider" id="ballSlider" height="23px" width="100px" min="0" max="3" initial="1" stepSize="1"/>
+                    <control name="label" text="1" id="ballLabel" height="23px" width="23px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                    <text text="How many balls on each alliance?" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
                 <control name="radioButtonGroup" id="view"/>
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="driver" group="view"/>

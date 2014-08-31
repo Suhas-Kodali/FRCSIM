@@ -70,6 +70,7 @@ public class Main extends SimpleApplication implements ActionListener {
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
+//        bulletAppState.setDebugEnabled(true);
     }
 
     public static float in(final float in){
@@ -124,6 +125,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static boolean isTank = true, isInStation = true;
     public static SwerveType swerveType = SwerveType.FieldCentricRedDriverCam;
     public static TankType tankType = TankType.arcade;
+    public static int maxBalls = 1;
     
     public void startGame(){       
         field = new Field(rootNode, bulletAppState.getPhysicsSpace());
