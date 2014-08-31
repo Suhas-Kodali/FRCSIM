@@ -37,7 +37,7 @@ import org.frogforce503.FRCSIM.TankPlayer.TankType;
  */
 public class Main extends SimpleApplication implements ActionListener {
 
-    public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis, orange, cyan;
+    public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis, orange, cyan, gray;
     public static Field field;
     public static Main app;
     public static BulletAppState bulletAppState;
@@ -98,6 +98,9 @@ public class Main extends SimpleApplication implements ActionListener {
         black = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         black.getAdditionalRenderState().setWireframe(false);
         black.setColor("Color", ColorRGBA.Black); 
+        gray = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        gray.getAdditionalRenderState().setWireframe(false);
+        gray.setColor("Color", ColorRGBA.Gray); 
         
         allianceWalls = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         allianceWalls.getAdditionalRenderState().setWireframe(false);
@@ -189,7 +192,8 @@ public class Main extends SimpleApplication implements ActionListener {
             cam.setLocation(new Vector3f(0, 12, 12));
             cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         }
-        flyCam.setEnabled(false);
+        flyCam.setEnabled(true);
+        flyCam.setMoveSpeed(15);
         isStarted = true;
     }
 
