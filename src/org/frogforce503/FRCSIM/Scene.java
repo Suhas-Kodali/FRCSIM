@@ -171,4 +171,10 @@ public class Scene implements ScreenController {
         nifty.getCurrentScreen().findElementByName("otherAllianceLabel").getRenderer(TextRenderer.class).setText(Math.round(e.getValue())+""); 
         Main.numOnOtherAlliance = Math.round(e.getValue());
     }
+    
+    @NiftyEventSubscriber(id="ballSlider")
+    public void ballSliderChangeEvent(final String id, final SliderChangedEvent e){
+        nifty.getCurrentScreen().findElementByName("ballLabel").getRenderer(TextRenderer.class).setText(Math.round(e.getValue())+""); 
+        Main.maxBalls = Math.round(e.getValue());
+    }
 }

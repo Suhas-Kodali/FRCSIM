@@ -8,7 +8,7 @@ import com.jme3.scene.Node;
  * @author Bryce
  */
 public class BasicShooter extends AbstractShooter{
-    public static final float shootElevation = .6f;
+    public static final float shootElevation = .675f;
     
     @Override
     public void update() {

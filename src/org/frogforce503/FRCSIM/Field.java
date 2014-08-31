@@ -65,13 +65,13 @@ public class Field {
         rootNode.attachChild(floorGeometry);
         space.add(floorGeometry);
         
-        Box truss = new Box(new Vector3f(-Main.in(6), Main.in(62), Main.in(-170.2f)), new Vector3f(Main.in(6), Main.in(74), Main.in(170.2f)));
+        Box truss = new Box(new Vector3f(-Main.in(6), Main.in(-6), Main.in(-170.2f)), new Vector3f(Main.in(6), Main.in(6), Main.in(170.2f)));
         Geometry trussGeometry = new Geometry("truss", truss);
         trussGeometry.setMaterial(Main.sides);
         trussGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
-        trussGeometry.setLocalTranslation(Vector3f.ZERO);
         RigidBodyControl trussControl = new RigidBodyControl(0);
         trussGeometry.addControl(trussControl);
+        trussControl.setPhysicsLocation(new Vector3f(0, Main.in(65), 0));
         rootNode.attachChild(trussGeometry);
         space.add(trussGeometry);
         
@@ -152,7 +152,6 @@ public class Field {
         goal2TopGeometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2TopGeometry);
         space.add(goal2TopGeometry);
-        
         for(int j = -1; j < 2; j = j + 2){
             
         for(int i = -1; i < 2; i = i + 2){ 
@@ -176,7 +175,7 @@ public class Field {
         Box lowGoalBottom = new Box(Main.in(5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
         Geometry lowGoalBottomGeometry = new Geometry("Goal", lowGoalBottom);
         lowGoalBottomGeometry.setMaterial(Main.gray);
-        lowGoalBottomGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i, Main.in(7), width*j/2 - Main.in(29)*j/2);
+        lowGoalBottomGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f- (1.5f/2))*i, Main.in(7), width*j/2 - Main.in(29)*j/2);
         lowGoalBottomGeometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(lowGoalBottomGeometry);
         space.add(lowGoalBottomGeometry);

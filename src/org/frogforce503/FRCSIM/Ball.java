@@ -84,11 +84,11 @@ public class Ball implements Position{
         for(int i = balls.size()-1; i >= 0; i--){
             balls.get(i).update();
         }
-        if(redCount<=0){
+        if(redCount < Main.maxBalls){
             Ball ball = new Ball(Main.app.getRootNode(), Main.bulletAppState.getPhysicsSpace(), Alliance.RED);
             ball.setPosition(Vector3f.UNIT_X.mult(Main.in(-32*12)));
         }
-        if(blueCount<=0){
+        if(blueCount < Main.maxBalls){
             Ball ball = new Ball(Main.app.getRootNode(), Main.bulletAppState.getPhysicsSpace(), Alliance.BLUE);
             ball.setPosition(Vector3f.UNIT_X.mult(Main.in(32*12)));
         }             
@@ -192,7 +192,7 @@ public class Ball implements Position{
         return owner != null && owner instanceof Robot;
     }
     
-    public void destroy(){
+    public void reset(){
         if(alliance == Alliance.RED){
             reset(Vector3f.UNIT_X.mult(Main.in(-32*12)));
         } else {
