@@ -27,7 +27,7 @@ public class Ball implements Position{
     private static int redCount = 0, blueCount = 0;
     private boolean noAssistsLeft = false;
     private Vector3f lastPos;    
-    private Object owner = null;
+    private BallOwner owner = null;
     private final ArrayList<Robot> owners = new ArrayList<Robot>(3);
     
     public Ball(final Node rootNode, final PhysicsSpace space, final Alliance alliance){
@@ -58,6 +58,9 @@ public class Ball implements Position{
         scored = false;
         trussed = false;
         noAssistsLeft = false;
+        if(owner!=null){
+            owner.releaseBall();
+        }
         owner = null;
         owners.clear();
     }
@@ -78,6 +81,9 @@ public class Ball implements Position{
             alliance.incrementScore(10);
         }
         lastPos = curPos;
+        if(alliance == Main.playerAlliance){
+            System.out.println(owner);
+        }
     }
     
     public static void updateAll(){
@@ -102,6 +108,7 @@ public class Ball implements Position{
                 }
             }
         }           
+        
         for(int j = Field.blueGoalGhost.getOverlappingObjects().size()-1; j >=0; j--){
             if(Field.blueGoalGhost.getOverlapping(j).getUserObject() instanceof Ball){
                 Ball ball = (Ball) Field.blueGoalGhost.getOverlapping(j).getUserObject();
@@ -111,6 +118,28 @@ public class Ball implements Position{
                 }
             }
         }
+        
+        for(int k = Field.lowGoalGhosts.length - 1; k>=0; k--){
+            for(int j = Field.lowGoalGhosts[k].getOverlappingObjects().size() - 1; j >= 0; j--){
+                if(Field.lowGoalGhosts[k].getOverlapping(j).getUserObject() instanceof Ball){
+                    Ball ball = (Ball) Field.lowGoalGhosts[k].getOverlapping(j).getUserObject();
+                    if(!ball.isScored() && ball.alliance.side * ball.getPosition().x < 0){
+                        ball.alliance.incrementScore(1 + ball.getAssistScore());
+                        ball.score();
+                        if(ball.isOwned()){
+                            ball.release();
+                        }
+                        ball.setPosition(ball.getPosition().mult(new Vector3f(1, 1.25f, 1.25f)));
+                        HumanPlayer.ballExitField(ball, ball.getPosition());
+                    } else if(!ball.isOwned()){
+                        ball.setPosition(ball.getPosition().mult(new Vector3f(1, 1.25f, 1)));
+                        HumanPlayer.ballExitField(ball, ball.getPosition());
+                    }
+                    
+                }
+            }
+        }
+        
     }
     
     public static Ball getClosestBall(final Vector3f point, final Alliance alliance){
@@ -162,7 +191,7 @@ public class Ball implements Position{
         return scored;
     }
        
-    public void capture(final Object newOwner){
+    public void capture(final BallOwner newOwner){
         this.owner = newOwner;
         if(owner instanceof Robot && ((Robot) owner).alliance == alliance){
             if(!owners.contains((Robot) owner)){
@@ -181,7 +210,8 @@ public class Ball implements Position{
     }
     
     public void release(){
-        this.owner = null;
+        owner.releaseBall();
+        owner = null;
     }
     
     public boolean isOwned(){
@@ -227,5 +257,9 @@ public class Ball implements Position{
 
     public boolean hasBeenTrussed() {
         return trussed;
+    }
+
+    public static interface BallOwner {
+        public void releaseBall();
     }
 }

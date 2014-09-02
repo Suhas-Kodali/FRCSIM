@@ -9,6 +9,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import java.util.ArrayList;
+import org.frogforce503.FRCSIM.Ball.BallOwner;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
@@ -139,5 +140,10 @@ public class BasicIntake extends AbstractIntake{
     @Override
     public boolean isExtended(){
         return isIntakeExtended;
+    }
+
+    @Override
+    public void releaseBall() {
+        heldBall = null;
     }
 }

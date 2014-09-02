@@ -4,12 +4,13 @@ import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import org.frogforce503.FRCSIM.Ball.BallOwner;
 
 /**
  *
  * @author Bryce
  */
-public class HumanPlayer {
+public class HumanPlayer implements BallOwner{
     private static final EnumMap<Alliance, EnumMap<HumanPlayerPosition, HumanPlayer>> humanPlayers;
     static {
         humanPlayers = new EnumMap<Alliance, EnumMap<HumanPlayerPosition, HumanPlayer>>(Alliance.class);
@@ -129,16 +130,18 @@ public class HumanPlayer {
         final Alliance alliance = ball.alliance;
         if(ball.isScored()){
             ball.reset();
-        } else if(exitPos.x * alliance.side < 0){
-            if(exitPos.z > 0){
-                ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.FarPosZ)).giveBall(ball);
+        } else if(!ball.isOwned()){
+            if(exitPos.x * alliance.side < 0){
+                if(exitPos.z > 0){
+                    ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.FarPosZ)).giveBall(ball);
+                } else {
+                    ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.FarNegZ)).giveBall(ball);  
+                }
             } else {
-                ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.FarNegZ)).giveBall(ball);  
-            }
-        } else {
-            ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).giveBall(ball);
-            if(humanPlayers.get(alliance).get(HumanPlayerPosition.Close).holdingPosition.z * ball.getPosition().z < 0){
-                ((CloseHumanPlayer)humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).switchPosition();
+                ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).giveBall(ball);
+                if(humanPlayers.get(alliance).get(HumanPlayerPosition.Close).holdingPosition.z * ball.getPosition().z < 0){
+                    ((CloseHumanPlayer)humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).switchPosition();
+                }
             }
         }
     }
@@ -154,6 +157,14 @@ public class HumanPlayer {
         }
         if(closest != null){
             closest.doThrow(pos);
+        }
+    }
+
+    public void releaseBall() {
+        currentBall = null;
+        isBallHeld = false;
+        if(ballQueue.isEmpty() == false){
+            currentBall = ballQueue.remove(0);
         }
     }
     

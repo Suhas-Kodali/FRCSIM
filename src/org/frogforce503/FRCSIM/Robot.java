@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
 import org.frogforce503.FRCSIM.AbstractSubsystem.SubsystemType;
+import org.frogforce503.FRCSIM.Ball.BallOwner;
 
 /**
  *
  * @author Bryce
  */
-public class Robot implements Position{
+public class Robot implements Position, BallOwner{
     final protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
     private static int count = 1;
     public final int number = count++;
@@ -147,5 +148,9 @@ public class Robot implements Position{
     
     public AIFollowerProgram getAIFollower(){
         return ai;
+    }
+
+    public void releaseBall() {
+        ((AbstractIntake) subsystems.get(SubsystemType.Intake)).releaseBall();
     }
 }

@@ -2,12 +2,13 @@ package org.frogforce503.FRCSIM;
 
 import com.jme3.bullet.control.VehicleControl;
 import java.util.EnumMap;
+import org.frogforce503.FRCSIM.Ball.BallOwner;
 
 /**
  *
  * @author Bryce
  */
-public abstract class AbstractIntake extends AbstractSubsystem{
+public abstract class AbstractIntake extends AbstractSubsystem implements BallOwner{
     protected VehicleControl vehicle;
     protected Robot robot;
     

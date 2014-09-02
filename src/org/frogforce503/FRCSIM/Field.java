@@ -11,7 +11,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
@@ -34,6 +34,7 @@ public class Field {
     public static final float length = Main.in(54*12);
     public static final GhostControl redGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2))), 
             blueGoalGhost = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(6)/2, Main.in(37)/2, width/2))); 
+    public static final GhostControl[] lowGoalGhosts = new GhostControl[4];
     private Plane[] exitPlane = new Plane[4];
     
     
@@ -68,7 +69,7 @@ public class Field {
         Box truss = new Box(new Vector3f(-Main.in(6), Main.in(-6), Main.in(-170.2f)), new Vector3f(Main.in(6), Main.in(6), Main.in(170.2f)));
         Geometry trussGeometry = new Geometry("truss", truss);
         trussGeometry.setMaterial(Main.sides);
-        trussGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
+        trussGeometry.setQueueBucket(Bucket.Transparent);
         RigidBodyControl trussControl = new RigidBodyControl(0);
         trussGeometry.addControl(trussControl);
         trussControl.setPhysicsLocation(new Vector3f(0, Main.in(65), 0));
@@ -78,7 +79,7 @@ public class Field {
         for(int i = -1; i <= 1; i+=2){
             Box northWall = new Box(length/2, Main.in(20f)/2, Main.in(20f)/2);
             Geometry northWall_geo = new Geometry("side_wall", northWall);
-            northWall_geo.setQueueBucket(RenderQueue.Bucket.Transparent);
+            northWall_geo.setQueueBucket(Bucket.Transparent);
             northWall_geo.setMaterial(Main.sides);
             rootNode.attachChild(northWall_geo);
             northWall_geo.setLocalTranslation(0, Main.in(10), i*width/2 + i*Main.in(20)/2);
@@ -90,7 +91,7 @@ public class Field {
         Box goal1 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal1Geometry = new Geometry("Goal", goal1);
         goal1Geometry.setMaterial(Main.allianceWalls);
-        goal1Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
+        goal1Geometry.setQueueBucket(Bucket.Transparent);
         goal1Geometry.setLocalTranslation(length/2+Main.in(5)/2, Main.in(6*12+10.75f)/2, 0);
         goal1Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal1Geometry);
@@ -123,7 +124,7 @@ public class Field {
         Box goal2 = new Box(Main.in(5), Main.in(6*12+10.75f)/2, width/2);
         Geometry goal2Geometry = new Geometry("Goal", goal2);
         goal2Geometry.setMaterial(Main.allianceWalls);
-        goal2Geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
+        goal2Geometry.setQueueBucket(Bucket.Transparent);
         goal2Geometry.setLocalTranslation(-length/2 - Main.in(5)/2, Main.in(6*12+10.75f)/2, 0);
         goal2Geometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2Geometry);
@@ -152,118 +153,131 @@ public class Field {
         goal2TopGeometry.addControl(new RigidBodyControl(0));
         rootNode.attachChild(goal2TopGeometry);
         space.add(goal2TopGeometry);
+        
+        int k = 0;
         for(int j = -1; j < 2; j = j + 2){
-            
-        for(int i = -1; i < 2; i = i + 2){ 
-        
-        Material material;    
-            
-            if(i > 0){
-                material = Main.red;
-            }else{
-                material = Main.blue;
+
+            for(int i = -1; i < 2; i = i + 2){ 
+                
+                Material material = (i>0)? Main.red : Main.blue;
+                
+                Box lowGoalTop = new Box(Main.in(1.5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
+                Geometry lowGoalTopGeometry = new Geometry("Goal", lowGoalTop);
+                lowGoalTopGeometry.setMaterial(Main.gray);
+                lowGoalTopGeometry.setLocalTranslation((length*i)/2 - Main.in(32.5f)*i, Main.in(35), width*j/2 - Main.in(29)*j/2);
+                lowGoalTopGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalTopGeometry);
+                space.add(lowGoalTopGeometry);
+
+                Box lowGoalBottom = new Box(Main.in(5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
+                Geometry lowGoalBottomGeometry = new Geometry("Goal", lowGoalBottom);
+                lowGoalBottomGeometry.setMaterial(Main.gray);
+                lowGoalBottomGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f- (1.5f/2))*i, Main.in(7), width*j/2 - Main.in(29)*j/2);
+                lowGoalBottomGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalBottomGeometry);
+                space.add(lowGoalBottomGeometry);
+
+                Box lowGoalBase = new Box(Main.in(1.5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
+                Geometry lowGoalBaseGeometry = new Geometry("Goal", lowGoalBase);
+                lowGoalBaseGeometry.setMaterial(Main.gray);
+                lowGoalBaseGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i, Main.in(1.5f)/2, width*j/2 - Main.in(29)*j/2);
+                lowGoalBaseGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalBaseGeometry);
+                space.add(lowGoalBaseGeometry);
+
+                Box lowGoalBottomNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalBottomNorthGeometry = new Geometry("Goal", lowGoalBottomNorth);
+                lowGoalBottomNorthGeometry.setMaterial(Main.gray);
+                lowGoalBottomNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(7), width*j/2 - Main.in(29)*j);
+                lowGoalBottomNorthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalBottomNorthGeometry);
+                space.add(lowGoalBottomNorthGeometry);
+
+                Box lowGoalBottomSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalBottomSouthGeometry = new Geometry("Goal", lowGoalBottomSouth);
+                lowGoalBottomSouthGeometry.setMaterial(Main.gray);
+                lowGoalBottomSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(7), width*j/2 - Main.in(1.5f)*j/2);
+                lowGoalBottomSouthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalBottomSouthGeometry);
+                space.add(lowGoalBottomSouthGeometry);
+
+                Box lowGoalBaseNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalBaseNorthGeometry = new Geometry("Goal", lowGoalBaseNorth);
+                lowGoalBaseNorthGeometry.setMaterial(Main.gray);
+                lowGoalBaseNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(1.5f)/2, width*j/2 - Main.in(29)*j);
+                lowGoalBaseNorthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalBaseNorthGeometry);
+                space.add(lowGoalBaseNorthGeometry);
+
+                Box lowGoalBaseSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalBaseSouthGeometry = new Geometry("Goal", lowGoalBaseSouth);
+                lowGoalBaseSouthGeometry.setMaterial(Main.gray);
+                lowGoalBaseSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(1.5f)/2, width*j/2 - Main.in(1.5f)*j/2);
+                lowGoalBaseSouthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalBaseSouthGeometry);
+                space.add(lowGoalBaseSouthGeometry);
+
+                Box lowGoalTopNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalTopNorthGeometry = new Geometry("Goal", lowGoalTopNorth);
+                lowGoalTopNorthGeometry.setMaterial(Main.gray);
+                lowGoalTopNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(35), width*j/2 - Main.in(29)*j);
+                lowGoalTopNorthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalTopNorthGeometry);
+                space.add(lowGoalTopNorthGeometry);
+
+                Box lowGoalTopSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalTopSouthGeometry = new Geometry("Goal", lowGoalTopSouth);
+                lowGoalTopSouthGeometry.setMaterial(Main.gray);
+                lowGoalTopSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(35), width*j/2 - Main.in(1.5f)*j/2);
+                lowGoalTopSouthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalTopSouthGeometry);
+                space.add(lowGoalTopSouthGeometry);
+
+                Box lowGoalMiddleNorth = new Box(Main.in(1.5f)/2, Main.in(35f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalMiddleNorthGeometry = new Geometry("Goal", lowGoalMiddleNorth);
+                lowGoalMiddleNorthGeometry.setMaterial(Main.gray);
+                lowGoalMiddleNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i, Main.in(35)/2, width*j/2 - Main.in(29)*j);
+                lowGoalMiddleNorthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalMiddleNorthGeometry);
+                space.add(lowGoalMiddleNorthGeometry);
+
+                Box lowGoalMiddleSouth = new Box(Main.in(1.5f)/2, Main.in(35f)/2, Main.in(1.5f)/2);
+                Geometry lowGoalMiddleSouthGeometry = new Geometry("Goal", lowGoalMiddleSouth);
+                lowGoalMiddleSouthGeometry.setMaterial(Main.gray);
+                lowGoalMiddleSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i, Main.in(35)/2, width*j/2 - Main.in(1.5f)*j/2);
+                lowGoalMiddleSouthGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalMiddleSouthGeometry);
+                space.add(lowGoalMiddleSouthGeometry);
+
+                Box lowGoalMiddle = new Box(Main.in(30f)/2, Main.in(1.5f)/2, Main.in(29f)/2);
+                Geometry lowGoalMiddleGeometry = new Geometry("Goal", lowGoalMiddle);
+                lowGoalMiddleGeometry.setMaterial(material);
+                lowGoalMiddleGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(3.5f), width*j/2 - Main.in(30)*j/2);
+                Quaternion pitch = new Quaternion();
+                pitch.fromAngleAxis((-FastMath.PI/14)*i, new Vector3f(0,0,1));
+                lowGoalMiddleGeometry.setLocalRotation(pitch);
+                lowGoalMiddleGeometry.addControl(new RigidBodyControl(0));
+                rootNode.attachChild(lowGoalMiddleGeometry);
+                space.add(lowGoalMiddleGeometry);
+                
+                Box lowGoalBuffer = new Box(Main.in(40f)/2, Main.in(7)/2, Main.in(40f)/2);
+                Geometry lowGoalBufferGeometry = new Geometry("Goal", lowGoalBuffer);
+                lowGoalBufferGeometry.setMaterial(Main.blackNoAlpha);
+                lowGoalBufferGeometry.setLocalTranslation(length*i/2-Main.in(32.5f)*i/2, Main.in(3.5f), width*j/2 - Main.in(30)*j/2);
+                lowGoalBufferGeometry.addControl(new RigidBodyControl(0));
+                lowGoalBufferGeometry.setQueueBucket(Bucket.Transparent);
+                rootNode.attachChild(lowGoalBufferGeometry);
+                space.add(lowGoalBufferGeometry);
+
+                lowGoalGhosts[k] = new GhostControl(new BoxCollisionShape(new Vector3f(Main.in(5)/2, Main.in(5)/2, Main.in(5)/2)));
+                Node lowGoalGhostNode = new Node("lg");
+                lowGoalGhostNode.addControl(lowGoalGhosts[k]);
+                lowGoalGhostNode.setLocalTranslation(new Vector3f(length*i/2-Main.in(32.5f)*i/2, Main.in(35f)/2, width*j/2 - Main.in(30)*j/2));
+                rootNode.attachChild(lowGoalGhostNode);
+                space.add(lowGoalGhostNode);
+                
+                k++;
             }
-        
-        Box lowGoalTop = new Box(Main.in(1.5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
-        Geometry lowGoalTopGeometry = new Geometry("Goal", lowGoalTop);
-        lowGoalTopGeometry.setMaterial(Main.gray);
-        lowGoalTopGeometry.setLocalTranslation((length*i)/2 - Main.in(32.5f)*i, Main.in(35), width*j/2 - Main.in(29)*j/2);
-        lowGoalTopGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalTopGeometry);
-        space.add(lowGoalTopGeometry);
-        
-        Box lowGoalBottom = new Box(Main.in(5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
-        Geometry lowGoalBottomGeometry = new Geometry("Goal", lowGoalBottom);
-        lowGoalBottomGeometry.setMaterial(Main.gray);
-        lowGoalBottomGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f- (1.5f/2))*i, Main.in(7), width*j/2 - Main.in(29)*j/2);
-        lowGoalBottomGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalBottomGeometry);
-        space.add(lowGoalBottomGeometry);
-        
-        Box lowGoalBase = new Box(Main.in(1.5f)/2, Main.in(1.5f)/2, Main.in(29)/2);
-        Geometry lowGoalBaseGeometry = new Geometry("Goal", lowGoalBase);
-        lowGoalBaseGeometry.setMaterial(Main.gray);
-        lowGoalBaseGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i, Main.in(1.5f)/2, width*j/2 - Main.in(29)*j/2);
-        lowGoalBaseGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalBaseGeometry);
-        space.add(lowGoalBaseGeometry);
-        
-        Box lowGoalBottomNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalBottomNorthGeometry = new Geometry("Goal", lowGoalBottomNorth);
-        lowGoalBottomNorthGeometry.setMaterial(Main.gray);
-        lowGoalBottomNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(7), width*j/2 - Main.in(29)*j);
-        lowGoalBottomNorthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalBottomNorthGeometry);
-        space.add(lowGoalBottomNorthGeometry);
-        
-        Box lowGoalBottomSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalBottomSouthGeometry = new Geometry("Goal", lowGoalBottomSouth);
-        lowGoalBottomSouthGeometry.setMaterial(Main.gray);
-        lowGoalBottomSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(7), width*j/2 - Main.in(1.5f)*j/2);
-        lowGoalBottomSouthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalBottomSouthGeometry);
-        space.add(lowGoalBottomSouthGeometry);
-        
-        Box lowGoalBaseNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalBaseNorthGeometry = new Geometry("Goal", lowGoalBaseNorth);
-        lowGoalBaseNorthGeometry.setMaterial(Main.gray);
-        lowGoalBaseNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(1.5f)/2, width*j/2 - Main.in(29)*j);
-        lowGoalBaseNorthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalBaseNorthGeometry);
-        space.add(lowGoalBaseNorthGeometry);
-        
-        Box lowGoalBaseSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalBaseSouthGeometry = new Geometry("Goal", lowGoalBaseSouth);
-        lowGoalBaseSouthGeometry.setMaterial(Main.gray);
-        lowGoalBaseSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(1.5f)/2, width*j/2 - Main.in(1.5f)*j/2);
-        lowGoalBaseSouthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalBaseSouthGeometry);
-        space.add(lowGoalBaseSouthGeometry);
-        
-        Box lowGoalTopNorth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalTopNorthGeometry = new Geometry("Goal", lowGoalTopNorth);
-        lowGoalTopNorthGeometry.setMaterial(Main.gray);
-        lowGoalTopNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(35), width*j/2 - Main.in(29)*j);
-        lowGoalTopNorthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalTopNorthGeometry);
-        space.add(lowGoalTopNorthGeometry);
-        
-        Box lowGoalTopSouth = new Box(Main.in(32.5f)/2, Main.in(1.5f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalTopSouthGeometry = new Geometry("Goal", lowGoalTopSouth);
-        lowGoalTopSouthGeometry.setMaterial(Main.gray);
-        lowGoalTopSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(35), width*j/2 - Main.in(1.5f)*j/2);
-        lowGoalTopSouthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalTopSouthGeometry);
-        space.add(lowGoalTopSouthGeometry);
-        
-        Box lowGoalMiddleNorth = new Box(Main.in(1.5f)/2, Main.in(35f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalMiddleNorthGeometry = new Geometry("Goal", lowGoalMiddleNorth);
-        lowGoalMiddleNorthGeometry.setMaterial(Main.gray);
-        lowGoalMiddleNorthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i, Main.in(35)/2, width*j/2 - Main.in(29)*j);
-        lowGoalMiddleNorthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalMiddleNorthGeometry);
-        space.add(lowGoalMiddleNorthGeometry);
-        
-        Box lowGoalMiddleSouth = new Box(Main.in(1.5f)/2, Main.in(35f)/2, Main.in(1.5f)/2);
-        Geometry lowGoalMiddleSouthGeometry = new Geometry("Goal", lowGoalMiddleSouth);
-        lowGoalMiddleSouthGeometry.setMaterial(Main.gray);
-        lowGoalMiddleSouthGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i, Main.in(35)/2, width*j/2 - Main.in(1.5f)*j/2);
-        lowGoalMiddleSouthGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalMiddleSouthGeometry);
-        space.add(lowGoalMiddleSouthGeometry);
-        
-        Box lowGoalMiddle = new Box(Main.in(30f)/2, Main.in(1.5f)/2, Main.in(29f)/2);
-        Geometry lowGoalMiddleGeometry = new Geometry("Goal", lowGoalMiddle);
-        lowGoalMiddleGeometry.setMaterial(material);
-        lowGoalMiddleGeometry.setLocalTranslation(length*i/2 - Main.in(32.5f)*i/2, Main.in(3.5f), width*j/2 - Main.in(30)*j/2);
-        Quaternion pitch = new Quaternion();
-        pitch.fromAngleAxis((-FastMath.PI/14)*i, new Vector3f(0,0,1));
-        lowGoalMiddleGeometry.setLocalRotation(pitch);
-        lowGoalMiddleGeometry.addControl(new RigidBodyControl(0));
-        rootNode.attachChild(lowGoalMiddleGeometry);
-        space.add(lowGoalMiddleGeometry);
-        
-        }
         }
         
         Node redGoalGhostNode = new Node("a thing");
