@@ -49,7 +49,7 @@ public class Main extends SimpleApplication implements ActionListener {
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
-        appSettings.setSettingsDialogImage("Textures/first-vertical.png");
+        appSettings.setSettingsDialogImage("Textures/frog_force.png");
         appSettings.setUseJoysticks(true);
         appSettings.setResolution(1280, 600);
         app.setDisplayFps(false);
