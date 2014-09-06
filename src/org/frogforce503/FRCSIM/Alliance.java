@@ -36,4 +36,19 @@ public enum Alliance {
     public int getScore(){
         return score;
     }
+    
+    @Override
+    public String toString(){
+        return this == Alliance.RED? "red" : (this == Alliance.BLUE? "blue" : "null");
+    }
+    
+    public static Alliance fromString(String str){
+        if(str.equals("red")){
+            return Alliance.RED;
+        }
+        if(str.equals("blue")){
+            return Alliance.BLUE;
+        }
+        return null;
+    }
 }

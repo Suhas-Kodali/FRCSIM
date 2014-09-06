@@ -14,6 +14,10 @@ public abstract class AbstractProgram extends AbstractControl{
 
     public abstract String getHRName();
     
+    public String detailedToString(String offset){
+        return offset + "Program("+getUID()+", \"" + getHRName() + "\")";
+    }
+    
     private static int progCount = 0;
     public static int getProgramNum(){
         return progCount++;

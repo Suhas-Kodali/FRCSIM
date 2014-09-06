@@ -204,4 +204,14 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
             updateFCSC(0, 0, angle/3);
         }
     }
+
+    @Override
+    public String toString(){
+        return "SwerveDrivetrain";
+    }
+    
+    @Override
+    public String detailedToString(String offset) {
+        return offset + "SwerveDrivetrain{\n"+offset+"    isPlayer: " + isPlayer +"\n"+offset+"}";
+    }
 }

@@ -230,4 +230,14 @@ public class TankDrivetrain extends AbstractDrivetrain{
         
         updateArcade(pow, turn);
     }
+
+    @Override
+    public String toString(){
+        return "TankDrivetrain";
+    }
+    
+    @Override
+    public String detailedToString(String offset) {
+        return offset + "TankDrivetrain{\n"+offset+"    isPlayer: " + isPlayer +"\n"+offset+"}";
+    }
 }

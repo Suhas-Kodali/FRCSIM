@@ -57,4 +57,9 @@ public class AIFollowerProgram extends AbstractProgram{
     public String getHRName() {
         return "AIFollowerProgram for robot #"+robot.number;
     }
+    
+    @Override
+    public String detailedToString(String offset){
+        return offset + "Program("+getUID()+", \"" + getHRName() + "\", \"" + program.detailedToString("") + "\")";
+    }
 }

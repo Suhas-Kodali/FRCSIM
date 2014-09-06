@@ -10,7 +10,7 @@ import org.frogforce503.FRCSIM.Ball.BallOwner;
  *
  * @author Bryce
  */
-public class HumanPlayer implements BallOwner{
+public class HumanPlayer implements BallOwner, DTSDebuggable{
     private static final EnumMap<Alliance, EnumMap<HumanPlayerPosition, HumanPlayer>> humanPlayers;
     static {
         humanPlayers = new EnumMap<Alliance, EnumMap<HumanPlayerPosition, HumanPlayer>>(Alliance.class);
@@ -25,6 +25,7 @@ public class HumanPlayer implements BallOwner{
     public HumanPlayer(final Alliance alliance, final HumanPlayerPosition pos){
         this.alliance = alliance;
         this.holdingPosition = pos.holdingPosition.mult(new Vector3f(alliance.side, -1, -1));
+        this.name = "HumanPlayer("+alliance +", "+pos.name()+")";
         humanPlayers.get(alliance).put(pos, this);
     }
     
@@ -41,15 +42,8 @@ public class HumanPlayer implements BallOwner{
     protected Ball currentBall = null;
     protected final ArrayList<Ball> ballQueue = new ArrayList<Ball>(3);
     protected Vector3f holdingPosition;
+    private final String name;
     
-    public void requestAutoThrow(){
-        isAutoThrowing = true;
-    }
-    public void requestManualThrow(){
-        isAutoThrowing = false;
-    }
-    
-    private boolean isAutoThrowing = true;
     private final static float autoThrowRadius = 4;
     private final static float throwForce = 5;
     private final static float pullForce = 8;
@@ -59,7 +53,7 @@ public class HumanPlayer implements BallOwner{
     protected boolean isBallHeld = false;
     private long lastThrow = System.nanoTime();
     public void update(){
-        if(isAutoThrowing && currentBall != null && isBallHeld && System.nanoTime() - lastThrow > 1 * 1000 * 1000 * 1000l){
+        if(currentBall != null && isBallHeld && System.nanoTime() - lastThrow > 1 * 1000 * 1000 * 1000l){
             final Robot goodRobot = Robot.getClosestRobot(currentBall.getPosition(), alliance);
             if(goodRobot != null && goodRobot.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius 
                     && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3 && !goodRobot.hasBall() && goodRobot.wantsBall()){
@@ -168,6 +162,27 @@ public class HumanPlayer implements BallOwner{
         }
     }
     
+    @Override
+    public String toString(){
+        return name;
+    }
+    
+    @Override
+    public String detailedToString(String offset){
+        StringBuilder temp = new StringBuilder();
+        temp.append(offset).append(name).append("{");
+        temp.append(offset).append("    currentBall: ").append(currentBall).append(",\n");
+        temp.append(offset).append("    ballQueue: [ ");
+        for(Ball ball : ballQueue){
+            temp.append(offset).append("\n        ").append(ball).append(",");
+        }
+        temp.setLength(temp.length()-1);
+        temp.append(offset).append("\n    holdingPosition: ").append(holdingPosition).append("\n");
+        temp.append(offset).append("     isBallHeld: ").append(isBallHeld).append("\n");
+        temp.append(offset).append("}");
+        return temp.toString();
+    }
+    
     public static class ManualInboundRunnable implements Runnable{
         private Robot robot;
         public ManualInboundRunnable(final Robot robot){
@@ -194,10 +209,12 @@ public class HumanPlayer implements BallOwner{
     }
     
     public static enum HumanPlayerPosition{
-        Close(Alliance.RED.farHumanPlayer), FarPosZ(Alliance.RED.closeHumanPlayer), FarNegZ(Alliance.RED.closeHumanPlayer.mult(new Vector3f(1,1,-1)));
+        Close(Alliance.RED.farHumanPlayer, "Close"), FarPosZ(Alliance.RED.closeHumanPlayer, "Far(+Z)"), FarNegZ(Alliance.RED.closeHumanPlayer.mult(new Vector3f(1,1,-1)), "Far(-Z)");
         public final Vector3f holdingPosition;
-        private HumanPlayerPosition(final Vector3f holdingPosition){
+        public final String name;
+        private HumanPlayerPosition(final Vector3f holdingPosition, final String name){
             this.holdingPosition = holdingPosition;
+            this.name = name;
         }
     }
     

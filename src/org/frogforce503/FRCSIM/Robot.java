@@ -15,7 +15,7 @@ import org.frogforce503.FRCSIM.Ball.BallOwner;
  *
  * @author Bryce
  */
-public class Robot implements Position, BallOwner{
+public class Robot implements Position, BallOwner, DTSDebuggable{
     final protected EnumMap<SubsystemType, AbstractSubsystem> subsystems;
     private static int count = 1;
     public final int number = count++;
@@ -152,5 +152,22 @@ public class Robot implements Position, BallOwner{
 
     public void releaseBall() {
         ((AbstractIntake) subsystems.get(SubsystemType.Intake)).releaseBall();
+    }
+    
+    public String toString(){
+        return "Robot("+number+")";
+    }
+    
+    public String detailedToString(String offset){
+        StringBuilder temp = new StringBuilder();
+        temp.append(offset).append(this).append("{\n");
+        temp.append(offset).append("    alliance: ").append(alliance).append(",\n");
+        temp.append(offset).append("    subsystems: [ ");
+        for(AbstractSubsystem subsystem : subsystems.values()){
+            temp.append("\n").append(subsystem.detailedToString(offset + "        ")).append(",");
+        }
+        temp.setLength(temp.length()-1);
+        temp.append("\n").append(offset).append("    ]\n");
+        return temp.toString();
     }
 }

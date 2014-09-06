@@ -66,6 +66,14 @@ public class TankPlayer extends AbstractControl{
                 drivetrain.updateTank(left, right);
         }
     }
+
+    public String toString(){
+        return "TankPlayer";
+    }
+    
+    public String detailedToString(String offset) {
+        return offset + "TankPlayer{\n    type: "+type+"\n    keyMapping: "+keyMapping+"\n}";
+    }
     
     public static class TankKeyMapping{
         public final String up, down, left, right, leftForward, rightForward, toggleIntake, shoot, spit, inbound, switchSides;

@@ -8,12 +8,11 @@ import java.util.EnumMap;
  *
  * @author Bryce
  */
-public abstract class AbstractSubsystem {
+public abstract class AbstractSubsystem implements DTSDebuggable{
     public abstract void update();
     public abstract SubsystemType getType();
     public abstract void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot);
     public abstract void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance);
-    
     public static enum SubsystemType {
         Drivetrain(), Shooter(), Intake(), Controller(), GoaliePole(), Box();
     }

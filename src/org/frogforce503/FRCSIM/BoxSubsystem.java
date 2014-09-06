@@ -40,4 +40,14 @@ public class BoxSubsystem extends AbstractSubsystem{
         rootNode.attachChild(boxGeometry);
     }
     
+    @Override
+    public String toString(){
+        return "BoxSubsystem(" + width + "x" + length + "x" + height + ")";
+    }
+    
+    @Override
+    public String detailedToString(String offset){
+        return offset + toString();
+    }
+    
 }

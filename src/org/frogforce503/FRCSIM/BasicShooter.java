@@ -27,4 +27,14 @@ public class BasicShooter extends AbstractShooter{
 
     @Override
     public void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance) { }
+
+    @Override
+    public String toString(){
+        return "BasicShooter";
+    }
+    
+    @Override
+    public String detailedToString(String offset) {
+        return offset + toString();
+    }
 }

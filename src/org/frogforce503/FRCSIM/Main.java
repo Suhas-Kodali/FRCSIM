@@ -20,8 +20,15 @@ import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
 import org.frogforce503.FRCSIM.AI.AISuperCoach;
 import org.frogforce503.FRCSIM.AI.PlayerFollowerProgram;
@@ -35,7 +42,7 @@ import org.frogforce503.FRCSIM.TankPlayer.TankType;
  *
  * @author Bryce Paputa
  */
-public class Main extends SimpleApplication implements ActionListener {
+public class Main extends SimpleApplication implements ActionListener, DTSDebuggable {
 
     public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis, orange, cyan, gray, blackNoAlpha;
     public static Field field;
@@ -46,6 +53,8 @@ public class Main extends SimpleApplication implements ActionListener {
     public static TankKeyMapping keyMapping;
     public static Joystick[] joysticks;
     public static Robot player;
+    public static final ArrayList<AISuperCoach> coaches = new ArrayList<AISuperCoach>(2);
+    
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
@@ -127,8 +136,19 @@ public class Main extends SimpleApplication implements ActionListener {
         sides.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
        
         playerAlliance = Alliance.RED;
+        debuggables.add(Ball.balls);
+        debuggables.add(Robot.robots.get(Alliance.RED));
+        debuggables.add(Robot.robots.get(Alliance.BLUE));
+        debuggables.add(coaches);
+        try {
+            FRCSIMLogger.setup();
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     
+    private final static Logger logger = Logger.getLogger(Main.class.getName()); 
     public static int nblue, nred, numOnAlliance = 2, numOnOtherAlliance = 3; 
     public static Alliance playerAlliance = null;//Alliance.RED; 
     public static boolean isTank = true, isInStation = true;
@@ -175,12 +195,15 @@ public class Main extends SimpleApplication implements ActionListener {
             new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, (i-1-nred)*3));
         }
         
+        coaches.add(redCoach);
+        coaches.add(blueCoach);
+        
         if(playerAlliance != null){
             ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>();
             playersubsystems.add(new BasicIntake());
             playersubsystems.add(new BasicShooter());
             if(isTank){
-                playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
+                playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.joy, tankType)));
                 playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
             } else {
                 playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, swerveType)));           
@@ -255,6 +278,29 @@ public class Main extends SimpleApplication implements ActionListener {
                 cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
             }
         }
+    }
+    
+    public static final ArrayList<ArrayList<? extends DTSDebuggable>> debuggables = new ArrayList<ArrayList<? extends DTSDebuggable>>(4);
+    public static PrintWriter debugWriter;
+    
+    public String detailedToString(String offset) {
+        StringBuilder temp = new StringBuilder();
+        for(ArrayList<? extends DTSDebuggable> list : debuggables){
+            for(DTSDebuggable debuggable : list){
+                temp.append(debuggable.detailedToString(offset)).append("\n");
+            }
+        }
+        return temp.toString();
+    }
+    
+    public static void printDebugMessage(){
+        logger.info(Main.app.detailedToString(""));
+    }
+    
+    @Override
+    public void destroy(){
+        printDebugMessage();
+        super.destroy();
     }
     
     public static final class JoystickEventManager implements RawInputListener{

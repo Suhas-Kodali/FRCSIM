@@ -30,6 +30,14 @@ public class SwervePlayer extends AbstractControl{
         }
         setKeyMapping(tempMapping);
     }
+
+    public String toString(){
+        return "SwervePlayer";
+    }
+    
+    public String detailedToString(String offset) {
+        return offset + "SwervePlayer{\n    type: "+type+"\n    keyMapping: "+keyMapping+"\n}";
+    }
     
     public static enum SwerveType{
         FieldCentricSpectatorCam(), FieldCentricBlueDriverCam(), FieldCentricRedDriverCam(), RobotCentric();

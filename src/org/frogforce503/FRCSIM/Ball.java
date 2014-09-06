@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  * @author Bryce Paputa
  */
-public class Ball implements Position{
+public class Ball implements Position, DTSDebuggable{
     
     public final Alliance alliance;
     private final Geometry sphereGeometry;
@@ -81,9 +81,6 @@ public class Ball implements Position{
             alliance.incrementScore(10);
         }
         lastPos = curPos;
-        if(alliance == Main.playerAlliance){
-            System.out.println(owner);
-        }
     }
     
     public static void updateAll(){
@@ -105,6 +102,7 @@ public class Ball implements Position{
                 if(!ball.isScored() && ball.alliance == Alliance.RED && ball.getPosition().x > Main.in(54*12/2)){
                     Alliance.RED.incrementScore(10 + ball.getAssistScore());
                     ball.score();
+                    //Main.printDebugMessage();
                 }
             }
         }           
@@ -146,7 +144,7 @@ public class Ball implements Position{
         float minDistance = Float.MAX_VALUE;
         Ball ball = null;
         for(Ball curBall : balls){
-            if(curBall.alliance == alliance){
+            if(curBall.alliance == alliance || alliance == null){
                 float curDistance = curBall.getPosition().subtract(point).lengthSquared();
                 if(curDistance < minDistance){
                     minDistance = curDistance;
@@ -257,6 +255,31 @@ public class Ball implements Position{
 
     public boolean hasBeenTrussed() {
         return trussed;
+    }
+    
+    public String detailedToString(String offset) {
+        StringBuilder temp = new StringBuilder();
+        temp.append(offset).append("Ball(").append(number).append("){\n");
+        temp.append(offset).append("    alliance: ").append(alliance.toString()).append(",\n");
+        temp.append(offset).append("    trussed: ").append(trussed).append(",\n");
+        temp.append(offset).append("    scored: ").append(scored).append(",\n");
+        temp.append(offset).append("    position: ").append(getPosition().toString()).append(",\n");
+        temp.append(offset).append("    velocity: ").append(getVelocity().toString()).append(",\n");
+        temp.append(offset).append("    owners: [ ");
+        for(Robot owner : owners){
+            temp.append(offset).append("\n         ").append(owner.toString()).append(",");
+        }
+        temp.setLength(temp.length()-1);
+        temp.append(offset).append("\n    ],\n");
+        temp.append(offset).append("    owner: ").append(owner);
+        temp.append(offset).append("\n}");
+        return temp.toString();        
+    }
+    
+    @Override
+    public String toString(){
+        return "Ball(" + number + ")";
+        
     }
 
     public static interface BallOwner {

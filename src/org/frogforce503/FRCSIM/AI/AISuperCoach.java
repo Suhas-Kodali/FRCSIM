@@ -5,25 +5,28 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import org.frogforce503.FRCSIM.Alliance;
 import org.frogforce503.FRCSIM.Ball;
+import org.frogforce503.FRCSIM.DTSDebuggable;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
  *
  * @author Bryce
  */
-public class AISuperCoach {
+public class AISuperCoach implements DTSDebuggable{
     private final Alliance alliance;
     
     public AISuperCoach(final Alliance alliance){
         this.alliance = alliance;
     }
+    final HashMap<Robot, RobotRole> roles = new HashMap<Robot, RobotRole>(3);
+    final HashMap<Robot, Position> targets = new HashMap<Robot, Position>(3);
 
     public void update() {
         final ArrayList<Robot> rolelessRobots = new ArrayList<Robot>(Robot.robots.get(alliance));
         final ArrayList<Robot> ourRobots = Robot.robots.get(alliance);
         final ArrayList<Ball> balls = Ball.balls;
-        final HashMap<Robot, RobotRole> roles = new HashMap<Robot, RobotRole>(3);
-        final HashMap<Robot, Position> targets = new HashMap<Robot, Position>(3);
+        roles.clear();
+        targets.clear();
         for(Ball ball : balls){
             final Robot owner = (ball.getOwner() instanceof Robot) ? ((Robot) ball.getOwner()) : null;
             if(ball.alliance == alliance){
@@ -118,8 +121,20 @@ public class AISuperCoach {
         }
     }
 
-    void registerFollower(final AIFollowerProgram aThis) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String detailedToString(String offset) {
+        StringBuilder temp = new StringBuilder();
+        temp.append(offset).append("AISuperCoach(").append(alliance).append("){\n");
+        temp.append(offset).append("    Last Assignment: { ");
+        for(Robot robot : roles.keySet()){
+            temp.append(offset).append("\n        ").append(robot).append(": ").append(roles.get(robot));
+            if(targets.containsKey(robot)){
+                temp.append("\n").append(offset).append("            ").append("Target: ").append(targets.get(robot));
+            }
+            temp.append(",");
+        }
+        temp.setLength(temp.length()-1);
+        temp.append("\n    }\n}");
+        return temp.toString();
     }
     
     public static enum RobotRole{
