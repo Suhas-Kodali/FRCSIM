@@ -93,7 +93,7 @@ public class SwervePlayer extends AbstractControl{
             this.inbound = inbound;
             this.switchSides = switchSides;
         }
-        public final static SwerveKeyMapping std = new SwerveKeyMapping("up", "down", "left", "right", "a", "d", "r", "space", "c", "p", "l");
+        
         public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space", "shift", "i", "o");
         public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "", "", "");
     }

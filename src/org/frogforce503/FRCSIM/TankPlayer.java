@@ -97,11 +97,9 @@ public class TankPlayer extends AbstractControl{
             this.extraJoystick = extraJoystick;
         }
        
-        public final static TankKeyMapping std = new TankKeyMapping("up", "down", "left", "right", "pgup", "pgdwn", "shift", "enter", "shift", "p", "o", -1, -1);
-        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "q", "e", "r", "space", "c", "i", "o", -1, -1);
+        public final static TankKeyMapping wasd = new TankKeyMapping("w", "s", "a", "d", "q", "e", "r", "space", "shift", "i", "o", -1, -1);
         public final static TankKeyMapping joy = new TankKeyMapping("", "", "", "", "", "", "Button 1", "Button 0", "Button 2", "Button 5", "", 0, 1);
         public final static TankKeyMapping NULL = new TankKeyMapping("", "", "", "","", "", "", "", "", "", "", -1, -1);
-
     }
     
     public void setKeyMapping(final TankKeyMapping src){

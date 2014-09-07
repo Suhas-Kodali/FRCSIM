@@ -203,7 +203,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             playersubsystems.add(new BasicIntake());
             playersubsystems.add(new BasicShooter());
             if(isTank){
-                playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.joy, tankType)));
+                playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
                 playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
             } else {
                 playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, swerveType)));           
