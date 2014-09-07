@@ -7,19 +7,25 @@ import org.frogforce503.FRCSIM.Main;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
- *
- * @author Bryce
+ * Extension of AIFollowerProgram that uses player input instead of running AI.
+ * @author Bryce Paputa
  */
 public class PlayerFollowerProgram extends AIFollowerProgram{
     private final AbstractControl playerControl;
-    private static int baseID = AbstractProgram.getProgramNum();
+    private static int baseID = AbstractProgram.getProgramBaseID();
     private int uid = -baseID;
     
-    
+    /**
+     * Constructor for a new Player Follower.
+     * @param playerControl Constrol system that controls the player's robot.
+     */
     public PlayerFollowerProgram(final AbstractControl playerControl){
         this.playerControl = playerControl;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update(){
         playerControl.update();
@@ -31,6 +37,10 @@ public class PlayerFollowerProgram extends AIFollowerProgram{
         }
     }
     
+    /**
+     * {@inheritDoc}
+     * Doesn't actually execute any programs other than eject programs.
+     */
     @Override
     public void setProgram(final AbstractProgram program){
         program.registerOtherSubsystems(subsystems, robot);
@@ -40,13 +50,20 @@ public class PlayerFollowerProgram extends AIFollowerProgram{
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) { 
         super.registerOtherSubsystems(subsystems, robot);
         playerControl.registerOtherSubsystems(subsystems, robot);
-        uid = baseID + robot.number * AbstractProgram.getMaxProgramNum();
+        uid = baseID + robot.number * AbstractProgram.getMaxProgramBaseID();
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getUID(){
         return uid;
     }

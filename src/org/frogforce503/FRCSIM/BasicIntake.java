@@ -9,12 +9,11 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import java.util.ArrayList;
-import org.frogforce503.FRCSIM.Ball.BallOwner;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
- *
- * @author Bryce
+ * A basic intake.
+ * @author Bryce Paputa
  */
 public class BasicIntake extends AbstractIntake{
     private final Geometry intakeGeometry;
@@ -26,9 +25,13 @@ public class BasicIntake extends AbstractIntake{
     private Ball shootingBall;
     private final ArrayList<Ball> pulledBalls = new ArrayList<Ball>(6);
     private final Node holdGhostNode;
+    private boolean isShooting = false;
+    private boolean isIntakeExtended = false;
     
+    /**
+     * Constructor for a basic intake.
+     */
     public BasicIntake(){
-        
         final Box intakeBox = new Box(in(1), in(12), in(6));
         intakeGeometry = new Geometry("Intake", intakeBox);
         intakeGeometry.setLocalTranslation(in(31)/2, in(3) + in(12)/2 + in(10), in(28)/2 - in(6));
@@ -51,8 +54,11 @@ public class BasicIntake extends AbstractIntake{
         holdGhostNode.setLocalTranslation(new Vector3f(0,in(18)/2,0));
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
-    public void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance) {
+    public void registerPhysics(final Node rootNode, final PhysicsSpace space) {
         space.add(intakeNode);
         rootNode.attachChild(intakeNode);
         space.add(pullGhost);
@@ -61,9 +67,12 @@ public class BasicIntake extends AbstractIntake{
         
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void preShot(){
-        super.preShot();
+        isShooting = true;
         shootingBall = heldBall;
         heldBall = null;
         shootingBall.release();
@@ -71,26 +80,38 @@ public class BasicIntake extends AbstractIntake{
             pulledBalls.remove(heldBall);
         } 
     }
-    
+
+    /**
+     * {@inheritDoc} 
+     */    
     @Override
     public void postShot(){
-        super.postShot();
         shootingBall = null;
+        isShooting = false;
     }
-    
+ 
+    /**
+     * {@inheritDoc} 
+     */   
     @Override
     public Ball getShootingBall(){
         return shootingBall;
     }
-    
+ 
+    /**
+     * {@inheritDoc} 
+     */   
     @Override
     public Ball getHeldBall() {
         return heldBall;
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void update() {
-        if(heldBall == null && !isShooting()){
+        if(heldBall == null && !isShooting){
             for(int j = pullGhost.getOverlappingObjects().size()-1; j >=0; j--){
                 if(pullGhost.getOverlapping(j).getUserObject() instanceof Ball){
                     Ball ball = ((Ball) pullGhost.getOverlapping(j).getUserObject());
@@ -109,16 +130,17 @@ public class BasicIntake extends AbstractIntake{
         }
         
         for(Ball ball : pulledBalls){
-            ball.getRigidBodyControl().applyCentralForce(vehicle.getPhysicsLocation().subtract(ball.getRigidBodyControl().getPhysicsLocation()).normalize().add(new Vector3f(0,.5f,0)).mult(45));
+            ball.applyForce(robot.getPosition().subtract(ball.getPosition()).normalize().add(new Vector3f(0,.5f,0)).mult(45));
         }
         pulledBalls.clear();
-        if(heldBall!= null && !isShooting()){
-            heldBall.getRigidBodyControl().setPhysicsLocation(vehicle.getPhysicsLocation().add(new Vector3f(0, in(18), 0)));
+        if(heldBall!= null && !isShooting){
+            heldBall.setPosition(robot.getPosition().add(new Vector3f(0, in(18), 0)));
         }
     }
-
-    private boolean isIntakeExtended = false;
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void extend(){
         if(!isIntakeExtended){
@@ -128,6 +150,9 @@ public class BasicIntake extends AbstractIntake{
         }
     }
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void retract(){
         if(isIntakeExtended){
@@ -137,16 +162,25 @@ public class BasicIntake extends AbstractIntake{
         }
     }    
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public boolean isExtended(){
         return isIntakeExtended;
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void releaseBall() {
         heldBall = null;
     }
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public String detailedToString(String offset){
         StringBuilder temp = new StringBuilder();

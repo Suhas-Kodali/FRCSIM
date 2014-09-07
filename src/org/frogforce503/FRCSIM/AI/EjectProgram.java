@@ -7,25 +7,35 @@ import org.frogforce503.FRCSIM.AbstractSubsystem;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
- *
- * @author Bryce
+ * Program that ejects the robot's ball.
+ * @author Bryce Paputa
  */
 public class EjectProgram extends AbstractProgram{
     private AbstractShooter shooter;
     private AbstractIntake intake;
-    private static int baseID = AbstractProgram.getProgramNum();
+    private static int baseID = AbstractProgram.getProgramBaseID();
     private int uid = -baseID;
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getUID() {
         return uid;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getHRName() {
         return "Eject The Ball";
     }
 
+    /**
+     * {@inheritDoc}
+     * Ejects the ball.
+     */
     @Override
     public void update() {
         if(intake.hasBall()){
@@ -33,11 +43,13 @@ public class EjectProgram extends AbstractProgram{
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
         intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
-        uid = baseID + AbstractProgram.getMaxProgramNum() * robot.number;
+        uid = baseID + AbstractProgram.getMaxProgramBaseID() * robot.number;
     }
-    
 }

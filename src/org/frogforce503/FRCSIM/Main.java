@@ -20,41 +20,131 @@ import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
 import org.frogforce503.FRCSIM.AI.AISuperCoach;
 import org.frogforce503.FRCSIM.AI.PlayerFollowerProgram;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
-import org.frogforce503.FRCSIM.SwervePlayer.SwerveType;
+import org.frogforce503.FRCSIM.SwervePlayer.SwerveControlMethod;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
-import org.frogforce503.FRCSIM.TankPlayer.TankType;
+import org.frogforce503.FRCSIM.TankPlayer.TankControlMethod;
 
 
-/**`
- *
+/**
+ * Main class.
  * @author Bryce Paputa
  */
 public class Main extends SimpleApplication implements ActionListener, DTSDebuggable {
-
+    /**
+     * Material used by the game.
+     */
     public static Material red, black, blue, green, darkGray, allianceWalls, sides, chassis, orange, cyan, gray, blackNoAlpha;
+    
+    /**
+     * The field.
+     */
     public static Field field;
+    
+    /**
+     * Instance of Main.
+     */
     public static Main app;
+    
+    /**
+     * App state that generates the PhysicsSpace.
+     */
     public static BulletAppState bulletAppState;
+    
+    /**
+     * Stores whether or not the game has started yet.
+     */
     public static boolean isStarted = false;
-    public static Scene scene;
-    public static TankKeyMapping keyMapping;
+    
+    /**
+     * Array of joysticks.
+     */
     public static Joystick[] joysticks;
+    
+    /**
+     * The player's robot, null if there is no player.
+     */
     public static Robot player;
+    
+    /**
+     * Array of AI coaches.
+     */
     public static final ArrayList<AISuperCoach> coaches = new ArrayList<AISuperCoach>(2);
     
+    /**
+     * Interface to the Nifty screen.
+     */
+    public static Scene scene;
+    
+    /**
+     * Number of ai robots on the blue alliance
+     */
+    public static int nblue;
+    
+    /**
+     * Number of ai robots on the red allaince.
+     */
+    public static int nred;
+    
+    /**
+     * Number of ai robots on the player's alliance.
+     */
+    public static int numOnAlliance = 2;
+    
+    /**
+     * Number of ai robots on the opposing alliance.
+     */
+    public static int numOnOtherAlliance = 3; 
+    
+    /**
+     * The alliance the the player will be on, set to Alliance.Red in initMaterials().
+     */
+    public static Alliance playerAlliance = null;//Alliance.Red; 
+    
+    /**
+     * Will the player be a Tank drive?
+     */
+    public static boolean isTank = true;
+    
+    /**
+     * Will the player's perspective be in the driver station?
+     */
+    public static boolean isInStation = true;
+    
+    /**
+     * Stores the type of swerve drive to use.
+     */
+    public static SwerveControlMethod swerveType = SwerveControlMethod.FieldCentricRedDriverCam;
+    
+    /**
+     * Stores the type of Tank drive to use.
+     */
+    public static TankControlMethod tankType = TankControlMethod.Arcade;
+    
+    /**
+     * Stores the maximum number of balls.
+     */
+    public static int maxBalls = 1;
+    
+    private static final ArrayList<ArrayList<? extends DTSDebuggable>> debuggables = new ArrayList<ArrayList<? extends DTSDebuggable>>(4);
+    private final static Logger logger = Logger.getLogger(Main.class.getName()); 
+    
+    private Main(){}
+    
+    /**
+     * main method, starts the game.
+     * @param args Unused
+     */
     public static void main(String[] args) {
         app = new Main();
         AppSettings appSettings = new AppSettings(true);
@@ -67,26 +157,33 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         app.start();
     }
 
+    /**
+     * Sets up the game.
+     */
     @Override
     public void simpleInitApp() {
-        
         initMaterials();
         setupKeys();
-        
-        
-        scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam);
-        scene.startScreen();
+        (scene = new Scene(assetManager, inputManager, audioRenderer, guiViewPort, flyCam)).startScreen();
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
 //        bulletAppState.setDebugEnabled(true);
     }
 
+    /**
+     * Converts inches to meters.
+     * @param in    Value in inches
+     * @return      Value in meters
+     */
     public static float in(final float in){
         return in/39.3701f;
     }
     
-    public void initMaterials(){
+    /**
+     * Sets up materials, must be called before any references to alliances.
+     */
+    private void initMaterials(){
         red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         red.getAdditionalRenderState().setWireframe(false);
         red.setColor("Color", ColorRGBA.Red); 
@@ -135,31 +232,31 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         sides.setTexture("ColorMap", assetManager.loadTexture(new TextureKey("Textures/fieldSides.png")));
         sides.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
        
-        playerAlliance = Alliance.RED;
+        playerAlliance = Alliance.Red;
         debuggables.add(Ball.balls);
-        debuggables.add(Robot.robots.get(Alliance.RED));
-        debuggables.add(Robot.robots.get(Alliance.BLUE));
+        debuggables.add(Robot.robots.get(Alliance.Red));
+        debuggables.add(Robot.robots.get(Alliance.Blue));
         debuggables.add(coaches);
         try {
-            FRCSIMLogger.setup();
+            Logger llogger = Logger.getLogger("");
+            llogger.setLevel(Level.INFO);
+            FileHandler fileTxt = new FileHandler("FRCSIMLog.fsd");
+            fileTxt.setFormatter(new SimpleFormatter());
+            fileTxt.setLevel(Level.INFO);
+            llogger.addHandler(fileTxt);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
     
-    private final static Logger logger = Logger.getLogger(Main.class.getName()); 
-    public static int nblue, nred, numOnAlliance = 2, numOnOtherAlliance = 3; 
-    public static Alliance playerAlliance = null;//Alliance.RED; 
-    public static boolean isTank = true, isInStation = true;
-    public static SwerveType swerveType = SwerveType.FieldCentricRedDriverCam;
-    public static TankType tankType = TankType.arcade;
-    public static int maxBalls = 1;
-    
+    /**
+     * Starts the game.
+     */
     public void startGame(){       
         field = new Field(rootNode, bulletAppState.getPhysicsSpace());
         
-        if(playerAlliance == Alliance.BLUE){
+        if(playerAlliance == Alliance.Blue){
             nblue = numOnAlliance;
             nred = numOnOtherAlliance;
         } else {
@@ -168,7 +265,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         }
         
         final ArrayList<ArrayList<AbstractSubsystem>> subsystems = new ArrayList<ArrayList<AbstractSubsystem>>(6);
-        final AISuperCoach redCoach = new AISuperCoach(Alliance.RED);
+        final AISuperCoach redCoach = new AISuperCoach(Alliance.Red);
         
         for(int i = 0; i < nred; i++){
             subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
@@ -179,10 +276,10 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
                 ((AIFollowerProgram) subsystems.get(i).get(2)).registerCoach(redCoach);
             }
             subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace(), false));
-            new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.RED, new Vector3f(3, 0, (i-1)*3));
+            new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.Red, new Vector3f(3, 0, (i-1)*3));
         }
         
-        final AISuperCoach blueCoach = new AISuperCoach(Alliance.BLUE);
+        final AISuperCoach blueCoach = new AISuperCoach(Alliance.Blue);
         for(int i = nred; i < nred + nblue; i++){
             subsystems.add(i, new ArrayList<AbstractSubsystem>(4));
             subsystems.get(i).add(new BasicIntake());
@@ -192,7 +289,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
                 ((AIFollowerProgram) subsystems.get(i).get(2)).registerCoach(blueCoach);
             }
             subsystems.get(i).add(new TankDrivetrain(subsystems.get(i), bulletAppState.getPhysicsSpace(), false));
-            new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.BLUE, new Vector3f(-3, 0, (i-1-nred)*3));
+            new Robot(subsystems.get(i), rootNode, bulletAppState.getPhysicsSpace(), Alliance.Blue, new Vector3f(-3, 0, (i-1-nred)*3));
         }
         
         coaches.add(redCoach);
@@ -213,7 +310,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         }
         
         if(isInStation){
-            cam.setLocation(new Vector3f((Field.length/2 + Main.in(70))*(playerAlliance == Alliance.RED? -1 : 1), Main.in(68), -Field.width/3*(System.nanoTime()%3-1)));
+            cam.setLocation(new Vector3f((Field.length/2 + in(70))*(playerAlliance == Alliance.Red? -1 : 1), in(68), -Field.width/3*(System.nanoTime()%3-1)));
             if(player != null){
                 cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
             } else {
@@ -228,7 +325,6 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
     }
 
     private void setupKeys() {
-        
         int[] keys = new int[]{KeyInput.KEY_A,KeyInput.KEY_B,KeyInput.KEY_C,
                 KeyInput.KEY_D,KeyInput.KEY_E,KeyInput.KEY_F,KeyInput.KEY_G,
                 KeyInput.KEY_H,KeyInput.KEY_I,KeyInput.KEY_J,KeyInput.KEY_K,
@@ -268,6 +364,10 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         inputManager.addRawInputListener( new JoystickEventManager() );
     }
     
+    /**
+     * Calls all of the update methods of other classes.
+     * @param tpf Unused
+     */
     @Override
     public void simpleUpdate(float tpf) {
         if(isStarted){
@@ -280,9 +380,9 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         }
     }
     
-    public static final ArrayList<ArrayList<? extends DTSDebuggable>> debuggables = new ArrayList<ArrayList<? extends DTSDebuggable>>(4);
-    public static PrintWriter debugWriter;
-    
+    /**
+     * {@inheritDoc} 
+     */
     public String detailedToString(String offset) {
         StringBuilder temp = new StringBuilder();
         for(ArrayList<? extends DTSDebuggable> list : debuggables){
@@ -293,26 +393,47 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         return temp.toString();
     }
     
+    /**
+     * Logs a debugging message.
+     */
     public static void printDebugMessage(){
         logger.info(Main.app.detailedToString(""));
     }
     
+    /**
+     * Called at the end of the program, prints out a last debugging message.
+     */
     @Override
     public void destroy(){
         printDebugMessage();
         super.destroy();
     }
     
-    public static final class JoystickEventManager implements RawInputListener{
-
+    /**
+     * Class that listens to joystick input.
+     */
+    private static final class JoystickEventManager implements RawInputListener{
+        
+        /**
+         * {@inheritDoc}
+         */
         public void beginInput() {}
 
+        /**
+         * {@inheritDoc}
+         */
         public void endInput() {}
 
+        /**
+         * {@inheritDoc}
+         */
         public void onJoyAxisEvent(final JoyAxisEvent evt) {
             InputManager.joystickAxisEvent(evt.getJoyIndex(), evt.getAxisIndex(), evt.getValue());
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void onJoyButtonEvent(final JoyButtonEvent evt) {
             if(evt.isPressed()){
                 InputManager.press(evt.getButton().getName());
@@ -321,16 +442,30 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void onMouseMotionEvent(MouseMotionEvent evt) {}
 
+        /**
+         * {@inheritDoc}
+         */
         public void onMouseButtonEvent(MouseButtonEvent evt) {}
 
+        /**
+         * {@inheritDoc}
+         */
         public void onKeyEvent(KeyInputEvent evt) {}
 
+        /**
+         * {@inheritDoc}
+         */
         public void onTouchEvent(TouchEvent evt) {}
-        
     }
     
+    /**
+     * Class that manages input.
+     */
     public static final class InputManager{
         private InputManager() {}
         private static final ArrayList<HashMap<Integer, Float>> axisMaps = new ArrayList<HashMap<Integer, Float>>();
@@ -338,6 +473,10 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         private static final ArrayList<String> pressed = new ArrayList<String>();
         private static final HashMap<String, Runnable> listeners = new HashMap<String, Runnable>();
         
+        /**
+         * Called when a key is pressed, marks that the key is pressed and calls any listeners on the key.
+         * @param key Key that was pressed
+         */
         public static void press(final String key){
             pressed.add(key);
             if(listeners.containsKey(key)){
@@ -345,22 +484,46 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             }
         }
         
+        /**
+         * Called when a key is released, marks that the key is no longer pressed.
+         * @param key Key that was released
+         */
         public static void release(final String key){
             pressed.remove(key);
         }
         
+        /**
+         * Checks if a key is pressed.
+         * @param key   Key to check
+         * @return      Whether or not the key is pressed
+         */
         public static boolean isPressed(final String key){
             return pressed.contains(key);
         }
         
+        /**
+         * Adds a listener to a key.
+         * @param key       Key to listen to
+         * @param function  Function to run on press
+         */
         public static void addListener(final String key, final Runnable function){
             listeners.put(key, function);
         }
         
+        /**
+         * Remove the listener from a key.
+         * @param key Key to remove from
+         */
         public static void removeListener(final String key){
             listeners.remove(key);
         }
         
+        /**
+         * Adds a joystick.
+         * @param joystick      Joystick to add
+         * @param upDownAxis    Y axis of controller
+         * @param leftRightAxis X axis of controller
+         */
         public static void addJoystick(final Joystick joystick, final int upDownAxis, final int leftRightAxis){
             HashMap<Integer, Float> axes = new HashMap();
             axes.put(upDownAxis, 0f);
@@ -369,6 +532,12 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             axisMaps.add(joystick.getJoyId(), axes);
         }
         
+        /**
+         * Called when a joystick value changes.
+         * @param id    ID of the joystick
+         * @param axis  Axis that changed
+         * @param value New value
+         */
         public static void joystickAxisEvent(final int id, final int axis, final float value){
             if(axisMaps.get(id).get(axis) != null){
                 axisMaps.get(id).put(axis, value);
@@ -379,6 +548,13 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             return sensitivity * (input*input*input) + (1-sensitivity) * input;
         }
         
+        /**
+         * Get the value of a joystick axis.
+         * @param id            ID of joystick
+         * @param axis          Axis to get
+         * @param sensitivity   Sensitivity for scale function (a*x^3+(1-a)*x)
+         * @return              Scaled value
+         */
         public static float getAxisValue(final int id, final int axis, final float sensitivity){
             if(id < axisMaps.size()){
                 final float raw = axisMaps.get(id).get(axis);
@@ -392,21 +568,19 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             }
         }
         
+        /**
+         * Checks if a key is pressed.
+         * @param key   Key to check
+         * @return      1 if pressed, 0 otherwise
+         */
         public static int isPressedi(final String key){
             return (pressed.contains(key)?1:0);
         }
-        
-        public static int isPressedButtonsi(final String keyPos, final String keyNeg){
-            if(pressed.contains(keyPos)){
-                return 1;
-            }else if(pressed.contains(keyNeg)){
-                return -1;
-            }else{
-                return 0;
-            }
-        }
     }
     
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public void onAction(final String binding, final boolean value, final float tpf) {
         if(value == true){

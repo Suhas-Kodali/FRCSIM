@@ -10,8 +10,8 @@ import org.frogforce503.FRCSIM.Ball;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
- *
- * @author Bryce
+ * Program that gets a ball.
+ * @author Bryce Paputa
  */
 public class GetBallProgram extends AbstractProgram{
     private AbstractDrivetrain drivetrain;
@@ -19,17 +19,28 @@ public class GetBallProgram extends AbstractProgram{
     private AbstractIntake intake;
     private Position defense;
     private final Ball target;
-    private static int baseID = AbstractProgram.getProgramNum();
+    private static int baseID = AbstractProgram.getProgramBaseID();
     private int uid = -baseID;
     
+    /**
+     * Constructor for a program that gets the nearest ball.
+     */
     public GetBallProgram(){
         target = null;
     }
     
+    /**
+     * Constructor for a program that gets a specified ball.
+     * @param target Ball to get
+     */
     public GetBallProgram(Ball target){
         this.target = target;
     }
     
+    /**
+     * {@inheritDoc}
+     * Finds the nearest ball if one was not specified and gets it.
+     */
     @Override
     public void update() {
         if(robot.hasBall()){
@@ -61,7 +72,7 @@ public class GetBallProgram extends AbstractProgram{
                 }      
             }
         } else {
-            owned = localTarget.isOwned() && localTarget.getOwner() instanceof Robot;
+            owned = localTarget.isOwnedByRobot();
         }
         if(localTarget != null && localTarget.getPosition() != null){
             if(!owned){
@@ -78,24 +89,32 @@ public class GetBallProgram extends AbstractProgram{
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         this.drivetrain = (AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain);
         this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
         this.robot = robot; 
         defense = new InterferencePosition(robot);
-        uid = baseID + robot.number * AbstractProgram.getMaxProgramNum() + (target==null? 0 : target.number) * AbstractProgram.getMaxProgramNum() * Robot.getMaxRobotNum();
+        uid = baseID + robot.number * AbstractProgram.getMaxProgramBaseID() + (target==null? 0 : target.number) * AbstractProgram.getMaxProgramBaseID() * Robot.getMaxRobotNum();
         drivetrain.setOnDefense(false);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getUID(){
         return uid;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getHRName() {
         return "Get The Ball!";
     }
-    
 }

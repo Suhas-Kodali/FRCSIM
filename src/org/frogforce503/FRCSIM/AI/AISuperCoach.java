@@ -9,18 +9,25 @@ import org.frogforce503.FRCSIM.DTSDebuggable;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
- *
- * @author Bryce
+ * AI coach that sends commands to the alliance's robots.
+ * @author Bryce Paputa
  */
 public class AISuperCoach implements DTSDebuggable{
     private final Alliance alliance;
+    private final HashMap<Robot, RobotRole> roles = new HashMap<Robot, RobotRole>(3);
+    private final HashMap<Robot, Position> targets = new HashMap<Robot, Position>(3);
     
+    /**
+     * Constructor for an AI coach.
+     * @param alliance Alliance to coach
+     */
     public AISuperCoach(final Alliance alliance){
         this.alliance = alliance;
     }
-    final HashMap<Robot, RobotRole> roles = new HashMap<Robot, RobotRole>(3);
-    final HashMap<Robot, Position> targets = new HashMap<Robot, Position>(3);
-
+    
+    /**
+     * Runs the algorithm to determine the next commands and sends them to the robots.
+     */
     public void update() {
         final ArrayList<Robot> rolelessRobots = new ArrayList<Robot>(Robot.robots.get(alliance));
         final ArrayList<Robot> ourRobots = Robot.robots.get(alliance);
@@ -120,7 +127,10 @@ public class AISuperCoach implements DTSDebuggable{
             }
         }
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     public String detailedToString(String offset) {
         StringBuilder temp = new StringBuilder();
         temp.append(offset).append("AISuperCoach(").append(alliance).append("){\n");
@@ -137,7 +147,43 @@ public class AISuperCoach implements DTSDebuggable{
         return temp.toString();
     }
     
+    /**
+     * Enum that represents the different commmands.
+     */
     public static enum RobotRole{
-        Pickup, Scorer, AssistGiver, AssistGetter, Trusser, Defense, Eject;
+        /**
+         * Tells the robot to pick up a specific ball.
+         */
+        Pickup, 
+        
+        /**
+         * Tells the robot to score.
+         */
+        Scorer, 
+        
+        /**
+         * Tells the robot to give the ball to another robot to get an assist.
+         */
+        AssistGiver, 
+        
+        /**
+         * Tells the robot to get the ball from another robot to get an assist.
+         */
+        AssistGetter, 
+        
+        /**
+         * Tells the robot to truss.
+         */
+        Trusser, 
+        
+        /**
+         * Tells the robot to play defense.
+         */
+        Defense, 
+        
+        /**
+         * Tells the robot to eject it's ball.
+         */
+        Eject;
     }
 }

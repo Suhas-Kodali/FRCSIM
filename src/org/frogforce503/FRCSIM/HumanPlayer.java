@@ -7,21 +7,60 @@ import java.util.EnumMap;
 import org.frogforce503.FRCSIM.Ball.BallOwner;
 
 /**
- *
- * @author Bryce
+ * Human player class.
+ * @author Bryce Paputa
  */
 public class HumanPlayer implements BallOwner, DTSDebuggable{
     private static final EnumMap<Alliance, EnumMap<HumanPlayerPosition, HumanPlayer>> humanPlayers;
     static {
         humanPlayers = new EnumMap<Alliance, EnumMap<HumanPlayerPosition, HumanPlayer>>(Alliance.class);
-        humanPlayers.put(Alliance.RED, new EnumMap<HumanPlayerPosition, HumanPlayer>(HumanPlayerPosition.class));
-        humanPlayers.put(Alliance.BLUE, new EnumMap<HumanPlayerPosition, HumanPlayer>(HumanPlayerPosition.class));
+        humanPlayers.put(Alliance.Red, new EnumMap<HumanPlayerPosition, HumanPlayer>(HumanPlayerPosition.class));
+        humanPlayers.put(Alliance.Blue, new EnumMap<HumanPlayerPosition, HumanPlayer>(HumanPlayerPosition.class));
         for(final HumanPlayerPosition pos : HumanPlayerPosition.values()){
-            humanPlayers.get(Alliance.RED).put(pos, (pos == HumanPlayerPosition.Close? new CloseHumanPlayer(Alliance.RED, pos): new HumanPlayer(Alliance.RED, pos)));
-            humanPlayers.get(Alliance.BLUE).put(pos, (pos == HumanPlayerPosition.Close? new CloseHumanPlayer(Alliance.BLUE, pos): new HumanPlayer(Alliance.BLUE, pos)));
+            humanPlayers.get(Alliance.Red).put(pos, (pos == HumanPlayerPosition.Close? new CloseHumanPlayer(Alliance.Red, pos): new HumanPlayer(Alliance.Red, pos)));
+            humanPlayers.get(Alliance.Blue).put(pos, (pos == HumanPlayerPosition.Close? new CloseHumanPlayer(Alliance.Blue, pos): new HumanPlayer(Alliance.Blue, pos)));
         }
-    }        
+    }     
     
+    /**
+     * Alliance of this human player.
+     */
+    public final Alliance alliance;
+    
+    /**
+     * Next ball to be inbounded.
+     */
+    protected Ball currentBall = null;
+    
+    /**
+     * Balls waiting in queue.
+     */
+    protected final ArrayList<Ball> ballQueue = new ArrayList<Ball>(3);
+    
+    /**
+     * Position to hold balls in.
+     */
+    protected Vector3f holdingPosition;
+    
+    /**
+     * Is the ball held in the final position?
+     */
+    protected boolean isBallHeld = false;
+    
+    private final String name;
+    private final static float autoThrowRadius = 4;
+    private final static float throwForce = 5;
+    private final static float pullForce = 8;
+    private final static float maxThrowForce = 15;
+    private final static float holdRange = .05f;
+    private final static float holdForce = 10;
+    private long lastThrow = System.nanoTime();   
+    
+    /**
+     * Human player constructor.
+     * @param alliance  Alliance for this player
+     * @param pos       Position this player should hold the ball in
+     */
     public HumanPlayer(final Alliance alliance, final HumanPlayerPosition pos){
         this.alliance = alliance;
         this.holdingPosition = pos.holdingPosition.mult(new Vector3f(alliance.side, -1, -1));
@@ -29,6 +68,10 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         humanPlayers.get(alliance).put(pos, this);
     }
     
+    /**
+     * Give this human player a ball.
+     * @param ball Ball to give
+     */
     protected void giveBall(final Ball ball){
         ball.capture(this);
         if(currentBall == null){
@@ -38,26 +81,15 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
     }
     
-    public final Alliance alliance;
-    protected Ball currentBall = null;
-    protected final ArrayList<Ball> ballQueue = new ArrayList<Ball>(3);
-    protected Vector3f holdingPosition;
-    private final String name;
-    
-    private final static float autoThrowRadius = 4;
-    private final static float throwForce = 5;
-    private final static float pullForce = 8;
-    private final static float maxThrowForce = 15;
-    private final static float holdRange = .05f;
-    private final static float holdForce = 10;
-    protected boolean isBallHeld = false;
-    private long lastThrow = System.nanoTime();
+    /**
+     * Update this human player. Runs auto throw code, updates ball states, and applys forces to balls.
+     */
     public void update(){
         if(currentBall != null && isBallHeld && System.nanoTime() - lastThrow > 1 * 1000 * 1000 * 1000l){
             final Robot goodRobot = Robot.getClosestRobot(currentBall.getPosition(), alliance);
             if(goodRobot != null && goodRobot.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius 
                     && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3 && !goodRobot.hasBall() && goodRobot.wantsBall()){
-                final Robot badRobot = Robot.getClosestRobot(goodRobot.getPosition(), alliance == Alliance.RED? Alliance.BLUE : Alliance.RED);
+                final Robot badRobot = Robot.getClosestRobot(goodRobot.getPosition(), alliance == Alliance.Red? Alliance.Blue : Alliance.Red);
                 if(badRobot == null){
                     doThrow(goodRobot.getPosition());
                 } else if(badRobot.isTall){
@@ -79,10 +111,10 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
         
         if(currentBall != null && !isBallHeld){
-            if(currentBall.getRigidBodyControl().getPhysicsLocation().distance(holdingPosition) < 2){
+            if(currentBall.getPosition().distance(holdingPosition) < 2){
                 currentBall.setVelocity(holdingPosition.subtract(currentBall.getPosition()).mult(holdForce));
             }else{
-                currentBall.getRigidBodyControl().applyCentralForce(holdingPosition.subtract(currentBall.getPosition()).mult(pullForce));
+                currentBall.applyForce(holdingPosition.subtract(currentBall.getPosition()).mult(pullForce));
             }
             if(holdingPosition.subtract(currentBall.getPosition()).length() < holdRange){
                 isBallHeld = true;
@@ -98,6 +130,9 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
     }
     
+    /**
+     * Update all of the human players.
+     */
     public static void updateAll(){
         for(final EnumMap<HumanPlayerPosition, HumanPlayer> array : humanPlayers.values()){
             for(final HumanPlayer player : array.values()){
@@ -106,6 +141,10 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
     }
     
+    /**
+     * Throw the current ball at a target.
+     * @param target Target to throw at
+     */
     public void doThrow(final Vector3f target){
         if(currentBall != null){
             final Vector3f force = target.subtract(currentBall.getPosition().add(Vector3f.UNIT_Y.mult(1.5f)));
@@ -120,11 +159,16 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
     }
     
-    public static void ballExitField(final Ball ball, final Vector3f exitPos){
+    /**
+     * Give a ball to a human player.
+     * @param ball Ball to give
+     */
+    public static void giveBallToNearestHP(final Ball ball){
         final Alliance alliance = ball.alliance;
         if(ball.isScored()){
             ball.reset();
         } else if(!ball.isOwned()){
+            Vector3f exitPos = ball.getPosition();
             if(exitPos.x * alliance.side < 0){
                 if(exitPos.z > 0){
                     ((HumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.FarPosZ)).giveBall(ball);
@@ -140,7 +184,12 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
     }
     
-    public static void requestThrowAt(final Vector3f pos, final Alliance alliance){
+    /**
+     * Throws the closest ball at a point.
+     * @param pos       Point to throw at
+     * @param alliance  Alliance of requester
+     */
+    public static void throwAt(final Vector3f pos, final Alliance alliance){
         float minDistance = Float.MAX_VALUE;
         HumanPlayer closest = null;
         for(final HumanPlayer hp : humanPlayers.get(alliance).values()){
@@ -154,6 +203,9 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void releaseBall() {
         currentBall = null;
         isBallHeld = false;
@@ -162,11 +214,17 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString(){
         return name;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String detailedToString(String offset){
         StringBuilder temp = new StringBuilder();
@@ -183,41 +241,73 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
         return temp.toString();
     }
     
+    /**
+     * Runnable for manually inbounding.
+     */
     public static class ManualInboundRunnable implements Runnable{
         private Robot robot;
+        
+        /**
+         * Constructor for a manual inbound runnable.
+         * @param robot Robot to throw at 
+         */
         public ManualInboundRunnable(final Robot robot){
             this.robot = robot;
         }
-        
+              
+        /**
+         * {@inheritDoc}
+         */
         public void run() {
-            requestThrowAt(robot.getPosition(), robot.alliance);
-        }
-        
-    }
-    
-    public static class SwitchSidesRunnable implements Runnable{
-        private final Alliance alliance;
-        public SwitchSidesRunnable(final Alliance alliance){
-            this.alliance = alliance;
-        }
-        
-        public void run(){
-            if(((CloseHumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).currentBall != null){
-                ((CloseHumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).moveBallToOtherSide();
-            }
+            throwAt(robot.getPosition(), robot.alliance);
         }
     }
     
+    
+    
+    /**
+     * Enum that represents the different human player posiitons.
+     */
     public static enum HumanPlayerPosition{
-        Close(Alliance.RED.farHumanPlayer, "Close"), FarPosZ(Alliance.RED.closeHumanPlayer, "Far(+Z)"), FarNegZ(Alliance.RED.closeHumanPlayer.mult(new Vector3f(1,1,-1)), "Far(-Z)");
+        /**
+         * Inbounder.
+         */
+        Close(Alliance.Red.farHumanPlayer, "Close"), 
+        
+        /**
+         * Far HP, positive Z.
+         */
+        FarPosZ(Alliance.Red.closeHumanPlayer, "Far(+Z)"), 
+        
+        /**
+         * Far HP, negative Z.
+         */
+        FarNegZ(Alliance.Red.closeHumanPlayer.mult(new Vector3f(1,1,-1)), "Far(-Z)");
+        
+        /**
+         * Where the ball is held.
+         */
         public final Vector3f holdingPosition;
+        
+        /**
+         * Name of the position.
+         */
         public final String name;
+        
+        /**
+         * Constructor for a human player position.
+         * @param holdingPosition   Where to hold the ball
+         * @param name              Name of the position
+         */
         private HumanPlayerPosition(final Vector3f holdingPosition, final String name){
             this.holdingPosition = holdingPosition;
             this.name = name;
         }
     }
     
+    /**
+     * Class for inbounders. Adds the ability to switch sides.
+     */
     public static class CloseHumanPlayer extends HumanPlayer{
         public CloseHumanPlayer(final Alliance alliance, final HumanPlayerPosition humanPlayerPosition){
             super(alliance, humanPlayerPosition);
@@ -233,5 +323,29 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
             switchPosition();
             sendBallToPedestal();
         }
+        
+        /**
+        * Runnable for switching sides.
+        */
+       public static class SwitchSidesRunnable implements Runnable{
+           private final Alliance alliance;
+
+           /**
+            * Constructor for a switch sides runnable.
+            * @param alliance Alliance to move
+            */
+           public SwitchSidesRunnable(final Alliance alliance){
+               this.alliance = alliance;
+           }
+
+           /**
+            * {@inheritDoc}
+            */
+           public void run(){
+               if(((CloseHumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).currentBall != null){
+                   ((CloseHumanPlayer) humanPlayers.get(alliance).get(HumanPlayerPosition.Close)).moveBallToOtherSide();
+               }
+           }
+       }
     }
 }

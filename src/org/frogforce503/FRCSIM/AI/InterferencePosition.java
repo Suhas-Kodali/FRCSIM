@@ -7,12 +7,18 @@ import org.frogforce503.FRCSIM.Main;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
- *
- * @author Bryce
+ * Class that finds a position that interferes with offense.
+ * @author Bryce Paputa
  */
 public class InterferencePosition implements Position{
     private final Robot defender;
+    private boolean isPinning = false, isRunningAway = false;
+    private long pinBeginTime = 0, runBeginTime = 0;
     
+    /**
+     * Constructor for an interference position.
+     * @param defender Reference to the defending robot
+     */
     public InterferencePosition(final Robot defender){
         this.defender = defender;
         if(defender != Main.player){
@@ -20,10 +26,12 @@ public class InterferencePosition implements Position{
         }
     }
     
-    private boolean isPinning = false, isRunningAway = false;
-    private long pinBeginTime = 0, runBeginTime = 0;
+    /**
+     * {@inheritDoc}
+     * Calculates a new interfering position on each call. 
+     */
     public Vector3f getPosition() {
-        final Robot robotTarget = Robot.getClosestRobot(defender.getPosition(), (defender.alliance == Alliance.RED? Alliance.BLUE : Alliance.RED));
+        final Robot robotTarget = Robot.getClosestRobot(defender.getPosition(), (defender.alliance == Alliance.Red? Alliance.Blue : Alliance.Red));
         if(robotTarget == null){
             return Vector3f.ZERO;
         }
@@ -31,7 +39,7 @@ public class InterferencePosition implements Position{
         
         Vector3f ballTarget, ourBall;
         try{
-            ballTarget = Ball.getClosestBall(vectorTarget, (defender.alliance == Alliance.RED? Alliance.BLUE : Alliance.RED)).getPosition();
+            ballTarget = Ball.getClosestBall(vectorTarget, (defender.alliance == Alliance.Red? Alliance.Blue : Alliance.Red)).getPosition();
         } catch(NullPointerException e){
             ballTarget = null;
         }

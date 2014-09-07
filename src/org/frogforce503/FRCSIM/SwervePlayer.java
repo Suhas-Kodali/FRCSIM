@@ -2,20 +2,24 @@ package org.frogforce503.FRCSIM;
 
 import com.jme3.math.Vector3f;
 import java.util.EnumMap;
+import org.frogforce503.FRCSIM.HumanPlayer.CloseHumanPlayer;
 
 /**
- *
- * @author Bryce
+ * Class that takes player inputs and controls a swerve drivetrain.
+ * @author Bryce Paputa
  */
 public class SwervePlayer extends AbstractControl{
     private SwerveDrivetrain drivetrain;
     private AbstractIntake intake;
     private AbstractShooter shooter;
     private Robot robot;
-    
-    
     private Alliance alliance;
+    private SwerveControlMethod type;
+    private SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL, tempMapping;
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         if(subsystems.get(SubsystemType.Drivetrain) instanceof SwerveDrivetrain){
@@ -30,26 +34,61 @@ public class SwervePlayer extends AbstractControl{
         }
         setKeyMapping(tempMapping);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString(){
         return "SwervePlayer";
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String detailedToString(String offset) {
         return offset + "SwervePlayer{\n    type: "+type+"\n    keyMapping: "+keyMapping+"\n}";
     }
     
-    public static enum SwerveType{
-        FieldCentricSpectatorCam(), FieldCentricBlueDriverCam(), FieldCentricRedDriverCam(), RobotCentric();
+    /**
+     * Enum that represents different swerve control methods
+     */
+    public static enum SwerveControlMethod{
+        /**
+         * Field centric control from a spectator's viewpoint.
+         */
+        FieldCentricSpectatorCam(),
+        
+        /**
+         * Field centric control from a blue driver's viewpoint.
+         */
+        FieldCentricBlueDriverCam(), 
+        
+        /**
+         * Field centric control from a red driver's viewpoint.
+         */
+        FieldCentricRedDriverCam(), 
+        
+        /**
+         * Robot centric control.
+         */
+        RobotCentric();
     }
     
-    private SwerveType type;
-    
-    public SwervePlayer(final SwerveKeyMapping keyMapping, final SwerveType type){
+    /**
+     * Constructor for a swerve player.
+     * @param keyMapping    Which key mapping to use
+     * @param type          Which control method to use
+     */
+    public SwervePlayer(final SwerveKeyMapping keyMapping, final SwerveControlMethod type){
         tempMapping = keyMapping;
         this.type = type;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update() {
         if(Main.InputManager.isPressed("g")){
@@ -74,12 +113,81 @@ public class SwervePlayer extends AbstractControl{
         }
     }
     
-    SwerveKeyMapping keyMapping = SwerveKeyMapping.NULL, tempMapping;
-    
+    /**
+     * Class that stores key mappings.
+     */
     public static class SwerveKeyMapping{
-        public final String up, down, left, right, rotateCCW, rotateCW, toggleIntake, shoot, spit, inbound, switchSides;
-        public SwerveKeyMapping(final String up, final String down, final String left, final String right, 
-                final String rotateCCW, final String rotateCW, final String load, final String shoot, 
+        /**
+         * Moves forwards. 
+         */
+        public final String up;
+        
+        /**
+         * Moves backwards.
+         */
+        public final String down;
+        
+        /**
+         * Strafes left.
+         */
+        public final String left;
+        
+        /**
+         * Strafes right.
+         */
+        public final String right;
+        
+        /**
+         * Rotates counterclockwise.
+         */
+        public final String rotateCCW;
+        
+        /**
+         * Rotates clockwise.
+         */
+        public final String rotateCW;
+        
+        /**
+         * Toggles the intake up and down.
+         */
+        public final String toggleIntake;
+        
+        /**
+         * Shoots the ball.
+         */
+        public final String shoot;
+        
+        /**
+         * Spits the ball out.
+         */
+        public final String spit;
+        
+        /**
+         * Manually inbounds.
+         */
+        public final String inbound;
+        
+        /**
+         * Tells the inbounder to switch sides.
+         */
+        public final String switchSides;
+        
+        /**
+         * Constructor for a new key mapping.
+         * @param up            Moves forwards
+         * @param down          Moves backwards
+         * @param left          Strafes left
+         * @param right         Strafes right
+         * @param rotateCCW     Rotates counterclockwise
+         * @param rotateCW      Rotates clockwise
+         * @param toggleIntake  Toggles the intake up and down
+         * @param shoot         Shoots the ball
+         * @param spit          Spits the ball out
+         * @param inbound       Manually inbounds
+         * @param switchSides   Tells the inbounder to switch sides
+         */
+        private SwerveKeyMapping(final String up, final String down, final String left, final String right, 
+                final String rotateCCW, final String rotateCW, final String toggleIntake, final String shoot, 
                 final String spit, final String inbound, final String switchSides){
             this.up = up;
             this.down = down;
@@ -87,17 +195,28 @@ public class SwervePlayer extends AbstractControl{
             this.right = right;
             this.rotateCCW = rotateCCW;
             this.rotateCW = rotateCW;
-            this.toggleIntake = load;
+            this.toggleIntake = toggleIntake;
             this.shoot = shoot;
             this.spit = spit;
             this.inbound = inbound;
             this.switchSides = switchSides;
         }
         
+        /**
+         * Controls the drivetrain with WASD strafing and driving and left and right arrows turning.
+         */
         public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space", "shift", "i", "o");
+        
+        /**
+         * Null placeholder.
+         */
         public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "", "", "");
     }
     
+    /**
+     * Sets this player's key mapping.
+     * @param src New key mapping
+     */
     public void setKeyMapping(final SwerveKeyMapping src){
         if(keyMapping != SwerveKeyMapping.NULL){
             if(intake != null){
@@ -114,7 +233,7 @@ public class SwervePlayer extends AbstractControl{
         if(keyMapping != SwerveKeyMapping.NULL){
             Main.InputManager.addListener(keyMapping.toggleIntake, intake.toggle);
             Main.InputManager.addListener(keyMapping.inbound, new HumanPlayer.ManualInboundRunnable(robot));
-            Main.InputManager.addListener(keyMapping.switchSides, new HumanPlayer.SwitchSidesRunnable(alliance));
+            Main.InputManager.addListener(keyMapping.switchSides, new CloseHumanPlayer.SwitchSidesRunnable(alliance));
             if(shooter != null){
                 Main.InputManager.addListener(keyMapping.shoot, shooter.shoot);
                 Main.InputManager.addListener(keyMapping.spit, shooter.spit);

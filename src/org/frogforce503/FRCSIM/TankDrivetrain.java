@@ -16,7 +16,7 @@ import java.util.EnumMap;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
- *
+ * Class for a 8 wheeled tank drivetrain.
  * @author Bryce Paputa
  */
 public class TankDrivetrain extends AbstractDrivetrain{
@@ -31,7 +31,14 @@ public class TankDrivetrain extends AbstractDrivetrain{
     private final Bumpers bumpers;
     private Robot robot;
     private final boolean isPlayer;
+    private float lastTurn = 0;
     
+    /**
+     * Constructor for a tank drivetrain.
+     * @param subsystems    Other subsystems of the robot
+     * @param space         PhysicsSpace for the drivetrain to exist in
+     * @param isPlayer      Is this drivetrain for a human player
+     */
     public TankDrivetrain(final ArrayList<AbstractSubsystem> subsystems, final  PhysicsSpace space, final boolean isPlayer) {
         this.isPlayer = isPlayer;
         chassisNode = new Node("chassis Node");
@@ -41,9 +48,9 @@ public class TankDrivetrain extends AbstractDrivetrain{
         chassisNode.attachChild(chassisGeometry);
         
         
-        bumpers = new Bumpers(chassisNode, Main.in(28), Main.in(28), Main.in(2));
+        bumpers = new Bumpers(chassisNode, in(28), in(28), in(2));
         for(final AbstractSubsystem subsystem : subsystems){
-            subsystem.registerPhysics(chassisNode, space, alliance);
+            subsystem.registerPhysics(chassisNode, space);
         }
         
         vehicleNode=new Node("vehicleNode");
@@ -78,9 +85,9 @@ public class TankDrivetrain extends AbstractDrivetrain{
         
         for(int i = 0; i < 8; i++){
             if(i<=3){
-                pos[i][0]=-xOff+width/2+Main.in(1);
+                pos[i][0]=-xOff+width/2+in(1);
             } else {
-                pos[i][0]=xOff-width/2-Main.in(1);
+                pos[i][0]=xOff-width/2-in(1);
             }
             switch(i%4){
                 case 0:
@@ -114,15 +121,20 @@ public class TankDrivetrain extends AbstractDrivetrain{
         }            
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance){
+    public void registerPhysics(final Node rootNode, final PhysicsSpace space){
         rootNode.attachChild(vehicleNode);
         space.add(vehicle);
-        this.alliance = alliance;
-        bumpers.registerAlliance(alliance, isPlayer);
     }
     
-    private float lastTurn = 0;
+    /**
+     * Sends commands to the wheels using arcade control
+     * @param pow   Forwards driving power
+     * @param turn  Turning power
+     */
     protected void updateArcade(float pow, float turn){
         pow = (pow>1? 1 : (pow<-1? -1 : pow));
         turn = (turn>1? 1 : (turn<-1? -1 : turn));
@@ -157,49 +169,60 @@ public class TankDrivetrain extends AbstractDrivetrain{
     protected void updateTank(final float cleft, final float cright){
         updateArcade(cright+cleft, cright-cleft);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public VehicleControl getVehicleControl() {
         return vehicle;
     }
     
-    @Override
-    public Node getVehicleNode() {
-        return vehicleNode;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update() {}
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         this.robot = robot;
+        this.alliance = robot.alliance;
+        bumpers.registerAlliance(alliance, isPlayer);
     }
-
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void driveToPoint(final Vector3f point, final DriveDirection direction){
         driveToPoint(point, direction, true);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void turnTowardsPoint(final Vector3f point){
         driveToPoint(point, DriveDirection.Towards, false);
     }
     
-    public void driveToPoint(Vector3f point, DriveDirection direction, final boolean canDrive) {
+    private void driveToPoint(Vector3f point, DriveDirection direction, final boolean canDrive) {
         final Vector3f curPos = vehicle.getPhysicsLocation();
-        final Vector3f redObstruction = Robot.getClosestRobot(curPos, Alliance.RED).getPosition(), blueObstruction = Robot.getClosestRobot(curPos, Alliance.BLUE).getPosition();
+        final Vector3f redObstruction = Robot.getClosestRobot(curPos, Alliance.Red).getPosition(), blueObstruction = Robot.getClosestRobot(curPos, Alliance.Blue).getPosition();
         point = avoidObstructions(curPos, point, (redObstruction.distanceSquared(curPos)>blueObstruction.distanceSquared(curPos)? blueObstruction : redObstruction));
         
         float turn = 1, pow = (canDrive? 1 : 0);
         Vector3f vehicleVector = vehicle.getForwardVector(null), vectorToPoint = point.subtract(curPos);
-        if(FastMath.abs(curPos.z) > Main.in(12*6) && FastMath.abs(curPos.x) > Main.in(12*21) && vectorToPoint.normalize().angleBetween(vehicleVector)<15){
+        if(FastMath.abs(curPos.z) > in(12*7) && FastMath.abs(curPos.x) > in(12*22) && vectorToPoint.normalize().angleBetween(vehicleVector)<15){
             direction = DriveDirection.DontCare;
             if(Math.abs(vehicleVector.dot(Vector3f.UNIT_X)) > Math.abs(vehicleVector.dot(Vector3f.UNIT_Z))){
-                point = new Vector3f(FastMath.sign(curPos.x)*Main.in(12*15), 0, 0);
+                point = new Vector3f(FastMath.sign(curPos.x)*in(12*15), 0, 0);
             } else {
-                point = new Vector3f(FastMath.sign(curPos.x)*Main.in(12*22), 0, 0);
+                point = new Vector3f(FastMath.sign(curPos.x)*in(12*22), 0, 0);
             }
             vectorToPoint = point.subtract(curPos);
             pow = 1;
@@ -230,12 +253,18 @@ public class TankDrivetrain extends AbstractDrivetrain{
         
         updateArcade(pow, turn);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString(){
         return "TankDrivetrain";
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String detailedToString(String offset) {
         return offset + "TankDrivetrain{\n"+offset+"    isPlayer: " + isPlayer +"\n"+offset+"}";

@@ -9,8 +9,8 @@ import org.frogforce503.FRCSIM.AbstractSubsystem;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
- *
- * @author Bryce
+ * Program that gets an assist.
+ * @author Bryce Paputa
  */
 public class GetAssistProgram extends AbstractProgram{
     private AbstractDrivetrain drivetrain;
@@ -18,17 +18,28 @@ public class GetAssistProgram extends AbstractProgram{
     private AbstractIntake intake;
     private AbstractShooter shooter;
     private final Robot target;
-    private static int baseID = AbstractProgram.getProgramNum();
+    private static int baseID = AbstractProgram.getProgramBaseID();
     private int uid = -baseID;
     
+    /**
+     * Constructor that makes a program to get the nearest available assist.
+     */
     public GetAssistProgram(){
         target = null;
     }
     
+    /**
+     * Constructor that makes a program to get a specific assist.
+     * @param target Robot to get an assist with
+     */
     public GetAssistProgram(final Robot target){
         this.target = target;
     }
     
+    /**
+     * {@inheritDoc}
+     * Finds the nearest target if one was not specified, drives to it, and spits out the ball to it.
+     */
     @Override
     public void update() {
         if(robot.hasBall()){
@@ -51,21 +62,30 @@ public class GetAssistProgram extends AbstractProgram{
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         this.drivetrain = (AbstractDrivetrain) subsystems.get(SubsystemType.Drivetrain);
         this.intake = (AbstractIntake) subsystems.get(SubsystemType.Intake);
         this.shooter = (AbstractShooter) subsystems.get(SubsystemType.Shooter);
         this.robot = robot;
-        uid = baseID  + robot.number * AbstractProgram.getMaxProgramNum() + (target == null? 0 : target.number) * AbstractProgram.getMaxProgramNum() * Robot.getMaxRobotNum();
+        uid = baseID  + robot.number * AbstractProgram.getMaxProgramBaseID() + (target == null? 0 : target.number) * AbstractProgram.getMaxProgramBaseID() * Robot.getMaxRobotNum();
         drivetrain.setOnDefense(false);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override 
     public int getUID(){
         return uid;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getHRName(){
         return "Get Assist!";

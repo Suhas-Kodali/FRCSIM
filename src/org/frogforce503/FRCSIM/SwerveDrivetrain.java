@@ -16,8 +16,8 @@ import java.util.EnumMap;
 import static org.frogforce503.FRCSIM.Main.in;
 
 /**
- *
- * @author Bryce
+ * Class for a 4 wheeled swerve drivetrain. 
+ * @author Bryce Paputa
  */
 public class SwerveDrivetrain extends AbstractDrivetrain{
     private final Node chassisNode;
@@ -32,6 +32,13 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
     private final Bumpers bumpers;
     private Robot robot;
     private final boolean isPlayer;
+    
+    /**
+     * Constructor for a swerve drivetrain.
+     * @param subsystems    Other subsystems on the robot
+     * @param space         PhysicsSpace for the drivetrain to exist in
+     * @param isPlayer      Is the drivetrain for a human player
+     */
     public SwerveDrivetrain(final ArrayList<AbstractSubsystem> subsystems, final PhysicsSpace space, final boolean isPlayer){
         this.isPlayer = isPlayer;
         chassisNode = new Node("chassis Node");
@@ -40,9 +47,9 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         chassisGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
         chassisNode.attachChild(chassisGeometry);
         
-        bumpers = new Bumpers(chassisNode, Main.in(28), Main.in(28), Main.in(2));
+        bumpers = new Bumpers(chassisNode, in(28), in(28), in(2));
         for(final AbstractSubsystem subsystem : subsystems){
-            subsystem.registerPhysics(chassisNode, space, alliance);
+            subsystem.registerPhysics(chassisNode, space);
         }
         
         vehicleNode = new Node("vehicleNode");
@@ -90,21 +97,28 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         vehicle.setDamping(.5f, .5f);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void registerPhysics(final Node rootNode, final PhysicsSpace space, final Alliance alliance){
+    public void registerPhysics(final Node rootNode, final PhysicsSpace space){
         rootNode.attachChild(vehicleNode);
         space.add(vehicle);
-        this.alliance = alliance;
-        bumpers.registerAlliance(alliance, isPlayer);
     }
     
+    /**
+     * Sends commands to the wheels using robot centric control.
+     * @param FWR   Forward command
+     * @param STR   Stafe command
+     * @param omega Turn command
+     */
     protected void updateRC(float FWR, float STR, float omega){
         FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
         STR = (STR>1? 1 : (STR<-1? -1 : STR));
         omega = (omega>1? 1 : (omega<-1? -1 : omega));
         
         final Vector2f V = new Vector2f(STR, FWR);
-        float l2 = Main.in(11.25f), speedFactor = speedForce, turnFactor = turnForce;
+        float l2 = in(11.25f), speedFactor = speedForce, turnFactor = turnForce;
         
         final float angleFromX = (new Vector2f(vehicle.getForwardVector(null).x, vehicle.getForwardVector(null).z)).getAngle();
         Vector2f command = new Vector2f(FWR, STR);
@@ -139,6 +153,12 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         applyDownforce();
     }
     
+    /**
+     * Sends commands to the wheels using field centric control based of off a spectator's view.
+     * @param FWR   Forward command
+     * @param STR   Stafe command
+     * @param omega Turn command
+     */
     void updateFCSC(float FWR, float STR, float omega) {
         FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
         STR = (STR>1? 1 : (STR<-1? -1 : STR));
@@ -149,10 +169,22 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         updateRC(command.x, command.y, omega);
     }
     
+    /**
+     * Sends commands to the wheels using field centric control based of off a red driver's view.
+     * @param FWR   Forward command
+     * @param STR   Stafe command
+     * @param omega Turn command
+     */
     void updateFCRDC(float FWR, float STR, float omega) {
         updateFCBDC(-FWR, -STR, omega);
     }
     
+    /**
+     * Sends commands to the wheels using field centric control based of off a blue driver's view.
+     * @param FWR   Forward command
+     * @param STR   Stafe command
+     * @param omega Turn command
+     */
     void updateFCBDC(float FWR, float STR, float omega) {
         FWR = (FWR>1? 1 : (FWR<-1? -1 : FWR));
         STR = (STR>1? 1 : (STR<-1? -1 : STR));
@@ -162,25 +194,34 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         command.rotateAroundOrigin(angleFromX-FastMath.PI, true);
         updateRC(command.x, command.y, omega);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public VehicleControl getVehicleControl() {
         return vehicle;
     }
-
-    @Override
-    public Node getVehicleNode() {
-        return vehicleNode;
-    }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update() {}
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerOtherSubsystems(final EnumMap<SubsystemType, AbstractSubsystem> subsystems, final Robot robot) {
         this.robot = robot;
+        this.alliance = robot.alliance;
+        bumpers.registerAlliance(alliance, isPlayer);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void driveToPoint(final Vector3f point, final DriveDirection direction){
         Vector3f curPos = vehicle.getPhysicsLocation(); 
@@ -194,6 +235,10 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
         updateFCSC(z, x, angle);        
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void turnTowardsPoint(final Vector3f point){
         final Vector3f curPos = vehicle.getPhysicsLocation(); 
         final Vector3f vectorToPoint = point.subtract(curPos), vehicleVector = vehicle.getForwardVector(null);
@@ -204,12 +249,18 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
             updateFCSC(0, 0, angle/3);
         }
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString(){
         return "SwerveDrivetrain";
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String detailedToString(String offset) {
         return offset + "SwerveDrivetrain{\n"+offset+"    isPlayer: " + isPlayer +"\n"+offset+"}";
