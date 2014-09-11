@@ -36,6 +36,7 @@ public abstract class AbstractProgram extends AbstractControl{
      * @return New base ID number
      */
     public static int getProgramBaseID(){
+        assert progCount+1 <= getMaxProgramBaseID();
         return progCount++;
     }
     

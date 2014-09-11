@@ -30,6 +30,7 @@ import java.util.logging.SimpleFormatter;
 import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
 import org.frogforce503.FRCSIM.AI.AISuperCoach;
 import org.frogforce503.FRCSIM.AI.PlayerFollowerProgram;
+import org.frogforce503.FRCSIM.AI.TestProgram;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveControlMethod;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
@@ -295,8 +296,16 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         coaches.add(redCoach);
         coaches.add(blueCoach);
         
+//        ArrayList<AbstractSubsystem> testsystems = new ArrayList<AbstractSubsystem>(4);
+//        testsystems.add(new BasicIntake());
+//        testsystems.add(new BasicShooter());
+//        testsystems.add(new TestProgram());
+//        testsystems.add(new TankDrivetrain(testsystems, bulletAppState.getPhysicsSpace(), false));
+//        
+//        new Robot(testsystems, rootNode, bulletAppState.getPhysicsSpace(), playerAlliance.invert(), Vector3f.ZERO);
+        
         if(playerAlliance != null){
-            ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>();
+            ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>(4);
             playersubsystems.add(new BasicIntake());
             playersubsystems.add(new BasicShooter());
             if(isTank){

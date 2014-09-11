@@ -63,6 +63,11 @@ public abstract class AbstractDrivetrain extends AbstractSubsystem implements Po
     public abstract void turnTowardsPoint(final Vector3f point);
     
     /**
+     * Stops the robot.
+     */
+    public abstract void stop();
+    
+    /**
      * Drives to a point and turns towards a different point once it is in a specifc range.
      * @param point         Point to drive to
      * @param direction     Point to turn torwards
@@ -106,24 +111,20 @@ public abstract class AbstractDrivetrain extends AbstractSubsystem implements Po
      * @param obstruction   Location of obstruction
      * @return              New target
      */
-    public Vector3f avoidObstructions(final Vector3f curPos, final Vector3f target, final Vector3f obstruction){
-        if(isOnDefense){
+    public Vector3f avoidObstructions(final Vector3f curPos, Vector3f target, final Vector3f obstruction){
+        if(isOnDefense || System.currentTimeMillis()/1000%6>3){
             return target;
         }
         Vector3f vectorToTarget = target.subtract(curPos);
         Plane planeAgainstTarget = new Plane();
         planeAgainstTarget.setOriginNormal(curPos, vectorToTarget);
-        
-        if(planeAgainstTarget.pseudoDistance(obstruction) > 0 && planeAgainstTarget.pseudoDistance(obstruction) < 3){
+        if(planeAgainstTarget.pseudoDistance(obstruction) > 0 && planeAgainstTarget.pseudoDistance(obstruction) < 5){
             Plane planeToTarget = new Plane();
             planeToTarget.setOriginNormal(curPos, vectorToTarget.cross(Vector3f.UNIT_Y));
-            if(Math.abs(planeToTarget.pseudoDistance(obstruction))<.5f){
-                if(Math.abs(curPos.z)>in(12*15)){
-                    target.setZ(0);
-                } else {
-                    target.setZ(in(20*12*FastMath.sign(curPos.z)));
-                }
-                return (curPos.add(curPos.subtract(target).mult(2f).cross(target.z == 0?Vector3f.UNIT_Y:Vector3f.UNIT_Y.negate()))).interpolate(target, .5f);
+            System.out.println(Math.abs(planeToTarget.pseudoDistance(obstruction)));
+            if(Math.abs(planeToTarget.pseudoDistance(obstruction))<3){
+                target.setZ(0);
+                target.setX(curPos.x);
             }
         }
         return target;

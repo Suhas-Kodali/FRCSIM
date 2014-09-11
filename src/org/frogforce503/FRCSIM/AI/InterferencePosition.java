@@ -31,7 +31,7 @@ public class InterferencePosition implements Position{
      * Calculates a new interfering position on each call. 
      */
     public Vector3f getPosition() {
-        final Robot robotTarget = Robot.getClosestRobot(defender.getPosition(), (defender.alliance == Alliance.Red? Alliance.Blue : Alliance.Red));
+        final Robot robotTarget = Robot.getClosestRobot(defender.getPosition(), defender.alliance.invert());
         if(robotTarget == null){
             return Vector3f.ZERO;
         }

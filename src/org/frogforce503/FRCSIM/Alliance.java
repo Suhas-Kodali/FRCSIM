@@ -89,4 +89,8 @@ public enum Alliance {
     public String toString(){
         return this == Alliance.Red? "red" : (this == Alliance.Blue? "blue" : "null");
     }
+    
+    public Alliance invert(){
+        return (this == Red? Blue : Red);
+    }
 }

@@ -182,7 +182,15 @@ public class TankDrivetrain extends AbstractDrivetrain{
      * {@inheritDoc}
      */
     @Override
-    public void update() {}
+    public void update() { }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void stop(){
+        updateArcade(0, 0);
+    }
     
     /**
      * {@inheritDoc}
@@ -212,12 +220,12 @@ public class TankDrivetrain extends AbstractDrivetrain{
     
     private void driveToPoint(Vector3f point, DriveDirection direction, final boolean canDrive) {
         final Vector3f curPos = vehicle.getPhysicsLocation();
-        final Vector3f redObstruction = Robot.getClosestRobot(curPos, Alliance.Red).getPosition(), blueObstruction = Robot.getClosestRobot(curPos, Alliance.Blue).getPosition();
-        point = avoidObstructions(curPos, point, (redObstruction.distanceSquared(curPos)>blueObstruction.distanceSquared(curPos)? blueObstruction : redObstruction));
+        final Vector3f redObstruction = Robot.getClosestRobot(curPos, alliance.invert()).getPosition();
+        point = avoidObstructions(curPos, point, redObstruction);
         
         float turn = 1, pow = (canDrive? 1 : 0);
         Vector3f vehicleVector = vehicle.getForwardVector(null), vectorToPoint = point.subtract(curPos);
-        if(FastMath.abs(curPos.z) > in(12*7) && FastMath.abs(curPos.x) > in(12*22) && vectorToPoint.normalize().angleBetween(vehicleVector)<15){
+        if(FastMath.abs(curPos.z) > in(12*8) && FastMath.abs(curPos.x) > in(12*23) && vectorToPoint.normalize().angleBetween(vehicleVector)<15){
             direction = DriveDirection.DontCare;
             if(Math.abs(vehicleVector.dot(Vector3f.UNIT_X)) > Math.abs(vehicleVector.dot(Vector3f.UNIT_Z))){
                 point = new Vector3f(FastMath.sign(curPos.x)*in(12*15), 0, 0);
@@ -250,7 +258,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
             turn = FastMath.sign(turn);
             pow = FastMath.sign(pow);
         }
-        
+        //stop();
         updateArcade(pow, turn);
     }
     

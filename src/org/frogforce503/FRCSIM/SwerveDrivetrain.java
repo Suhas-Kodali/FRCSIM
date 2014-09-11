@@ -208,6 +208,14 @@ public class SwerveDrivetrain extends AbstractDrivetrain{
      */
     @Override
     public void update() {}
+ 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void stop(){
+        updateRC(0, 0, 0);
+    }
     
     /**
      * {@inheritDoc}

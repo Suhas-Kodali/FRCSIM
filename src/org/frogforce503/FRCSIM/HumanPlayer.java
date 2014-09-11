@@ -89,7 +89,7 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
             final Robot goodRobot = Robot.getClosestRobot(currentBall.getPosition(), alliance);
             if(goodRobot != null && goodRobot.getPosition().subtract(currentBall.getPosition()).length() < autoThrowRadius 
                     && Math.abs(goodRobot.getVelocity().dot(currentBall.getPosition().subtract(goodRobot.getPosition()).cross(Vector3f.UNIT_Y))) < 3 && !goodRobot.hasBall() && goodRobot.wantsBall()){
-                final Robot badRobot = Robot.getClosestRobot(goodRobot.getPosition(), alliance == Alliance.Red? Alliance.Blue : Alliance.Red);
+                final Robot badRobot = Robot.getClosestRobot(goodRobot.getPosition(), alliance.invert());
                 if(badRobot == null){
                     doThrow(goodRobot.getPosition());
                 } else if(badRobot.isTall){

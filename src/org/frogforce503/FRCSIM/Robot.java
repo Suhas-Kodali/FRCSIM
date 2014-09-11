@@ -85,7 +85,7 @@ public class Robot implements Position, BallOwner, DTSDebuggable{
         this.subsystems.get(SubsystemType.Drivetrain).registerPhysics(rootNode, space);
         ((AbstractDrivetrain) this.subsystems.get(SubsystemType.Drivetrain)).getVehicleControl().setPhysicsLocation(pos);
         
-        ai = (AIFollowerProgram) this.subsystems.get(SubsystemType.Controller);
+        ai = this.subsystems.get(SubsystemType.Controller) instanceof AIFollowerProgram? (AIFollowerProgram) this.subsystems.get(SubsystemType.Controller) : null;
         
         isTall = this.subsystems.containsKey(SubsystemType.Box);
         
