@@ -168,7 +168,7 @@ public class Field {
                 
                 Material material = (i>0)? Main.red : Main.blue;
                 
-                Box lowGoalTop = new Box(in(1.5f)/2, in(1.5f)/2, in(29)/2);
+                Box lowGoalTop = new Box(in(2f)/2, in(2)/2, in(29)/2);
                 Geometry lowGoalTopGeometry = new Geometry("Goal", lowGoalTop);
                 lowGoalTopGeometry.setMaterial(Main.gray);
                 lowGoalTopGeometry.setLocalTranslation((length*i)/2 - in(32.5f)*i, in(35), width*j/2 - in(29)*j/2);
@@ -184,7 +184,7 @@ public class Field {
                 rootNode.attachChild(lowGoalBottomGeometry);
                 space.add(lowGoalBottomGeometry);
 
-                Box lowGoalBase = new Box(in(1.5f)/2, in(1.5f)/2, in(29)/2);
+                Box lowGoalBase = new Box(in(2f)/2, in(2f)/2, in(29)/2);
                 Geometry lowGoalBaseGeometry = new Geometry("Goal", lowGoalBase);
                 lowGoalBaseGeometry.setMaterial(Main.gray);
                 lowGoalBaseGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i, in(1.5f)/2, width*j/2 - in(29)*j/2);
@@ -192,7 +192,7 @@ public class Field {
                 rootNode.attachChild(lowGoalBaseGeometry);
                 space.add(lowGoalBaseGeometry);
 
-                Box lowGoalBottomNorth = new Box(in(32.5f)/2, in(1.5f)/2, in(1.5f)/2);
+                Box lowGoalBottomNorth = new Box(in(32.5f)/2, in(2f)/2, in(2f)/2);
                 Geometry lowGoalBottomNorthGeometry = new Geometry("Goal", lowGoalBottomNorth);
                 lowGoalBottomNorthGeometry.setMaterial(Main.gray);
                 lowGoalBottomNorthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i/2, in(7), width*j/2 - in(29)*j);
@@ -200,7 +200,7 @@ public class Field {
                 rootNode.attachChild(lowGoalBottomNorthGeometry);
                 space.add(lowGoalBottomNorthGeometry);
 
-                Box lowGoalBottomSouth = new Box(in(32.5f)/2, in(1.5f)/2, in(1.5f)/2);
+                Box lowGoalBottomSouth = new Box(in(32.5f)/2, in(2f)/2, in(2f)/2);
                 Geometry lowGoalBottomSouthGeometry = new Geometry("Goal", lowGoalBottomSouth);
                 lowGoalBottomSouthGeometry.setMaterial(Main.gray);
                 lowGoalBottomSouthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i/2, in(7), width*j/2 - in(1.5f)*j/2);
@@ -208,7 +208,7 @@ public class Field {
                 rootNode.attachChild(lowGoalBottomSouthGeometry);
                 space.add(lowGoalBottomSouthGeometry);
 
-                Box lowGoalBaseNorth = new Box(in(32.5f)/2, in(1.5f)/2, in(1.5f)/2);
+                Box lowGoalBaseNorth = new Box(in(32.5f)/2, in(2f)/2, in(2f)/2);
                 Geometry lowGoalBaseNorthGeometry = new Geometry("Goal", lowGoalBaseNorth);
                 lowGoalBaseNorthGeometry.setMaterial(Main.gray);
                 lowGoalBaseNorthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i/2, in(1.5f)/2, width*j/2 - in(29)*j);
@@ -216,7 +216,7 @@ public class Field {
                 rootNode.attachChild(lowGoalBaseNorthGeometry);
                 space.add(lowGoalBaseNorthGeometry);
 
-                Box lowGoalBaseSouth = new Box(in(32.5f)/2, in(1.5f)/2, in(1.5f)/2);
+                Box lowGoalBaseSouth = new Box(in(32.5f)/2, in(2f)/2, in(2f)/2);
                 Geometry lowGoalBaseSouthGeometry = new Geometry("Goal", lowGoalBaseSouth);
                 lowGoalBaseSouthGeometry.setMaterial(Main.gray);
                 lowGoalBaseSouthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i/2, in(1.5f)/2, width*j/2 - in(1.5f)*j/2);
@@ -224,7 +224,7 @@ public class Field {
                 rootNode.attachChild(lowGoalBaseSouthGeometry);
                 space.add(lowGoalBaseSouthGeometry);
 
-                Box lowGoalTopNorth = new Box(in(32.5f)/2, in(1.5f)/2, in(1.5f)/2);
+                Box lowGoalTopNorth = new Box(in(32.5f)/2, in(2f)/2, in(2f)/2);
                 Geometry lowGoalTopNorthGeometry = new Geometry("Goal", lowGoalTopNorth);
                 lowGoalTopNorthGeometry.setMaterial(Main.gray);
                 lowGoalTopNorthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i/2, in(35), width*j/2 - in(29)*j);
@@ -232,7 +232,7 @@ public class Field {
                 rootNode.attachChild(lowGoalTopNorthGeometry);
                 space.add(lowGoalTopNorthGeometry);
 
-                Box lowGoalTopSouth = new Box(in(32.5f)/2, in(1.5f)/2, in(1.5f)/2);
+                Box lowGoalTopSouth = new Box(in(32.5f)/2, in(2f)/2, in(2f)/2);
                 Geometry lowGoalTopSouthGeometry = new Geometry("Goal", lowGoalTopSouth);
                 lowGoalTopSouthGeometry.setMaterial(Main.gray);
                 lowGoalTopSouthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i/2, in(35), width*j/2 - in(1.5f)*j/2);
@@ -240,7 +240,7 @@ public class Field {
                 rootNode.attachChild(lowGoalTopSouthGeometry);
                 space.add(lowGoalTopSouthGeometry);
 
-                Box lowGoalMiddleNorth = new Box(in(1.5f)/2, in(35f)/2, in(1.5f)/2);
+                Box lowGoalMiddleNorth = new Box(in(2f)/2, in(35f)/2, in(2f)/2);
                 Geometry lowGoalMiddleNorthGeometry = new Geometry("Goal", lowGoalMiddleNorth);
                 lowGoalMiddleNorthGeometry.setMaterial(Main.gray);
                 lowGoalMiddleNorthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i, in(35)/2, width*j/2 - in(29)*j);
@@ -248,7 +248,7 @@ public class Field {
                 rootNode.attachChild(lowGoalMiddleNorthGeometry);
                 space.add(lowGoalMiddleNorthGeometry);
 
-                Box lowGoalMiddleSouth = new Box(in(1.5f)/2, in(35f)/2, in(1.5f)/2);
+                Box lowGoalMiddleSouth = new Box(in(2f)/2, in(35f)/2, in(2f)/2);
                 Geometry lowGoalMiddleSouthGeometry = new Geometry("Goal", lowGoalMiddleSouth);
                 lowGoalMiddleSouthGeometry.setMaterial(Main.gray);
                 lowGoalMiddleSouthGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i, in(35)/2, width*j/2 - in(1.5f)*j/2);
@@ -256,7 +256,7 @@ public class Field {
                 rootNode.attachChild(lowGoalMiddleSouthGeometry);
                 space.add(lowGoalMiddleSouthGeometry);
 
-                Box lowGoalMiddle = new Box(in(30f)/2, in(1.5f)/2, in(29f)/2);
+                Box lowGoalMiddle = new Box(in(30f)/2, in(2f)/2, in(29f)/2);
                 Geometry lowGoalMiddleGeometry = new Geometry("Goal", lowGoalMiddle);
                 lowGoalMiddleGeometry.setMaterial(material);
                 lowGoalMiddleGeometry.setLocalTranslation(length*i/2 - in(32.5f)*i/2, in(3.5f), width*j/2 - in(30)*j/2);
@@ -267,7 +267,7 @@ public class Field {
                 rootNode.attachChild(lowGoalMiddleGeometry);
                 space.add(lowGoalMiddleGeometry);
                 
-                Box lowGoalBuffer = new Box(in(40f)/2, in(7)/2, in(40f)/2);
+                Box lowGoalBuffer = new Box(in(44f)/2, in(7)/2, in(44f)/2);
                 Geometry lowGoalBufferGeometry = new Geometry("Goal", lowGoalBuffer);
                 lowGoalBufferGeometry.setMaterial(Main.blackNoAlpha);
                 lowGoalBufferGeometry.setLocalTranslation(length*i/2-in(32.5f)*i/2, in(3.5f), width*j/2 - in(30)*j/2);

@@ -183,17 +183,16 @@ public class BasicIntake extends AbstractIntake{
      */
     @Override
     public String detailedToString(String offset){
-        StringBuilder temp = new StringBuilder();
-        temp.append(offset).append("BasicIntake{\n");
-        temp.append(offset).append("    heldBall: ").append(heldBall).append(",\n");
-        temp.append(offset).append("    shootingBall: ").append(shootingBall).append(",\n");
-        temp.append(offset).append("    pulledBalls: [ ");
+        StringBuilder temp = (new StringBuilder()
+            .append(offset).append("BasicIntake{\n")
+            .append(offset).append("    heldBall: ").append(heldBall).append(",\n")
+            .append(offset).append("    shootingBall: ").append(shootingBall).append(",\n")
+            .append(offset).append("    pulledBalls: [ "));
         for(Ball ball : pulledBalls){
             temp.append(offset).append("\n         ").append(ball).append(",");
         }
         temp.setLength(temp.length()-1);
-        temp.append("\n").append(offset).append("    ]\n");
-        temp.append(offset).append("}");
-        return temp.toString();
+        return temp.append("\n").append(offset).append("    ]\n")
+            .append(offset).append("}").toString();
     }
 }

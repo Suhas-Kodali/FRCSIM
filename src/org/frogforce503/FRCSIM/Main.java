@@ -130,7 +130,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
     /**
      * Stores the type of Tank drive to use.
      */
-    public static TankControlMethod tankType = TankControlMethod.Arcade;
+    public static TankControlMethod tankType = TankControlMethod.ArcadeKey;
     
     /**
      * Stores the maximum number of balls.
@@ -309,8 +309,13 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             playersubsystems.add(new BasicIntake());
             playersubsystems.add(new BasicShooter());
             if(isTank){
-                playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
-                playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
+                if(InputManager.joysticks.isEmpty()){
+                    playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
+                    playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
+                } else {
+                    playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.joy, tankType)));
+                    playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));                    
+                }
             } else {
                 playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, swerveType)));           
                 playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
@@ -366,7 +371,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         joysticks = inputManager.getJoysticks();
         for(Joystick joystick : joysticks){
             if(!InputManager.joysticks.contains(joystick)){
-                InputManager.addJoystick(joystick, 0, 1);
+                InputManager.addJoystick(joystick, 0, 1, 2, 3);
             }
         }
         
@@ -530,13 +535,15 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         /**
          * Adds a joystick.
          * @param joystick      Joystick to add
-         * @param upDownAxis    Y axis of controller
-         * @param leftRightAxis X axis of controller
+         * @param y1    Y axis of controller
+         * @param x1 X axis of controller
          */
-        public static void addJoystick(final Joystick joystick, final int upDownAxis, final int leftRightAxis){
+        public static void addJoystick(final Joystick joystick, final int y1, final int x1, final int y2, final int x2){
             HashMap<Integer, Float> axes = new HashMap();
-            axes.put(upDownAxis, 0f);
-            axes.put(leftRightAxis, 0f);
+            axes.put(y1, 0f);
+            axes.put(x1, 0f);
+            axes.put(y2, 0f);
+            axes.put(x2, 0f);
             joysticks.add(joystick);
             axisMaps.add(joystick.getJoyId(), axes);
         }

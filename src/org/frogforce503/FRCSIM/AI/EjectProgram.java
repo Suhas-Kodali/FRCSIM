@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import org.frogforce503.FRCSIM.AbstractIntake;
 import org.frogforce503.FRCSIM.AbstractShooter;
 import org.frogforce503.FRCSIM.AbstractSubsystem;
+import org.frogforce503.FRCSIM.Ball;
 import org.frogforce503.FRCSIM.Robot;
 
 /**
@@ -40,6 +41,12 @@ public class EjectProgram extends AbstractProgram{
     public void update() {
         if(intake.hasBall()){
             shooter.spit.run();
+        } else {
+            for(Ball ball : Ball.balls){
+                if(ball.getOwner().equals(this)){
+                    ball.release();
+                }
+            }
         }
     }
 

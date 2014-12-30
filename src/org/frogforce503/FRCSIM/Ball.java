@@ -104,6 +104,9 @@ public class Ball implements Position, DTSDebuggable{
     public void update(){
         final Vector3f curPos = sphereControl.getPhysicsLocation();
         sphereControl.applyCentralForce(sphereControl.getLinearVelocity().normalize().mult(sphereControl.getLinearVelocity().distanceSquared(Vector3f.ZERO)).mult(-drag));
+        if(sphereControl.getLinearVelocity().lengthSquared() < .05){
+            sphereControl.applyCentralForce(new Vector3f((float)(Math.random()-.5)*20, (float)(Math.random()-.5)*20, (float)(Math.random()-.5)*20));
+        }
         if(Main.field.isBallOutOfBounds(this) && !isOwned()){
             HumanPlayer.giveBallToNearestHP(this);
         }
@@ -168,7 +171,7 @@ public class Ball implements Position, DTSDebuggable{
                         ball.setPosition(ball.getPosition().mult(new Vector3f(1, 1.25f, 1.25f)));
                         HumanPlayer.giveBallToNearestHP(ball);
                     } else if(!ball.isOwned()){
-                        ball.setPosition(ball.getPosition().mult(new Vector3f(1, 1.25f, 1)));
+                        ball.setPosition(ball.getPosition().mult(new Vector3f(1, 2f, 1)));
                         HumanPlayer.giveBallToNearestHP(ball);
                     }
                 }
@@ -362,22 +365,21 @@ public class Ball implements Position, DTSDebuggable{
      */
     @Override
     public String detailedToString(String offset) {
-        StringBuilder temp = new StringBuilder();
-        temp.append(offset).append("Ball(").append(number).append("){\n");
-        temp.append(offset).append("    alliance: ").append(alliance.toString()).append(",\n");
-        temp.append(offset).append("    trussed: ").append(trussed).append(",\n");
-        temp.append(offset).append("    scored: ").append(scored).append(",\n");
-        temp.append(offset).append("    position: ").append(getPosition().toString()).append(",\n");
-        temp.append(offset).append("    velocity: ").append(getVelocity().toString()).append(",\n");
-        temp.append(offset).append("    owners: [ ");
+        StringBuilder temp = (new StringBuilder()
+            .append(offset).append("Ball(").append(number).append("){\n")
+            .append(offset).append("    alliance: ").append(alliance.toString()).append(",\n")
+            .append(offset).append("    trussed: ").append(trussed).append(",\n")
+            .append(offset).append("    scored: ").append(scored).append(",\n")
+            .append(offset).append("    position: ").append(getPosition().toString()).append(",\n")
+            .append(offset).append("    velocity: ").append(getVelocity().toString()).append(",\n")
+            .append(offset).append("    owners: [ "));
         for(Robot lowner : owners){
             temp.append(offset).append("\n         ").append(lowner.toString()).append(",");
         }
         temp.setLength(temp.length()-1);
-        temp.append(offset).append("\n    ],\n");
-        temp.append(offset).append("    owner: ").append(owner);
-        temp.append(offset).append("\n}");
-        return temp.toString();        
+        return temp.append(offset).append("\n    ],\n")
+            .append(offset).append("    owner: ").append(owner)
+            .append(offset).append("\n}").toString();   
     }
     
     /**

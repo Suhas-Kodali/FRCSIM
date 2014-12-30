@@ -249,15 +249,14 @@ public class Robot implements Position, BallOwner, DTSDebuggable{
      */
     @Override
     public String detailedToString(String offset){
-        StringBuilder temp = new StringBuilder();
-        temp.append(offset).append(this).append("{\n");
-        temp.append(offset).append("    alliance: ").append(alliance).append(",\n");
-        temp.append(offset).append("    subsystems: [ ");
+        StringBuilder temp = (new StringBuilder()
+            .append(offset).append(this).append("{\n")
+            .append(offset).append("    alliance: ").append(alliance).append(",\n")
+            .append(offset).append("    subsystems: [ "));
         for(AbstractSubsystem subsystem : subsystems.values()){
             temp.append("\n").append(subsystem.detailedToString(offset + "        ")).append(",");
         }
         temp.setLength(temp.length()-1);
-        temp.append("\n").append(offset).append("    ]\n");
-        return temp.toString();
+        return temp.append("\n").append(offset).append("    ]\n").toString();
     }
 }

@@ -49,7 +49,7 @@ public class TankPlayer extends AbstractControl{
      * Enum that represents different tank control methods
      */
     public enum TankControlMethod{
-        Arcade(), Tank();
+        ArcadeKey(), Arcade1Joy(), Arcade2Joy(), Tank();
     }
     
     /**
@@ -57,26 +57,30 @@ public class TankPlayer extends AbstractControl{
      */
     @Override
     public void update() {
+        float power, turn, left, right;
         switch(type){
-            case Arcade:
-                float power, turn;
-                if(keyMapping.joystick == -1){
-                    turn = Main.InputManager.isPressedi(keyMapping.left) - Main.InputManager.isPressedi(keyMapping.right);
-                    power = Main.InputManager.isPressedi(keyMapping.up) - Main.InputManager.isPressedi(keyMapping.down);
-                }else{
-                    power = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, .5f);
-                    turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 1, .5f);
-                }
+            case ArcadeKey:
+                turn = Main.InputManager.isPressedi(keyMapping.left) - Main.InputManager.isPressedi(keyMapping.right);
+                power = Main.InputManager.isPressedi(keyMapping.up) - Main.InputManager.isPressedi(keyMapping.down);
+                drivetrain.updateArcade(power, turn);
+                break;
+            case Arcade1Joy:                
+                power = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, .5f);
+                turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 1, .5f);
+                drivetrain.updateArcade(power, turn);
+                break;
+            case Arcade2Joy:                
+                power = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, .5f);
+                turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 3, .5f);
                 drivetrain.updateArcade(power, turn);
                 break;
             case Tank:
-                float left, right;
                 if(keyMapping.joystick == -1){
                     left = Main.InputManager.isPressedi(keyMapping.leftForward) - Main.InputManager.isPressedi(keyMapping.left);
                     right = Main.InputManager.isPressedi(keyMapping.rightForward) - Main.InputManager.isPressedi(keyMapping.right);
                 }else{
                     left = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, 0.5f);
-                    right = -Main.InputManager.getAxisValue(keyMapping.extraJoystick, 0, 0.5f);
+                    right = -Main.InputManager.getAxisValue(keyMapping.joystick, 2, 0.5f);
                 }
                 drivetrain.updateTank(left, right);
         }

@@ -133,8 +133,8 @@ public class AISuperCoach implements DTSDebuggable{
      */
     public String detailedToString(String offset) {
         StringBuilder temp = new StringBuilder();
-        temp.append(offset).append("AISuperCoach(").append(alliance).append("){\n");
-        temp.append(offset).append("    Last Assignment: { ");
+        temp.append(offset).append("AISuperCoach(").append(alliance).append("){\n")
+            .append(offset).append("    Last Assignment: { ");
         for(Robot robot : roles.keySet()){
             temp.append(offset).append("\n        ").append(robot).append(": ").append(roles.get(robot));
             if(targets.containsKey(robot)){

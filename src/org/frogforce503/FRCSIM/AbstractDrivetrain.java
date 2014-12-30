@@ -121,7 +121,6 @@ public abstract class AbstractDrivetrain extends AbstractSubsystem implements Po
         if(planeAgainstTarget.pseudoDistance(obstruction) > 0 && planeAgainstTarget.pseudoDistance(obstruction) < 5){
             Plane planeToTarget = new Plane();
             planeToTarget.setOriginNormal(curPos, vectorToTarget.cross(Vector3f.UNIT_Y));
-            System.out.println(Math.abs(planeToTarget.pseudoDistance(obstruction)));
             if(Math.abs(planeToTarget.pseudoDistance(obstruction))<3){
                 target.setZ(0);
                 target.setX(curPos.x);

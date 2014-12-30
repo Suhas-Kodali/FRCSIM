@@ -227,18 +227,17 @@ public class HumanPlayer implements BallOwner, DTSDebuggable{
      */
     @Override
     public String detailedToString(String offset){
-        StringBuilder temp = new StringBuilder();
-        temp.append(offset).append(name).append("{");
-        temp.append(offset).append("    currentBall: ").append(currentBall).append(",\n");
-        temp.append(offset).append("    ballQueue: [ ");
+        StringBuilder temp = (new StringBuilder()
+            .append(offset).append(name).append("{")
+            .append(offset).append("    currentBall: ").append(currentBall).append(",\n")
+            .append(offset).append("    ballQueue: [ "));
         for(Ball ball : ballQueue){
             temp.append(offset).append("\n        ").append(ball).append(",");
         }
         temp.setLength(temp.length()-1);
-        temp.append(offset).append("\n    holdingPosition: ").append(holdingPosition).append("\n");
-        temp.append(offset).append("     isBallHeld: ").append(isBallHeld).append("\n");
-        temp.append(offset).append("}");
-        return temp.toString();
+        return temp.append(offset).append("\n    holdingPosition: ").append(holdingPosition).append("\n")
+            .append(offset).append("     isBallHeld: ").append(isBallHeld).append("\n")
+            .append(offset).append("}").toString();
     }
     
     /**

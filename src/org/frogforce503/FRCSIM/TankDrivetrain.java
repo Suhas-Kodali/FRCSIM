@@ -22,10 +22,10 @@ import static org.frogforce503.FRCSIM.Main.in;
 public class TankDrivetrain extends AbstractDrivetrain{
     private final VehicleControl vehicle;
     private final float mass = 30;
-    private final float accelerationForce = 175f * mass/30f;
-    private final float turningForce = 100f * mass/30f;
+    private final float accelerationForce = 150f * mass/30f;
+    private final float turningForce = 150f * mass/30f;
     private final float frictionForce = 2f * mass/30f;
-    private final float maxSpeed = 17;
+    private final float maxSpeed = 23;
     private Alliance alliance;
     private final Node chassisNode, vehicleNode;
     private final Bumpers bumpers;
@@ -143,6 +143,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
         final float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
         if(pow*curSpeed > 0){
             accelerationFactor = (maxSpeed-Math.abs(curSpeed))/maxSpeed * accelerationForce;
+            
         } else {
             accelerationFactor = accelerationForce;
         }
