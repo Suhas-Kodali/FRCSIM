@@ -257,6 +257,6 @@ public class Robot implements Position, BallOwner, DTSDebuggable{
             temp.append("\n").append(subsystem.detailedToString(offset + "        ")).append(",");
         }
         temp.setLength(temp.length()-1);
-        return temp.append("\n").append(offset).append("    ]\n").toString();
+        return temp.append("\n").append(offset).append("    ]\n").append(offset).append("}\n").toString();
     }
 }
