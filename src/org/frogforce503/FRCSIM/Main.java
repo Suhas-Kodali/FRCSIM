@@ -309,7 +309,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             playersubsystems.add(new BasicIntake());
             playersubsystems.add(new BasicShooter());
             if(isTank){
-                if(InputManager.joysticks.isEmpty()){
+                if(tankType == TankControlMethod.ArcadeKey || tankType == TankControlMethod.Tank){
                     playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
                     playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
                 } else {

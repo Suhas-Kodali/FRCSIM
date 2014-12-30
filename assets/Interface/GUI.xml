@@ -73,8 +73,16 @@
             <panel id="tankPanel" height="80%" width="50%" x="50%" y="0%" childLayout="vertical">
                 <control name="radioButtonGroup" id="tankType"/>
                 <panel height="23px" width="100%" childLayout="horizontal">
-                    <control name="radioButton" id="arcadeDrive" group="tankType"/>
-                    <text text="Arcade drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                    <control name="radioButton" id="arcadeDriveKey" group="tankType"/>
+                    <text text="Arcade drive (Keyboard)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="arcadeDrive1Joy" group="tankType"/>
+                    <text text="Arcade drive (1 Joystick)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="arcadeDrive2Joy" group="tankType"/>
+                    <text text="Arcade drive (2 Joystick)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="tankDrive" group="tankType"/>
