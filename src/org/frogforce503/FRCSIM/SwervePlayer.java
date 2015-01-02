@@ -94,9 +94,16 @@ public class SwervePlayer extends AbstractControl{
         if(Main.InputManager.isPressed("g")){
             drivetrain.driveToPointAndDirection(Vector3f.ZERO, Vector3f.UNIT_X.mult(40), Vector3f.UNIT_XYZ, 0);
         } else {
-            float FWR = Main.InputManager.isPressedi(keyMapping.up)-Main.InputManager.isPressedi(keyMapping.down),
-                    STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left),
-                    omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
+            float FWR, STR, omega;
+            if(keyMapping.joystick == -1){
+                FWR = Main.InputManager.isPressedi(keyMapping.up)-Main.InputManager.isPressedi(keyMapping.down);
+                STR = Main.InputManager.isPressedi(keyMapping.right)-Main.InputManager.isPressedi(keyMapping.left);
+                omega = Main.InputManager.isPressedi(keyMapping.rotateCW)-Main.InputManager.isPressedi(keyMapping.rotateCCW);
+            } else {
+                FWR = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, .5f);
+                STR = Main.InputManager.getAxisValue(keyMapping.joystick, 1, .5f);
+                omega = Main.InputManager.getAxisValue(keyMapping.joystick, 3, .5f);
+            }
             switch(type){
                 case FieldCentricSpectatorCam:
                     drivetrain.updateFCSC(FWR, STR, omega);
@@ -173,6 +180,11 @@ public class SwervePlayer extends AbstractControl{
         public final String switchSides;
         
         /**
+         * Parameter for a joystick
+         */
+        public final int joystick;
+        
+        /**
          * Constructor for a new key mapping.
          * @param up            Moves forwards
          * @param down          Moves backwards
@@ -188,7 +200,7 @@ public class SwervePlayer extends AbstractControl{
          */
         private SwerveKeyMapping(final String up, final String down, final String left, final String right, 
                 final String rotateCCW, final String rotateCW, final String toggleIntake, final String shoot, 
-                final String spit, final String inbound, final String switchSides){
+                final String spit, final String inbound, final String switchSides, final int joystick){
             this.up = up;
             this.down = down;
             this.left = left;
@@ -200,17 +212,23 @@ public class SwervePlayer extends AbstractControl{
             this.spit = spit;
             this.inbound = inbound;
             this.switchSides = switchSides;
+            this.joystick = joystick;
         }
         
         /**
          * Controls the drivetrain with WASD strafing and driving and left and right arrows turning.
          */
-        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space", "shift", "i", "o");
+        public final static SwerveKeyMapping wasd = new SwerveKeyMapping("w", "s", "a", "d", "left", "right", "r", "space", "shift", "i", "o", -1);
         
         /**
          * Null placeholder.
          */
-        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "", "", "");
+        public final static SwerveKeyMapping NULL = new SwerveKeyMapping("", "", "", "", "", "", "", "", "", "", "", -1);
+        
+        /**
+         * Controls the drivetrain with a joystick
+         */
+        public final static SwerveKeyMapping joy = new SwerveKeyMapping("", "", "", "", "", "", "Button 1", "Button 0", "Button 2", "Button 5", "", 0);
     }
     
     /**

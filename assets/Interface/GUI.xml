@@ -89,7 +89,7 @@
                     <text text="Tank drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
             </panel>           
-            <panel id="swervePanel" height="80%" width="50%" x="50%" y="0%" childLayout="vertical" visible="false">
+            <panel id="swervePanel1" height="80%" width="50%" x="50%" y="0%" childLayout="vertical" visible="false">
                 <control name="radioButtonGroup" id="swerveType"/>
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="FCDrive" group="swerveType"/>
@@ -98,6 +98,17 @@
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="RCDrive" group="swerveType"/>
                     <text text="Robot centric drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+            </panel>           
+            <panel id="swervePanel2" height="80%" width="50%" x="50%" y="50%" childLayout="vertical" visible="false">
+                <control name="radioButtonGroup" id="swerveKeyMapping"/>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="Keyboard" group="swerveKeyMapping"/>
+                    <text text="Keyboard" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="Joystick" group="swerveKeyMapping"/>
+                    <text text="Joystick" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
             </panel>       
             <panel height="20%" width="50%" x="50%" y="80%" childLayout="vertical">

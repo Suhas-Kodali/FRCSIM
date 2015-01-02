@@ -15,6 +15,7 @@ import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveControlMethod;
+import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.TankPlayer.TankControlMethod;
 
 /**
@@ -183,15 +184,18 @@ public class Scene implements ScreenController {
     @NiftyEventSubscriber(id="dt")
     public void dtRadioButtonChangeEvent(final String id, final RadioButtonGroupStateChangedEvent e){
         final Element tankPanel = nifty.getCurrentScreen().findElementByName("tankPanel"), 
-                swervePanel = nifty.getCurrentScreen().findElementByName("swervePanel");
+                swervePanel1 = nifty.getCurrentScreen().findElementByName("swervePanel1"), 
+                swervePanel2 = nifty.getCurrentScreen().findElementByName("swervePanel2");
         if("tank".equals(e.getSelectedId())){
             Main.isTank = true;
             tankPanel.show();
-            swervePanel.hide();
+            swervePanel1.hide();
+            swervePanel2.hide();
         } else {
             Main.isTank = false;
             tankPanel.hide();
-            swervePanel.show();
+            swervePanel1.show();
+            swervePanel2.show();
         }
     }
     
@@ -232,6 +236,20 @@ public class Scene implements ScreenController {
             }
         } else {
             Main.swerveType = SwerveControlMethod.RobotCentric;
+        }
+    }
+    
+    /**
+     * Updates Main's state variables when the drivetrain key mapping changes.
+     * @param id    ID of the selected radio button
+     * @param e     Event object
+     */
+    @NiftyEventSubscriber(id="swerveKeyMapping")
+    public void swerveKeyMappingRadioButtonChangeEvent(final String id, final RadioButtonGroupStateChangedEvent e){
+        if("Keyboard".equals(e.getSelectedId())){
+            Main.swerveKeyMapping = SwerveKeyMapping.wasd;
+        } else {
+            Main.swerveKeyMapping = SwerveKeyMapping.joy;
         }
     }
     

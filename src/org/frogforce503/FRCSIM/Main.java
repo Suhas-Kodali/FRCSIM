@@ -110,7 +110,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
     /**
      * The alliance the the player will be on, set to Alliance.Red in initMaterials().
      */
-    public static Alliance playerAlliance = null;//Alliance.Red; 
+    public static Alliance playerAlliance = null;
     
     /**
      * Will the player be a Tank drive?
@@ -126,6 +126,12 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
      * Stores the type of swerve drive to use.
      */
     public static SwerveControlMethod swerveType = SwerveControlMethod.FieldCentricRedDriverCam;
+    
+    /**
+     * Stores the keymapping for swerve
+     */
+    
+    public static SwerveKeyMapping swerveKeyMapping = SwerveKeyMapping.wasd;
     
     /**
      * Stores the type of Tank drive to use.
@@ -317,7 +323,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
                     playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));                    
                 }
             } else {
-                playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(SwerveKeyMapping.wasd, swerveType)));           
+                playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(swerveKeyMapping, swerveType)));           
                 playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
             }
             player = new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), playerAlliance, new Vector3f(-3 * playerAlliance.side, 0, 3));
