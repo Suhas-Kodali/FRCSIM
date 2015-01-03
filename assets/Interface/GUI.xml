@@ -50,6 +50,16 @@
                     <control name="label" text="1" id="ballLabel" height="23px" width="23px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                     <text text="How many balls on each alliance?" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="button" id="timeDown" label = "down" height="23px" width="50px">
+                        <interact onClick="timeDown())"/>
+                    </control>        
+                    <control name="button" id="timeUp" label = "up" height="23px" width="50px">
+                        <interact onClick="timeUp())"/>
+                    </control>        
+                    <control name="label" text="2" id="timeLabel" height="23px" width="23px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                    <text text="Time (minutes)" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
                 <control name="radioButtonGroup" id="view"/>
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="driver" group="view"/>
@@ -67,6 +77,15 @@
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="swerve" group="dt"/>
                     <text text="Swerve drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <control name="radioButtonGroup" id="omni"/>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="noOmni" group="omni"/>
+                    <text text="No Omni Wheels" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="omni" group="omni"/>
+                    <text text="Omni Wheels (purely experimental)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
                 
             </panel>
@@ -126,7 +145,7 @@
                 </control>
             </panel>
         </layer>
-        <layer childLayout="vertical" height="100%" width="100%">
+        <layer childLayout="vertical" height="50%" width="100%" valign="top">
             <panel height="5%" width="10%" valign="top" align="right" backgroundColor="#FFF" childLayout="center">
                 <text text="" id="score" height="5%" width="5%" font="Interface/Fonts/Consolas.fnt" color="#000" />
             </panel>
@@ -134,5 +153,24 @@
                 <text text="" id="direction" height="5%" width="5%" font="Interface/Fonts/Consolas.fnt" color="#000"/>
             </panel>
         </layer>
+        <layer childLayout="vertical" height="50%" width="100%" valign="bottom">
+            <panel height="5%" width="20%" childLayout="center" valign="bottom" align="center" backgroundColor="#FFF">
+                <text text="" id="time" height="5%" width="5%" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+            </panel>
+        </layer>
+    </screen>
+    <screen id="endScreen" controller="org.frogforce503.FRCSIM.Scene">
+        
+        <layer childLayout="vertical" height="100%" width="100%">
+            <panel height="50%" width="100%" valign="top" align="center" backgroundColor="none" childLayout="center">
+                <text text="" id="score" height="50%" width="100%" font="Interface/Fonts/Consolas.fnt" color="#000" />
+            </panel>
+            
+            <panel height="50%" width="10%" backgroundColor="#FFF" valign="bottom" align="left" childLayout="center">
+                <control name="button" label="(Esc) to quit" id="Setup1Button" align="center" valign="center" height="100%" width="100%" visibleToMouse="true">
+                    <interact onClick="setup1Screen())"/>
+                </control>
+            </panel>
+        </layer>  
     </screen>
 </nifty>
