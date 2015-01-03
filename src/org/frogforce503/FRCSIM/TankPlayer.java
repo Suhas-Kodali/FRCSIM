@@ -49,7 +49,7 @@ public class TankPlayer extends AbstractControl{
      * Enum that represents different tank control methods
      */
     public enum TankControlMethod{
-        ArcadeKey(), Arcade1Joy(), Arcade2Joy(), Tank();
+        ArcadeKey(), Arcade1Joy(), Arcade2Joy(), TankKey(), TankJoy();
     }
     
     /**
@@ -74,15 +74,16 @@ public class TankPlayer extends AbstractControl{
                 turn = -Main.InputManager.getAxisValue(keyMapping.joystick, 3, .5f);
                 drivetrain.updateArcade(power, turn);
                 break;
-            case Tank:
-                if(keyMapping.joystick == -1){
-                    left = Main.InputManager.isPressedi(keyMapping.leftForward) - Main.InputManager.isPressedi(keyMapping.left);
-                    right = Main.InputManager.isPressedi(keyMapping.rightForward) - Main.InputManager.isPressedi(keyMapping.right);
-                }else{
-                    left = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, 0.5f);
-                    right = -Main.InputManager.getAxisValue(keyMapping.joystick, 2, 0.5f);
-                }
+            case TankKey:
+                left = Main.InputManager.isPressedi(keyMapping.leftForward) - Main.InputManager.isPressedi(keyMapping.left);
+                right = Main.InputManager.isPressedi(keyMapping.rightForward) - Main.InputManager.isPressedi(keyMapping.right);
                 drivetrain.updateTank(left, right);
+                break;
+            case TankJoy:
+                left = -Main.InputManager.getAxisValue(keyMapping.joystick, 0, 0.5f);
+                right = -Main.InputManager.getAxisValue(keyMapping.joystick, 2, 0.5f);
+                drivetrain.updateTank(left, right);
+                break;
         }
     }
     

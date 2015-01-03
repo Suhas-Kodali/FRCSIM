@@ -267,7 +267,7 @@ public class Field {
                 rootNode.attachChild(lowGoalMiddleGeometry);
                 space.add(lowGoalMiddleGeometry);
                 
-                Box lowGoalBuffer = new Box(in(44f)/2, in(7)/2, in(44f)/2);
+                Box lowGoalBuffer = new Box(in(42f)/2, in(5)/2, in(42f)/2);
                 Geometry lowGoalBufferGeometry = new Geometry("Goal", lowGoalBuffer);
                 lowGoalBufferGeometry.setMaterial(Main.blackNoAlpha);
                 lowGoalBufferGeometry.setLocalTranslation(length*i/2-in(32.5f)*i/2, in(3.5f), width*j/2 - in(30)*j/2);

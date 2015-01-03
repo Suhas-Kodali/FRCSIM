@@ -206,8 +206,10 @@ public class Scene implements ScreenController {
      */
     @NiftyEventSubscriber(id="tankType")
     public void tankTypeRadioButtonChangeEvent(final String id, final RadioButtonGroupStateChangedEvent e){
-        if("tankDrive".equals(e.getSelectedId())){
-            Main.tankType = TankControlMethod.Tank;
+        if("tankDriveKey".equals(e.getSelectedId())){
+            Main.tankType = TankControlMethod.TankKey;
+        } else if("tankDriveJoy".equals(e.getSelectedId())){
+            Main.tankType = TankControlMethod.TankJoy;
         } else if("arcadeDriveKey".equals(e.getSelectedId())){
             Main.tankType = TankControlMethod.ArcadeKey;
         } else if("arcadeDrive1Joy".equals(e.getSelectedId())){

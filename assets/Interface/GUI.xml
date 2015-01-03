@@ -85,8 +85,12 @@
                     <text text="Arcade drive (2 Joystick)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
                 <panel height="23px" width="100%" childLayout="horizontal">
-                    <control name="radioButton" id="tankDrive" group="tankType"/>
-                    <text text="Tank drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                    <control name="radioButton" id="tankDriveKey" group="tankType"/>
+                    <text text="Tank drive (Keyboard)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                </panel>
+                <panel height="23px" width="100%" childLayout="horizontal">
+                    <control name="radioButton" id="tankDriveJoy" group="tankType"/>
+                    <text text="Tank drive (Joystick)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
             </panel>           
             <panel id="swervePanel1" height="80%" width="50%" x="50%" y="0%" childLayout="vertical" visible="false">

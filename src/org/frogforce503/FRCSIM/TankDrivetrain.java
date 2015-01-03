@@ -141,12 +141,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
         float accelerationFactor, left, right;
         
         final float curSpeed = vehicle.getCurrentVehicleSpeedKmHour();
-        if(pow*curSpeed > 0){
-            accelerationFactor = (maxSpeed-Math.abs(curSpeed))/maxSpeed * accelerationForce;
-            
-        } else {
-            accelerationFactor = accelerationForce;
-        }
+        accelerationFactor = Math.abs(maxSpeed*Math.signum(pow)-curSpeed)/maxSpeed * accelerationForce;
         
         left  = accelerationFactor * (pow) + turningForce * turn;
         right = accelerationFactor * (pow) - turningForce * turn;
@@ -168,7 +163,7 @@ public class TankDrivetrain extends AbstractDrivetrain{
     }
     
     protected void updateTank(final float cleft, final float cright){
-        updateArcade(cright+cleft, cright-cleft);
+        updateArcade(cright+cleft, (cright-cleft)/2f);
     }
     
     /**
