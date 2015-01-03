@@ -14,6 +14,7 @@ import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.awt.Color;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveControlMethod;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.TankPlayer.TankControlMethod;
@@ -24,6 +25,7 @@ import org.frogforce503.FRCSIM.TankPlayer.TankControlMethod;
  */
 public class Scene implements ScreenController {
     private static Nifty nifty;
+    private static int time;
     /**
      * Constructor or a new scene object.
      * @param assetManager  JME3 AssetManager
@@ -66,11 +68,23 @@ public class Scene implements ScreenController {
         updateDirection();
     }
     
+    public void endScreen(){
+        nifty.gotoScreen("endScreen");
+        nifty.getCurrentScreen().findElementByName("score").getRenderer(TextRenderer.class).setText(getFinalScore());
+    }
+    
     /**
      * Updates the score.
      */
     public void updateScore(){
         nifty.getCurrentScreen().findElementByName("score").getRenderer(TextRenderer.class).setText(getScore());
+    }
+    
+    public void updateTime(){
+        nifty.getCurrentScreen().findElementByName("time").getRenderer(TextRenderer.class).setText(Float.toString(Main.app.getTime()).substring(0, 4));
+        if(Main.app.getTime() < 30){
+            nifty.getCurrentScreen().findElementByName("time").getRenderer(TextRenderer.class).setColor(de.lessvoid.nifty.tools.Color.randomColor());
+        }
     }
     
     /**
@@ -112,6 +126,20 @@ public class Scene implements ScreenController {
     public void quitGame() {
         Main.app.stop();  
     }
+    
+    public void timeUp(){
+        Main.time++;
+        nifty.getCurrentScreen().findElementByName("timeLabel").getRenderer(TextRenderer.class).setText(Integer.toString(Main.time));
+        time = Main.time;
+    }
+    
+    public void timeDown(){
+        if(Main.time > 1){
+            Main.time--;
+            nifty.getCurrentScreen().findElementByName("timeLabel").getRenderer(TextRenderer.class).setText(Integer.toString(Main.time));
+            time = Main.time;
+        }
+    }
 
     /**
      * Gets a string representing the score.
@@ -119,6 +147,10 @@ public class Scene implements ScreenController {
      */
     public String getScore(){
         return "R"+ Alliance.Red.getScore() + " B"+Alliance.Blue.getScore();
+    }
+    
+    public String getFinalScore(){
+        return "RED: "+ Alliance.Red.getScore() + "\n BLUE: "+Alliance.Blue.getScore();
     }
 
     /**
@@ -149,6 +181,16 @@ public class Scene implements ScreenController {
             }
         } else {
             Main.playerAlliance = null;
+        }
+    }
+    
+    @NiftyEventSubscriber(id="omni")
+    public void omniRadioButtonChangeEvent(final String id, final RadioButtonGroupStateChangedEvent e){
+        final String omni = e.getSelectedId();
+        if("noOmni".equals(omni)){
+            Main.isOmni = false;
+        } else if ("omni".equals(omni)){
+            Main.isOmni = true;
         }
     }
     
@@ -287,4 +329,5 @@ public class Scene implements ScreenController {
         nifty.getCurrentScreen().findElementByName("ballLabel").getRenderer(TextRenderer.class).setText(Math.round(e.getValue())+""); 
         Main.maxBalls = Math.round(e.getValue());
     }
+    
 }

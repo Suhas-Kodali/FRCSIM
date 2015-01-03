@@ -158,8 +158,24 @@ public class TankDrivetrain extends AbstractDrivetrain{
             vehicle.accelerate(i, right);
         }
         
+        
         vehicle.brake(frictionForce * 1f / (1-Math.abs(pow)));
-        applyDownforce();
+        if(Main.isOmni){
+            if(!isPlayer){
+                applyDownforce();
+            }
+            if(isPlayer){
+                if(Math.abs(vehicle.getLinearVelocity().x) > Math.abs(vehicle.getLinearVelocity().z) && Math.abs(vehicle.getForwardVector(null).z) > Math.abs(vehicle.getForwardVector(null).x)){
+                    getVehicleControl().applyCentralForce(Vector3f.UNIT_Y.mult(200));
+                }else if(Math.abs(vehicle.getLinearVelocity().z) > Math.abs(vehicle.getLinearVelocity().x) && Math.abs(vehicle.getForwardVector(null).x) > Math.abs(vehicle.getForwardVector(null).z)){
+                    getVehicleControl().applyCentralForce(Vector3f.UNIT_Y.mult(200));
+                }else{
+                    applyDownforce();
+                }
+            }
+        }else{
+            applyDownforce();
+        }
     }
     
     protected void updateTank(final float cleft, final float cright){

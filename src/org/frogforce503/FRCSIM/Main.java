@@ -20,6 +20,7 @@ import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
+import com.jme3.system.Timer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,6 @@ import java.util.logging.SimpleFormatter;
 import org.frogforce503.FRCSIM.AI.AIFollowerProgram;
 import org.frogforce503.FRCSIM.AI.AISuperCoach;
 import org.frogforce503.FRCSIM.AI.PlayerFollowerProgram;
-import org.frogforce503.FRCSIM.AI.TestProgram;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveKeyMapping;
 import org.frogforce503.FRCSIM.SwervePlayer.SwerveControlMethod;
 import org.frogforce503.FRCSIM.TankPlayer.TankKeyMapping;
@@ -107,6 +107,8 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
      */
     public static int numOnOtherAlliance = 3; 
     
+    public static int time = 2;
+    
     /**
      * The alliance the the player will be on, set to Alliance.Red in initMaterials().
      */
@@ -121,6 +123,8 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
      * Will the player's perspective be in the driver station?
      */
     public static boolean isInStation = true;
+    
+    public static boolean isOmni = false;
     
     /**
      * Stores the type of swerve drive to use.
@@ -187,11 +191,15 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
         return in/39.3701f;
     }
     
+    public float getTime(){
+        return time*60 - getTimer().getTimeInSeconds();
+    }
+    
     /**
      * Sets up materials, must be called before any references to alliances.
      */
     private void initMaterials(){
-        red = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        red = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         red.getAdditionalRenderState().setWireframe(false);
         red.setColor("Color", ColorRGBA.Red); 
         blue = new Material(getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
@@ -311,22 +319,22 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
 //        new Robot(testsystems, rootNode, bulletAppState.getPhysicsSpace(), playerAlliance.invert(), Vector3f.ZERO);
         
         if(playerAlliance != null){
-            ArrayList<AbstractSubsystem> playersubsystems = new ArrayList<AbstractSubsystem>(4);
-            playersubsystems.add(new BasicIntake());
-            playersubsystems.add(new BasicShooter());
+            ArrayList<AbstractSubsystem> playerSubsystems = new ArrayList<AbstractSubsystem>(4);
+            playerSubsystems.add(new BasicIntake());
+            playerSubsystems.add(new BasicShooter());
             if(isTank){
                 if(tankType == TankControlMethod.ArcadeKey || tankType == TankControlMethod.TankKey){
                     playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
                     playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
                 } else {
-                    playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.joy, tankType)));
-                    playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));                    
+                    playerSubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.joy, tankType)));
+                    playerSubsystems.add(new TankDrivetrain(playerSubsystems, bulletAppState.getPhysicsSpace(), true));                    
                 }
             } else {
-                playersubsystems.add(new PlayerFollowerProgram(new SwervePlayer(swerveKeyMapping, swerveType)));           
-                playersubsystems.add(new SwerveDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
+                playerSubsystems.add(new PlayerFollowerProgram(new SwervePlayer(swerveKeyMapping, swerveType)));           
+                playerSubsystems.add(new SwerveDrivetrain(playerSubsystems, bulletAppState.getPhysicsSpace(), true));
             }
-            player = new Robot(playersubsystems, rootNode, bulletAppState.getPhysicsSpace(), playerAlliance, new Vector3f(-3 * playerAlliance.side, 0, 3));
+            player = new Robot(playerSubsystems, rootNode, bulletAppState.getPhysicsSpace(), playerAlliance, new Vector3f(-3 * playerAlliance.side, 0, 3));
         }
         
         if(isInStation){
@@ -341,6 +349,7 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         }
         flyCam.setEnabled(false);
+        getTimer().reset();
         isStarted = true;
     }
 
@@ -390,13 +399,16 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
      */
     @Override
     public void simpleUpdate(float tpf) {
-        if(isStarted){
+        if(isStarted && getTime() > 0){
             Robot.updateAll();
             Ball.updateAll();
             HumanPlayer.updateAll();
+            scene.updateTime();
             if(player != null && isInStation){
                 cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
             }
+        }else if(isStarted && getTime() <= 0){
+            scene.endScreen();
         }
     }
     
