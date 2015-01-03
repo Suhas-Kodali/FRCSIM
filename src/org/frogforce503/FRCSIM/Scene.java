@@ -194,7 +194,7 @@ public class Scene implements ScreenController {
         }
     }
     
-    /*@NiftyEventSubscriber(id="omni")
+    @NiftyEventSubscriber(id="omni")
     public void omniRadioButtonChangeEvent(final String id, final RadioButtonGroupStateChangedEvent e){
         final String omni = e.getSelectedId();
         if("noOmni".equals(omni)){
@@ -202,7 +202,7 @@ public class Scene implements ScreenController {
         } else if ("omni".equals(omni)){
             Main.isOmni = true;
         }
-    }*/
+    }
     
     /**
      * Updates Main's state variables when the view changes.

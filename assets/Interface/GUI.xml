@@ -78,7 +78,7 @@
                     <control name="radioButton" id="swerve" group="dt"/>
                     <text text="Swerve drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
-                <!--<control name="radioButtonGroup" id="omni"/>
+                <control name="radioButtonGroup" id="omni"/>
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="noOmni" group="omni"/>
                     <text text="No Omni Wheels" font="Interface/Fonts/Consolas.fnt" color="#000"/>
@@ -86,7 +86,7 @@
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="omni" group="omni"/>
                     <text text="Omni Wheels (purely experimental)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
-                </panel>-->
+                </panel>
                 
             </panel>
             <panel id="tankPanel" height="80%" width="50%" x="50%" y="0%" childLayout="vertical">

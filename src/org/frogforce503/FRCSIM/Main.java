@@ -580,7 +580,11 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
          */
         public static void joystickAxisEvent(final int id, final int axis, final float value){
             if(axisMaps.get(id).get(axis) != null){
-                axisMaps.get(id).put(axis, value);
+                if(Math.abs(value) > 0.15){
+                    axisMaps.get(id).put(axis, value);
+                }else{
+                    axisMaps.get(id).put(axis, 0f);
+                }
             }
         }
         
