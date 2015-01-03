@@ -25,7 +25,7 @@ import org.frogforce503.FRCSIM.TankPlayer.TankControlMethod;
  */
 public class Scene implements ScreenController {
     private static Nifty nifty;
-    private static int time;
+    private static int time = 2;
     /**
      * Constructor or a new scene object.
      * @param assetManager  JME3 AssetManager
@@ -81,9 +81,13 @@ public class Scene implements ScreenController {
     }
     
     public void updateTime(){
-        nifty.getCurrentScreen().findElementByName("time").getRenderer(TextRenderer.class).setText(Float.toString(Main.app.getTime()).substring(0, 4));
-        if(Main.app.getTime() < 30){
-            nifty.getCurrentScreen().findElementByName("time").getRenderer(TextRenderer.class).setColor(de.lessvoid.nifty.tools.Color.randomColor());
+        if(time != 0){
+            nifty.getCurrentScreen().findElementByName("time").getRenderer(TextRenderer.class).setText(String.format("%1$.1f", Main.app.getTime()));
+            if(Main.app.getTime() < 30){
+                nifty.getCurrentScreen().findElementByName("time").getRenderer(TextRenderer.class).setColor(de.lessvoid.nifty.tools.Color.randomColor());
+            } 
+        } else {
+            nifty.getCurrentScreen().findElementByName("time").getRenderer(TextRenderer.class).setText("No Time Limit");
         }
     }
     
@@ -91,7 +95,9 @@ public class Scene implements ScreenController {
      * Updates the AI instructions.
      */
     public void updateDirection(){
-        nifty.getCurrentScreen().findElementByName("direction").getRenderer(TextRenderer.class).setText(getDirection());
+        if(nifty.getCurrentScreen().findElementByName("direction") != null){
+            nifty.getCurrentScreen().findElementByName("direction").getRenderer(TextRenderer.class).setText(getDirection());
+        }
     }
    
     /**
@@ -128,16 +134,20 @@ public class Scene implements ScreenController {
     }
     
     public void timeUp(){
-        Main.time++;
-        nifty.getCurrentScreen().findElementByName("timeLabel").getRenderer(TextRenderer.class).setText(Integer.toString(Main.time));
-        time = Main.time;
+        time++;
+        nifty.getCurrentScreen().findElementByName("timeLabel").getRenderer(TextRenderer.class).setText(Integer.toString(time));
+        Main.time = time;
     }
     
     public void timeDown(){
-        if(Main.time > 1){
-            Main.time--;
-            nifty.getCurrentScreen().findElementByName("timeLabel").getRenderer(TextRenderer.class).setText(Integer.toString(Main.time));
-            time = Main.time;
+        if(time > 1){
+            time--;
+            nifty.getCurrentScreen().findElementByName("timeLabel").getRenderer(TextRenderer.class).setText(Integer.toString(time));
+            Main.time = time;
+        } else if(time == 1){
+            Main.time = Integer.MAX_VALUE/61;
+            nifty.getCurrentScreen().findElementByName("timeLabel").getRenderer(TextRenderer.class).setText("No Limit");
+            time = 0;
         }
     }
 
@@ -184,7 +194,7 @@ public class Scene implements ScreenController {
         }
     }
     
-    @NiftyEventSubscriber(id="omni")
+    /*@NiftyEventSubscriber(id="omni")
     public void omniRadioButtonChangeEvent(final String id, final RadioButtonGroupStateChangedEvent e){
         final String omni = e.getSelectedId();
         if("noOmni".equals(omni)){
@@ -192,7 +202,7 @@ public class Scene implements ScreenController {
         } else if ("omni".equals(omni)){
             Main.isOmni = true;
         }
-    }
+    }*/
     
     /**
      * Updates Main's state variables when the view changes.

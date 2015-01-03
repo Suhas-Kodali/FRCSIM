@@ -324,8 +324,8 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             playerSubsystems.add(new BasicShooter());
             if(isTank){
                 if(tankType == TankControlMethod.ArcadeKey || tankType == TankControlMethod.TankKey){
-                    playersubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
-                    playersubsystems.add(new TankDrivetrain(playersubsystems, bulletAppState.getPhysicsSpace(), true));
+                    playerSubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.wasd, tankType)));
+                    playerSubsystems.add(new TankDrivetrain(playerSubsystems, bulletAppState.getPhysicsSpace(), true));
                 } else {
                     playerSubsystems.add(new PlayerFollowerProgram(new TankPlayer(TankKeyMapping.joy, tankType)));
                     playerSubsystems.add(new TankDrivetrain(playerSubsystems, bulletAppState.getPhysicsSpace(), true));                    
@@ -409,6 +409,12 @@ public class Main extends SimpleApplication implements ActionListener, DTSDebugg
             }
         }else if(isStarted && getTime() <= 0){
             scene.endScreen();
+            Robot.updateAll();
+            Ball.updateAll();
+            HumanPlayer.updateAll();
+            if(player != null && isInStation){
+                cam.lookAt(player.getPosition(), Vector3f.UNIT_Y);
+            }
         }
     }
     

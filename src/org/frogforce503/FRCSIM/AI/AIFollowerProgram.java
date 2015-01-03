@@ -105,6 +105,6 @@ public class AIFollowerProgram extends AbstractProgram {
      */
     @Override
     public String detailedToString(String offset){
-        return offset + "Program("+getUID()+", \"" + getHRName() + "\", \"" + program.detailedToString("") + "\")";
+        return offset + "Program("+getUID()+", \"" + getHRName() + "\", \"" + (program==null? "" : program.detailedToString("")) + "\")";
     }
 }

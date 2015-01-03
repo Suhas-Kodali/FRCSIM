@@ -58,7 +58,7 @@
                         <interact onClick="timeUp())"/>
                     </control>        
                     <control name="label" text="2" id="timeLabel" height="23px" width="23px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
-                    <text text="Time (minutes)" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
+                    <text text="Time (Minutes, 0 -> No Limit)" height="23px" width="300px" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
                 <control name="radioButtonGroup" id="view"/>
                 <panel height="23px" width="100%" childLayout="horizontal">
@@ -78,7 +78,7 @@
                     <control name="radioButton" id="swerve" group="dt"/>
                     <text text="Swerve drive" font="Interface/Fonts/Consolas.fnt" color="#000"/>
                 </panel>
-                <control name="radioButtonGroup" id="omni"/>
+                <!--<control name="radioButtonGroup" id="omni"/>
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="noOmni" group="omni"/>
                     <text text="No Omni Wheels" font="Interface/Fonts/Consolas.fnt" color="#000"/>
@@ -86,7 +86,7 @@
                 <panel height="23px" width="100%" childLayout="horizontal">
                     <control name="radioButton" id="omni" group="omni"/>
                     <text text="Omni Wheels (purely experimental)" font="Interface/Fonts/Consolas.fnt" color="#000"/>
-                </panel>
+                </panel>-->
                 
             </panel>
             <panel id="tankPanel" height="80%" width="50%" x="50%" y="0%" childLayout="vertical">
@@ -166,11 +166,11 @@
     <screen id="endScreen" controller="org.frogforce503.FRCSIM.Scene">
         
         <layer childLayout="vertical" height="100%" width="100%">
-            <panel height="50%" width="100%" valign="top" align="center" backgroundColor="none" childLayout="center">
-                <text text="" id="score" height="50%" width="100%" font="Interface/Fonts/Consolas.fnt" color="#000" />
+            <panel height="90%" width="100%" valign="top" align="center" backgroundColor="#0009" childLayout="center">
+                <text text="" id="score" height="50%" width="100%" font="Interface/Fonts/Consolas.fnt" color="#fff"/>
             </panel>
             
-            <panel height="50%" width="10%" backgroundColor="#FFF" valign="bottom" align="left" childLayout="center">
+            <panel height="10%" width="100%" backgroundColor="#0009" valign="bottom" align="left" childLayout="center">
                 <control name="button" label="(Esc) to quit" id="Setup1Button" align="center" valign="center" height="100%" width="100%" visibleToMouse="true">
                     <interact onClick="setup1Screen())"/>
                 </control>
